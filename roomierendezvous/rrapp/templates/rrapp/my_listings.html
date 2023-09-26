@@ -1,0 +1,9 @@
+{% if latest_listings %}
+    <ul>
+    {% for listing in latest_listings %}
+        <li><a href="{% url 'rrapp:listing_detail' user_id listing.id %}" >{{ listing.title }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No listings created yet.</p>
+{% endif %}
