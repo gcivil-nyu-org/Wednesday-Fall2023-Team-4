@@ -1,5 +1,6 @@
 {% if latest_listings %}
     <ul>
+        <li><a href="{% url 'rrapp:listing_new' user_id %}"> Create new </a></li>
     {% for listing in latest_listings %}
         <li><a href="{% url 'rrapp:listing_detail' user_id listing.id %}" >{{ listing.title }}</a></li>
     {% endfor %}

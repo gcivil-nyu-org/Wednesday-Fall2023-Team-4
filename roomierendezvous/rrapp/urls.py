@@ -12,5 +12,7 @@ urlpatterns = [
     # path('<int:user_id>/listings/<int:pk>/update', views.DetailView.as_view(), name='listing_update'),
     # ex: /rrapp/5/listings/
     path('<int:user_id>/listings/', views.ListingIndexView.as_view(), name='my_listings'),
+    # ex: /rrapp/5/listings/new
+    path('<int:user_id>/listings/new', views.ListingNewView.as_view(), name='listing_new'),
 
 ]
