@@ -134,6 +134,13 @@ class ListingNewView(generic.UpdateView):
 #         # user hits the Back button.
 #         return HttpResponseRedirect(reverse('rrapp:listing_detail', args=(user_id,listing.id)))
 
+def listing_delete(request, user_id, pk):
+    listing = get_object_or_404(Listing, pk=pk, user_id=user_id)
+    listing.delete()
+        # Always return an HttpResponseRedirect after successfully dealing
+        # with POST data. This prevents data from being posted twice if a
+        # user hits the Back button.
+    return HttpResponseRedirect(reverse('rrapp:my_listings', args=(user_id,)))
 
 # def my_listings(request, user_id):
 #     latest_listings = Listing.objects.order_by('-created_at')[:10]
