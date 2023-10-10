@@ -80,9 +80,9 @@ WSGI_APPLICATION = 'roomierendezvous.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'django-images',
-        'USER': 'django-images',
-        'PASSWORD': 'complexpassword123',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
         'HOST': 'localhost',
         'PORT': '5432',
     }
