@@ -14,3 +14,5 @@
 <p>number_of_bathrooms: {{ object.number_of_bathrooms }}</p>
 <p>furnished: {{ object.furnished }}</p>
 <p>utilities_included: {{ object.utilities_included }}</p>
+<a href="{% url 'rrapp:listing_detail_modify' object.user.id object.id %}" ><button>Edit</button></a>
+<a href="{% url 'rrapp:my_listings' object.user.id %}" ><button>Back</button></a>

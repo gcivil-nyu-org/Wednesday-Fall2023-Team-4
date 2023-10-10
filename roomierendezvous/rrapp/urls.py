@@ -15,4 +15,5 @@ urlpatterns = [
     # ex: /rrapp/5/listings/new
     path('<int:user_id>/listings/new', views.ListingNewView.as_view(), name='listing_new'),
 
+    path('<int:user_id>/listings/<int:pk>/modify', views.ListingUpdateView.as_view(), name='listing_detail_modify'),
 ]

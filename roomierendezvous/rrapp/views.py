@@ -30,7 +30,20 @@ class ListingIndexView(generic.ListView):
 class ListingDetailView(generic.DetailView):
     model = Listing
     template_name = "rrapp/listing_detail.html"
+    
+class ListingUpdateView(generic.UpdateView):
+    model = Listing
+    template_name = "rrapp/listing_detail_modify.html"
+    fields = ['status', 'title', 'description', 'monthly_rent', 'date_available_from','date_available_to', 'property_type', 'room_type', 'number_of_bedrooms', 'number_of_bathrooms', 'furnished', 'utilities_included']
+    # TODO
+    success_url = 'rrapp:listing_detail'
 
+    # pass the arguments to the url
+    def get_success_url(self):
+        user_id = self.kwargs['user_id']
+        listing_id = self.kwargs['pk']
+        return reverse('rrapp:listing_detail', args=(user_id, listing_id))
+    
 class ListingNewView(generic.UpdateView):
     model = Listing
     template_name = "rrapp/listing_new.html"

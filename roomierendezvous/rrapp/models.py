@@ -33,6 +33,9 @@ class User(models.Model):
     profile_picture_url = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.username
+    
 class Renter(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,)
 
@@ -68,3 +71,5 @@ class Listing(models.Model):
     utilities_included = models.BooleanField(default=True)
     # TODO
     # # preferences preferences
+    def __str__(self):
+        return self.title
