@@ -5,6 +5,12 @@
 <p>Created at: {{ object.created_at }}</p>
 <p>Status: {{ object.status }}</p>
 <p>Description: {{ object.description }}</p>
+<p>Address : </p>
+<p>address1 : {{ object.address1 }} </p>
+<p>address2 : {{ object.address2 }} </p>
+<p>zip_code : {{ object.zip_code }} </p>
+<p>city : {{ object.city }} </p>
+<p>country : {{ object.country }} </p>
 <p>monthly_rent: {{ object.monthly_rent }}</p>
 <p>date_available_from: {{ object.date_available_from }}</p>
 <p>date_available_to: {{ object.date_available_to }}</p>
@@ -14,5 +20,3 @@
 <p>number_of_bathrooms: {{ object.number_of_bathrooms }}</p>
 <p>furnished: {{ object.furnished }}</p>
 <p>utilities_included: {{ object.utilities_included }}</p>
-<a href="{% url 'rrapp:listing_detail_modify' object.user.id object.id %}" ><button>Edit</button></a>
-<a href="{% url 'rrapp:my_listings' object.user.id %}" ><button>Back</button></a>
