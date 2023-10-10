@@ -20,5 +20,17 @@
 <p>number_of_bathrooms: {{ object.number_of_bathrooms }}</p>
 <p>furnished: {{ object.furnished }}</p>
 <p>utilities_included: {{ object.utilities_included }}</p>
+<p>Amenitites :</p>
+<p>washer: {{ object.washer }}</p>
+<p>dryer: {{ object.dryer }}</p>
+<p>dishwasher: {{ object.dishwasher }}</p>
+<p>microwave: {{ object.microwave }}</p>
+<p>baking_oven: {{ object.baking_oven }}</p>
+<p>parking: {{ object.parking }}</p>
+<p>Preferences :</p>
+<p>age_range: {{ object.age_range }}</p>
+<p>smoking_allowed: {{ object.smoking_allowed }}</p>
+<p>pets_allowed: {{ object.pets_allowed }}</p>
+<p>food_groups_allowed: {{ object.food_groups_allowed }}</p>
 <a href="{% url 'rrapp:listing_detail_modify' object.user.id object.id %}" ><button>Edit</button></a>
 <a href="{% url 'rrapp:my_listings' object.user.id %}" ><button>Back</button></a>
