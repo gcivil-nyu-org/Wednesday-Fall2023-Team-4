@@ -7,6 +7,8 @@ from django.urls import reverse
 from django.views import generic
 from django import forms
 
+from psycopg2.extras import NumericRange
+
 from .models import Listing, User
 
 class IndexView(generic.View):
@@ -58,10 +60,25 @@ class ListingNewView(generic.UpdateView):
                                     date_available_from = form_data.get('date_available_from'), 
                                     date_available_to = form_data.get('date_available_to'), 
                                     property_type = form_data.get('property_type'), room_type = form_data.get('room_type'), 
+                                    address1 = form_data.get('address1'), 
+                                    address2 = form_data.get('address2'), 
+                                    zip_code = form_data.get('zip_code'), 
+                                    city = form_data.get('city'), 
+                                    country = form_data.get('country'), 
+                                    washer = form_data.get('washer') == 'on',
+                                    dryer = form_data.get('dryer') == 'on',
+                                    dishwasher = form_data.get('dishwasher') == 'on',
+                                    microwave = form_data.get('microwave') == 'on',
+                                    baking_oven = form_data.get('baking_oven') == 'on',
+                                    parking = form_data.get('parking') == 'on',
                                     number_of_bedrooms = form_data.get('number_of_bedrooms'), 
                                     number_of_bathrooms = form_data.get('number_of_bathrooms'), 
                                     furnished = form_data.get('furnished')=='on', 
-                                    utilities_included = form_data.get('utilities_included')=='on' )
+                                    utilities_included = form_data.get('utilities_included')=='on',
+                                    smoking_allowed = form_data.get('smoking_allowed') == 'on',
+                                    pets_allowed = form_data.get('pets_allowed'),
+                                    food_groups_allowed = form_data.get('food_groups_allowed'),
+                                    age_range = NumericRange(int(form_data.get('age_range_0')), int(form_data.get('age_range_1'))))
         l.save()
         return super().post(request, *args, **kwargs)
     
@@ -70,8 +87,11 @@ class ListingNewView(generic.UpdateView):
             class Meta:
                 model = Listing
                 fields = ['status', 'title', 'description', 'monthly_rent', 'date_available_from', 
-                          'date_available_to', 'property_type', 'room_type', 'number_of_bedrooms', 
-                          'number_of_bathrooms', 'furnished', 'utilities_included']
+                          'date_available_to', 'property_type', 'room_type', 'address1', 'address2', 
+                          'zip_code', 'city', 'country', 'washer', 'dryer', 
+                          'dishwasher', 'microwave', 'baking_oven', 'parking', 'number_of_bedrooms', 
+                          'number_of_bathrooms', 'furnished', 'utilities_included', 'age_range',
+                          'smoking_allowed', 'pets_allowed', 'food_groups_allowed']
 
         return _Form
 
