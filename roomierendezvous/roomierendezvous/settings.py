@@ -33,7 +33,6 @@ ALLOWED_HOSTS = ["127.0.0.1", "roomierendezvous-dev.us-east-1.elasticbeanstalk.c
 
 INSTALLED_APPS = [
     'rrapp.apps.RrappConfig',
-    'polls.apps.PollsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
