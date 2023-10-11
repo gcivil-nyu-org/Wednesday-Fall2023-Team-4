@@ -33,4 +33,5 @@
 <p>pets_allowed: {{ object.pets_allowed }}</p>
 <p>food_groups_allowed: {{ object.food_groups_allowed }}</p>
 <a href="{% url 'rrapp:listing_detail_modify' object.user.id object.id %}" ><button>Edit</button></a>
+<a href="{% url 'rrapp:listing_delete' object.user.id object.id %}" ><button>Delete</button></a>
 <a href="{% url 'rrapp:my_listings' object.user.id %}" ><button>Back</button></a>

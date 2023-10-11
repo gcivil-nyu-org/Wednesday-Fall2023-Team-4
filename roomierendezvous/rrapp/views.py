@@ -36,7 +36,12 @@ class ListingDetailView(generic.DetailView):
 class ListingUpdateView(generic.UpdateView):
     model = Listing
     template_name = "rrapp/listing_detail_modify.html"
-    fields = ['status', 'title', 'description', 'monthly_rent', 'date_available_from','date_available_to', 'property_type', 'room_type', 'number_of_bedrooms', 'number_of_bathrooms', 'furnished', 'utilities_included']
+    fields = ['status', 'title', 'description', 'monthly_rent', 'date_available_from', 
+                          'date_available_to', 'property_type', 'room_type', 'address1', 'address2', 
+                          'zip_code', 'city', 'country', 'washer', 'dryer', 
+                          'dishwasher', 'microwave', 'baking_oven', 'parking', 'number_of_bedrooms', 
+                          'number_of_bathrooms', 'furnished', 'utilities_included', 'age_range',
+                          'smoking_allowed', 'pets_allowed', 'food_groups_allowed']
     # TODO
     success_url = 'rrapp:listing_detail'
 
