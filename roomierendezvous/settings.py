@@ -87,6 +87,18 @@ DATABASES = {
     }
 }
 
+if 'TRAVIS' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE':   'django.db.backends.postgresql_psycopg2',
+            'NAME':     'rrtestdb',
+            'USER':     'travis',
+            'PASSWORD': '',
+            'HOST':     'localhost',
+            'PORT':     '5433',
+        }
+    }
+
 if 'RDS_DB_NAME' in os.environ:
     DATABASES = {
         'default': {
