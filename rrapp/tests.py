@@ -1,8 +1,7 @@
 from django.test import TestCase
-from rrapp.models import Listing
+
 
 # Create your tests here.
-
 class ListingTestCase(TestCase):
     def setUp(self):
         pass
