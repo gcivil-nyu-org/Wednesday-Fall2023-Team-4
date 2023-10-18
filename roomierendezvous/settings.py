@@ -100,6 +100,7 @@ DATABASES = {
 }
 """
 
+
 if 'TRAVIS' in os.environ:
     DATABASES = {
         'default': {

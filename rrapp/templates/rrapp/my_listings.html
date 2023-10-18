@@ -4,37 +4,66 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-      </head>
-      <body>
-        <div class="container-xxl text-center">
-            <div class = "row p-3">
-                <div class="col">
-                    
-                </div>
-                <div class="col-6">
-                    {% if latest_listings %}
-                        <div class="list-group">
-                        {% for listing in latest_listings %}
-                            <button type="button" class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'rrapp:listing_detail' user_id listing.id %}'">{{ listing.title }}</button>
-                        {% endfor %}
-                        </div>
-                    {% else %}
-                        <p>No listings created yet.</p>
-                    {% endif %}
-                    
-                    <div class = "row p-3">
-                        <div class="col">
-                            <a href="{% url 'rrapp:listing_new' user_id %}" class="btn btn-primary">Create new</a>
-                        </div>
+    </head>
+    <body class = "d-flex align-items-stretch flex-row" style="height:100%;">
+        <div class="bg-dark" style="width:18%;">
+            It's a sidebar
+        </div>
+        <div class="flex-fill text-center">
+            <div class="container p-3">
+                <nav aria-label="breadcrumb g-3" style="--bs-breadcrumb-divider: '>';">
+                    <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary rounded-3">
+                        <li class="breadcrumb-item">
+                            <a class="link-body-emphasis fw-semibold text-decoration-none">
+                                Home
+                            </a>
+                        </li>
+    
+                        <li class="breadcrumb-item avtive">
+                            My Listings
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            <div class = "d-flex flex-column align-items-center">
+                    <div class="align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
+                        <span class="fs-4 fw-semibold">My Listings</span>
                     </div>
-                </div>
-                <div class="col">
+
+                    <div style="width:70%;">
+                        {% if latest_listings %}
+                            <div class="list-group scrollarea">
+                                {% for listing in latest_listings %}
+                                    <button type="button" class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'rrapp:listing_detail' user_id listing.id %}'" style="height:3.5rem;">
+                                        <span class="fs-5 fw-semi">
+                                            {{ listing.title }}
+                                        </span>
+                                    </button>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p>No listings created yet.</p>
+                        {% endif %}
+                    </div>
                     
-                </div>
+                    <div class = "p-3">
+                            <a href="{% url 'rrapp:listing_new' user_id %}" class="btn btn-primary">Create new</a>
+                    </div>
             </div>
         </div>
 
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-      </body>
+    </body>
+    <style>
+        .breadcrumb-item.avtive {
+            color: var(--bs-breadcrumb-item-active-color);
+        }
+        html,body{
+            height:100%;
+            width:100%;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
 </html>
