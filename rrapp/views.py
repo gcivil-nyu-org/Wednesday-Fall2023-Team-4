@@ -6,16 +6,20 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
 from django import forms
+from django.shortcuts import render
 
 from psycopg2.extras import NumericRange
+
+from django.contrib import messages
 
 from .models import Listing, User
 
 
-class IndexView(generic.View):
-    def get(self, request, *args, **kwargs):
-        return HttpResponse("Hello, world. You're at the rrapp index.")
-
+# class IndexView(generic.View):
+#     def get(self, request, *args, **kwargs):
+#         return HttpResponse("Hello, world. You're at the rrapp index.")
+def home(request):
+    return render(request, 'rrapp/home.html')
 
 class ListingIndexView(generic.ListView):
     template_name = "rrapp/my_listings.html"
@@ -187,6 +191,18 @@ class ListingNewView(generic.UpdateView):
         context_data["user_id"] = self.kwargs["user_id"]
         return context_data
 
+def login(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        try:
+            user = User.objects.get(username=username)
+            user_id = user.id
+            context = {'user_id': user_id}
+            return render(request, 'rrapp/my_listings.html', context)
+        except:
+            messages.error(request, 'User does not exist') 
+    return render(request, 'rrapp/login.html')
 
 def listing_delete(request, user_id, pk):
     listing = get_object_or_404(Listing, pk=pk, user_id=user_id)
