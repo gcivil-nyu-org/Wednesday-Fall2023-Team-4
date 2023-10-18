@@ -11,16 +11,16 @@
         </div>
         <div class="flex-fill text-center">
             <div class="container-xxl text-center">
-                <div class="container p-3">
-                    <nav aria-label="breadcrumb g-3" style="--bs-breadcrumb-divider: '>';">
-                        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary rounded-3">
+                <div class="container pt-3">
+                    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+                        <ol class="breadcrumb p-3 bg-body-tertiary board rounded-3">
                             <li class="breadcrumb-item">
                                 <a class="link-body-emphasis fw-semibold text-decoration-none">
                                     Home
                                 </a>
                             </li>
                             <li class="breadcrumb-item">
-                                <a class="link-body-emphasis fw-semibold text-decoration-none">
+                                <a class="link-body-emphasis fw-semibold text-decoration-none" href="{% url 'rrapp:my_listings' object.user.id %}">
                                     My Listings
                                 </a>
                             </li>
@@ -31,11 +31,14 @@
                     </nav>
                 </div>
             </div>
-                
-            <div class = "d-flex flex-column align-items-center">
-                            <!-- {{ listing }} -->
-<h1>{{ object.title }}</h1>
+            
+            <div class = "w-100 align-items-center px-5" >
+            <div class = "d-flex flex-column align-items-center board rounded-3" style="background-color:#F8F8F8">
+                    <h1 class="font-monospace display-5 fw-medium text-body-emphasis p-1">{{ object.title }}</h1>
+
+
 <p>Created by: {{ object.user }}</p>
+
 <p>Created at: {{ object.created_at }}</p>
 <p>Status: {{ object.status }}</p>
 <p>Description: {{ object.description }}</p>
@@ -70,11 +73,18 @@
 <a href="{% url 'rrapp:listing_delete' object.user.id object.id %}" ><button>Delete</button></a>
 <a href="{% url 'rrapp:my_listings' object.user.id %}" ><button>Back</button></a>
             </div>
+
+
+        </div>
+
         </div>
     </body>
     <style>
         .breadcrumb-item.avtive {
             color: var(--bs-breadcrumb-item-active-color);
+        }
+        .board{
+            border: var(--bs-border-width) var(--bs-border-style) #dee2e6!important;
         }
         html,body{
             height:100%%;
