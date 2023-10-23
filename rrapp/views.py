@@ -41,19 +41,20 @@ class ListingDetailRenteeView(generic.DetailView):
     model = Listing
     template_name = "rrapp/rentee_listing_detail.html"
 
+
 class ListingResultsView(generic.ListView):
     template_name = "rrapp/rentee_listings.html"
     context_object_name = "queried_listings"
 
     def get_queryset(self):
         """Return the last five published questions."""
-        user_id = self.kwargs["user_id"]
         return Listing.objects.order_by("-created_at")[:10]
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
         context_data["user_id"] = self.kwargs["user_id"]
         return context_data
+
 
 class ListingUpdateView(generic.UpdateView):
     model = Listing
