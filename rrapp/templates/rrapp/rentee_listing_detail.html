@@ -1,36 +1,419 @@
-<!-- {{ listing }} -->
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    </head>
+    <body class = "d-flex align-items-stretch flex-row" style="height:100%;">
+        <div class="bg-dark" style="width:18%;">
+            It's a sidebar
+        </div>
+        <div class="flex-fill text-center">
+            <div class="container-xxl text-center">
+                <div class="container pt-3">
+                    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+                        <ol class="breadcrumb p-3 bg-body-tertiary board rounded-3">
+                            <li class="breadcrumb-item">
+                                <a class="link-body-emphasis fw-semibold text-decoration-none">
+                                    Home
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a class="link-body-emphasis fw-semibold text-decoration-none" href="{% url 'rrapp:my_listings' object.user.id %}">
+                                    My Listings
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item avtive">
+                                {{object.title}}
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            
+            <div class = "w-100 align-items-center px-5" >
+            <div class = "d-flex flex-column align-items-center board rounded-3" style="background-color:#F8F8F8">
+                    <h1 class="font-monospace display-5 fw-medium text-body-emphasis p-2">{{ object.title }}</h1>
+                    <div class="row w-75 text-center">
 
-<h1>{{ object.title }}</h1>
-<p>Created by: {{ object.user }}</p>
-<p>Created at: {{ object.created_at }}</p>
-<p>Status: {{ object.status }}</p>
-<p>Description: {{ object.description }}</p>
-<p>Address : </p>
-<p>address1 : {{ object.address1 }} </p>
-<p>address2 : {{ object.address2 }} </p>
-<p>zip_code : {{ object.zip_code }} </p>
-<p>city : {{ object.city }} </p>
-<p>country : {{ object.country }} </p>
-<p>monthly_rent: {{ object.monthly_rent }}</p>
-<p>date_available_from: {{ object.date_available_from }}</p>
-<p>date_available_to: {{ object.date_available_to }}</p>
-<p>property_type: {{ object.property_type }}</p>
-<p>room_type: {{ object.room_type }}</p>
-<p>number_of_bedrooms: {{ object.number_of_bedrooms }}</p>
-<p>number_of_bathrooms: {{ object.number_of_bathrooms }}</p>
-<p>furnished: {{ object.furnished }}</p>
-<p>utilities_included: {{ object.utilities_included }}</p>
-<p>Amenitites :</p>
-<p>washer: {{ object.washer }}</p>
-<p>dryer: {{ object.dryer }}</p>
-<p>dishwasher: {{ object.dishwasher }}</p>
-<p>microwave: {{ object.microwave }}</p>
-<p>baking_oven: {{ object.baking_oven }}</p>
-<p>parking: {{ object.parking }}</p>
-<p>Preferences :</p>
-<p>age_range: {{ object.age_range }}</p>
-<p>smoking_allowed: {{ object.smoking_allowed }}</p>
-<p>pets_allowed: {{ object.pets_allowed }}</p>
-<p>food_groups_allowed: {{ object.food_groups_allowed }}</p>
-<a href="{% url 'rrapp:rentee_listings' object.user.id %}" ><button>Shorlist</button></a>
-<a href="{% url 'rrapp:rentee_listings' object.user.id %}" ><button>Back</button></a>
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left ">
+                                <div class="p-2 text-left">Created By :</div>
+                            </div>
+                        </div>
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.user }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Created At :</div>
+                            </div>
+                        </div>
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.created_at }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Status :</div>
+                            </div>
+                        </div>
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.status }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Description :</div>
+                            </div>
+                        </div>
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.description }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Address1 :</div>
+                            </div>
+                        </div>
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.address1 }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Address2 :</div>
+                            </div>
+                        </div>
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.address2 }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Zip Code :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.zip_code }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">City :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.city }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Country :</div>
+                            </div>
+                        </div>
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.country }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Monthly Rent :</div>
+                            </div>
+                        </div>
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.monthly_rent }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Available From :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.date_available_from }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left"> To </div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.date_available_to }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Property Type :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.property_type }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Room Type :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.room_type }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Bedrooms :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.number_of_bedrooms }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Bathrooms :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.number_of_bathrooms }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left"> Furnished :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.furnished }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Utilities :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.utilities_included }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left"> Washer :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.washer }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Dryer :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.dryer }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left"> Dishwasher :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.dishwasher }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Microwave :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.microwave }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Baking Oven :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.baking_oven }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Parking :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.parking }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Preferences :</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Age Range :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.age_range }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Smoking Allowed :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.smoking_allowed }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Pets Allowed :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.pets_allowed }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Food Allowed :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.food_groups_allowed }}</div>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <div class="d-inline-flex gap-4 mb-5 p-4">
+                        <a href="{% url 'rrapp:rentee_listings' request.user.id %}" >
+                            <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right">Shortlist</button>
+                        </a>
+                        <a href="{% url 'rrapp:rentee_listings' request.user.id %}" >
+                            <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right">Back</button>
+                        </a>
+                    </div>
+            </div>
+        </div>
+
+        </div>
+    </body>
+    <style>
+        .breadcrumb-item.avtive {
+            color: var(--bs-breadcrumb-item-active-color);
+        }
+        .board{
+            border: var(--bs-border-width) var(--bs-border-style) #dee2e6!important;
+        }
+        html,body{
+            height:100%%;
+            width:100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .back-left {
+            background-color: #00796B;
+        }
+        .back-right {
+            background-color: #2E3236;
+        }
+        .text-left {
+            color: #FFFFFF;
+        }
+        .text-right {
+            color: #FFFFFF;
+        }
+
+        .cus-btn-left {
+            --bs-btn-color: #FFFFFF;
+            --bs-btn-bg: #00796B;
+            --bs-btn-active-bg: #009688;
+            --bs-btn-hover-bg: #009688;
+            --bs-btn-hover-color: #fff;
+        }
+
+        .cus-btn-mid {
+            --bs-btn-color: #FFFFFF;
+            --bs-btn-bg: #FFA000;
+            --bs-btn-active-bg: #FFC107;
+            --bs-btn-hover-bg: #FFC107;
+            --bs-btn-hover-color: #fff;
+        }
+        .cus-btn-right {
+            --bs-btn-color: #FFFFFF;
+            --bs-btn-bg: #2E3236;
+            --bs-btn-active-bg: #455A64;
+            --bs-btn-hover-bg: #455A64;
+            --bs-btn-hover-color: #fff;
+        }
+    </style>
+</html>
