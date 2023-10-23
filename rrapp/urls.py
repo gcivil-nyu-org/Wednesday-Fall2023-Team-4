@@ -27,4 +27,16 @@ urlpatterns = [
         views.ListingUpdateView.as_view(),
         name='listing_detail_modify',
     ),
+    # ex: /rrapp/rentee/5/listings/
+    path(
+        'rentee/<int:user_id>/listings/',
+        views.ListingResultsView.as_view(),
+        name='rentee_listings',
+    ),
+    # ex: /rrapp/rentee/5/listings/1
+    path(
+        'rentee/<int:user_id>/listings/<int:pk>',
+        views.ListingDetailRenteeView.as_view(),
+        name='rentee_listing_detail',
+    ),
 ]
