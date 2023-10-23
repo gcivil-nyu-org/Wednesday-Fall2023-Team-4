@@ -1,0 +1,11 @@
+<!-- <li><a href="{% url 'rrapp:listing_new' user_id %}"> Create new </a></li> -->
+{% if queried_listings %}
+    <p>Available listings :</p>
+    <ul>
+    {% for listing in queried_listings %}
+        <li><a href="{% url 'rrapp:rentee_listing_detail' user_id listing.id %}" >{{ listing.title }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No listings available.</p>
+{% endif %}
