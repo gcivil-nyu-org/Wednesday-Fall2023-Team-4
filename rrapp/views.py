@@ -26,7 +26,7 @@ class ListingIndexView(generic.ListView):
         """Return the last five published questions."""
         user_id = self.kwargs["user_id"]
         all_listings = Listing.objects.filter(user=user_id).order_by("-created_at")
-        paginator = Paginator(all_listings, 1)
+        paginator = Paginator(all_listings, 10)
         page_number = self.request.GET.get("page")
         latest_listings_page = paginator.get_page(page_number)
         return latest_listings_page
@@ -54,7 +54,7 @@ class ListingResultsView(generic.ListView):
     def get_queryset(self):
         """Return the last five published questions."""
         all_listings = Listing.objects.all()
-        paginator = Paginator(all_listings, 1)
+        paginator = Paginator(all_listings, 10)
         page_number = self.request.GET.get("page")
         queried_listings_page = paginator.get_page(page_number)
         return queried_listings_page
