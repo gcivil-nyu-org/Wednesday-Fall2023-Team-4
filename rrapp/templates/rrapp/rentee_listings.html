@@ -31,9 +31,9 @@
                     </div>
 
                     <div style="width:70%;">
-                        {% if queried_listings %}
+                        {% if queried_listings_page %}
                             <div class="list-group scrollarea">
-                                {% for listing in queried_listings %}
+                                {% for listing in queried_listings_page %}
                                     <button type="button" class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'rrapp:rentee_listing_detail' user_id listing.id %}'" style="height:3.5rem;">
                                         <span class="fs-5 fw-semi">
                                             {{ listing.title }}
@@ -46,8 +46,22 @@
                         {% endif %}
                     </div>
                     
-                    <div class = "p-3">
-                            <a href="{% url 'rrapp:listing_new' user_id %}" class="btn btn-primary">Create new</a>
+                    <div class="pagination">
+                        <span class="step-links">
+                            {% if queried_listings_page.has_previous %}
+                                <a href="?page=1" class="btn btn-primary">&laquo; first</a>
+                                <a href="?page={{ queried_listings_page.previous_page_number }}" class="btn btn-primary">previous</a>
+                            {% endif %}
+                    
+                            <span class="current">
+                                Page {{ queried_listings_page.number }} of {{ queried_listings_page.paginator.num_pages }}.
+                            </span>
+                    
+                            {% if queried_listings_page.has_next %}
+                                <a href="?page={{ queried_listings_page.next_page_number }}" class="btn btn-primary">next</a>
+                                <a href="?page={{ queried_listings_page.paginator.num_pages }}" class="btn btn-primary">last &raquo;</a>
+                            {% endif %}
+                        </span>
                     </div>
             </div>
         </div>

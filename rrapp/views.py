@@ -2,6 +2,7 @@ from typing import Any
 from django.shortcuts import get_object_or_404
 
 # Create your views here.
+from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
@@ -24,7 +25,11 @@ class ListingIndexView(generic.ListView):
     def get_queryset(self):
         """Return the last five published questions."""
         user_id = self.kwargs["user_id"]
-        return Listing.objects.filter(user=user_id).order_by("-created_at")[:10]
+        all_listings = Listing.objects.filter(user=user_id).order_by("-created_at")
+        paginator = Paginator(all_listings, 1)
+        page_number = self.request.GET.get("page")
+        latest_listings_page = paginator.get_page(page_number)
+        return latest_listings_page
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
@@ -44,11 +49,15 @@ class ListingDetailRenteeView(generic.DetailView):
 
 class ListingResultsView(generic.ListView):
     template_name = "rrapp/rentee_listings.html"
-    context_object_name = "queried_listings"
+    context_object_name = "queried_listings_page"
 
     def get_queryset(self):
         """Return the last five published questions."""
-        return Listing.objects.order_by("-created_at")[:10]
+        all_listings = Listing.objects.all()
+        paginator = Paginator(all_listings, 1)
+        page_number = self.request.GET.get("page")
+        queried_listings_page = paginator.get_page(page_number)
+        return queried_listings_page
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
