@@ -354,15 +354,10 @@
                     </div>
                     
                     <div class="d-inline-flex gap-4 mb-5 p-4">
-                        <a href="{% url 'rrapp:listing_detail_modify' object.user.id object.id %}" >
-                            <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-left">Edit</button>
-                        </a> 
-
-                        <a href="{% url 'rrapp:listing_delete' object.user.id object.id %}" >
-                            <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-mid">Delete</button>
+                        <a href="{% url 'rrapp:rentee_listings' request.user.id %}" >
+                            <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right">Shortlist</button>
                         </a>
-
-                        <a href="{% url 'rrapp:my_listings' object.user.id %}" >
+                        <a href="{% url 'rrapp:rentee_listings' request.user.id %}" >
                             <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right">Back</button>
                         </a>
                     </div>
