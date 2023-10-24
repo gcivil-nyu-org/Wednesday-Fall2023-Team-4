@@ -53,7 +53,7 @@ class ListingResultsView(generic.ListView):
 
     def get_queryset(self):
         """Return the last five published questions."""
-        all_listings = Listing.objects.all()
+        all_listings = Listing.objects.all().order_by('-created_at')
         paginator = Paginator(all_listings, 10)
         page_number = self.request.GET.get("page")
         queried_listings_page = paginator.get_page(page_number)
