@@ -38,6 +38,7 @@ install:
 before_script:
   - psql -c 'create database rrtestdb;' -U travis
   - python manage.py migrate --run-syncdb
+  - python manage.py migrate
 
 
 script:
