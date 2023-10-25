@@ -84,7 +84,7 @@ DATABASES = {
         'PASSWORD': 'complexpassword123',
         'HOST': 'localhost',
         'PORT': '5432',
-    }
+    },
     'test': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': ':memory:',
