@@ -40,6 +40,7 @@ before_script:
   - python manage.py migrate auth
   - python manage.py migrate --run-syncdb
   - python manage.py migrate
+  - black .
 
 
 script:
