@@ -15,7 +15,7 @@ urlpatterns = [
     path('logout/', views.logoutUser, name="logout"),
     # ex: /rrapp/register
     path('register/', views.registerPage, name="register"),
-    
+
     # ex: /rrapp/5/listings/1
     path(
         '<int:user_id>/listings/<int:pk>',

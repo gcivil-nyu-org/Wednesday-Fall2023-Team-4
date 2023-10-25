@@ -15,7 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from .models import Listing, User, Renter, Rentee
-from .forms import UserForm, MyUserCreationForm
+from .forms import MyUserCreationForm
 
 
 # class IndexView(generic.View):
@@ -28,23 +28,26 @@ def home(request):
 def loginPage(request):
     page = 'login'
     if request.user.is_authenticated:
-        return HttpResponseRedirect(reverse('rrapp:my_listings', args=(request.user.id,)))
+        return HttpResponseRedirect(reverse('rrapp:my_listings', 
+                                            args=(request.user.id,)))
     if request.method == 'POST':
         email = request.POST.get('email').lower()
         password = request.POST.get('password')
         try:
             user = User.objects.get(email=email)
-        except:
+        except Exception:
             messages.error(request, 'User does not exist')
         user = authenticate(request, email=email, password=password)
         if user is not None:
             try:
-                user_type = Renter.objects.get(user=user)
+                Renter.objects.get(user=user)
                 login(request, user)
-                return HttpResponseRedirect(reverse('rrapp:my_listings', args=(request.user.id,)))
-            except:
+                return HttpResponseRedirect(reverse('rrapp:my_listings', 
+                                                    args=(request.user.id,)))
+            except Exception:
                 login(request, user)
-                return HttpResponseRedirect(reverse('rrapp:rentee_listings', args=(request.user.id,)))
+                return HttpResponseRedirect(reverse('rrapp:rentee_listings', 
+                                                    args=(request.user.id,)))
         else:
             messages.error(request, 'Username OR password does not exit')
     context = {'page': page}
@@ -73,12 +76,14 @@ def registerPage(request):
                 user_type = Renter.objects.create(user=user)
                 user_type.save()
                 login(request, user)
-                return HttpResponseRedirect(reverse('rrapp:my_listings', args=(user_id,)))
+                return HttpResponseRedirect(reverse('rrapp:my_listings', 
+                                                    args=(user_id,)))
             else:
                 user_type = Rentee.objects.create(user=user)
                 user_type.save()
                 login(request, user)
-                return HttpResponseRedirect(reverse('rrapp:rentee_listings', args=(user_id,)))
+                return HttpResponseRedirect(reverse('rrapp:rentee_listings', 
+                                                    args=(user_id,)))
         else:
             messages.error(request, 'An error occurred during registration')
 

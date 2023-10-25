@@ -16,7 +16,8 @@ from django.contrib.postgres.serializers import RangeSerializer
 from django.db.migrations.writer import MigrationWriter
 
 # from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import BaseUserManager
 
 MigrationWriter.register_serializer(NumericRange, RangeSerializer)
 
