@@ -1,5 +1,5 @@
 from typing import Any
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -9,14 +9,83 @@ from django import forms
 
 from psycopg2.extras import NumericRange
 
-from .models import Listing, User
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
+from .models import Listing, User, Renter, Rentee
+from .forms import UserForm, MyUserCreationForm
 
 
-class IndexView(generic.View):
-    def get(self, request, *args, **kwargs):
-        return HttpResponse("Hello, world. You're at the rrapp index.")
+# class IndexView(generic.View):
+#     def get(self, request, *args, **kwargs):
+#         return HttpResponse("Hello, world. You're at the rrapp index.")
+def home(request):
+    return render(request, 'rrapp/home.html')
 
 
+def loginPage(request):
+    page = 'login'
+    if request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('rrapp:my_listings', args=(request.user.id,)))
+    if request.method == 'POST':
+        email = request.POST.get('email').lower()
+        password = request.POST.get('password')
+        try:
+            user = User.objects.get(email=email)
+        except:
+            messages.error(request, 'User does not exist')
+        user = authenticate(request, email=email, password=password)
+        if user is not None:
+            try:
+                user_type = Renter.objects.get(user=user)
+                login(request, user)
+                return HttpResponseRedirect(reverse('rrapp:my_listings', args=(request.user.id,)))
+            except:
+                login(request, user)
+                return HttpResponseRedirect(reverse('rrapp:rentee_listings', args=(request.user.id,)))
+        else:
+            messages.error(request, 'Username OR password does not exit')
+    context = {'page': page}
+    return render(request, 'rrapp/login_register.html', context)
+
+
+def logoutUser(request):
+    logout(request)
+    return render(request, 'rrapp/home.html')
+
+
+def registerPage(request):
+    form = MyUserCreationForm()
+
+    if request.method == 'POST':
+        form = MyUserCreationForm(request.POST)
+        renter_or_rentee = request.POST.get('renter_or_rentee')
+        if form.is_valid():
+            user = form.save(commit=False)
+            if not user.email[-4:] == '.edu':
+                messages.error(request, 'Email format is not correct')
+                return render(request, 'rrapp/login_register.html', {'form': form})
+            user.save()
+            user_id = user.id
+            if renter_or_rentee == 'Renter':
+                user_type = Renter.objects.create(user=user)
+                user_type.save()
+                login(request, user)
+                return HttpResponseRedirect(reverse('rrapp:my_listings', args=(user_id,)))
+            else:
+                user_type = Rentee.objects.create(user=user)
+                user_type.save()
+                login(request, user)
+                return HttpResponseRedirect(reverse('rrapp:rentee_listings', args=(user_id,)))
+        else:
+            messages.error(request, 'An error occurred during registration')
+
+    return render(request, 'rrapp/login_register.html', {'form': form})
+
+
+@method_decorator(login_required, name='dispatch')
 class ListingIndexView(generic.ListView):
     template_name = "rrapp/my_listings.html"
     context_object_name = "latest_listings"
@@ -32,16 +101,19 @@ class ListingIndexView(generic.ListView):
         return context_data
 
 
+@method_decorator(login_required, name='dispatch')
 class ListingDetailView(generic.DetailView):
     model = Listing
     template_name = "rrapp/listing_detail.html"
 
 
+@method_decorator(login_required, name='dispatch')
 class ListingDetailRenteeView(generic.DetailView):
     model = Listing
     template_name = "rrapp/rentee_listing_detail.html"
 
 
+@method_decorator(login_required, name='dispatch')
 class ListingResultsView(generic.ListView):
     template_name = "rrapp/rentee_listings.html"
     context_object_name = "queried_listings"
@@ -56,6 +128,7 @@ class ListingResultsView(generic.ListView):
         return context_data
 
 
+@method_decorator(login_required, name='dispatch')
 class ListingUpdateView(generic.UpdateView):
     model = Listing
     template_name = "rrapp/listing_detail_modify.html"
@@ -98,6 +171,7 @@ class ListingUpdateView(generic.UpdateView):
         return reverse('rrapp:listing_detail', args=(user_id, listing_id))
 
 
+@method_decorator(login_required, name='dispatch')
 class ListingNewView(generic.UpdateView):
     model = Listing
     template_name = "rrapp/listing_new.html"
@@ -207,6 +281,7 @@ class ListingNewView(generic.UpdateView):
         return context_data
 
 
+@login_required(login_url='login')
 def listing_delete(request, user_id, pk):
     listing = get_object_or_404(Listing, pk=pk, user_id=user_id)
     listing.delete()

@@ -15,6 +15,9 @@ from psycopg2.extras import NumericRange
 from django.contrib.postgres.serializers import RangeSerializer
 from django.db.migrations.writer import MigrationWriter
 
+# from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+
 MigrationWriter.register_serializer(NumericRange, RangeSerializer)
 
 
@@ -84,16 +87,64 @@ class Amenities(models.Model):
     parking = models.BooleanField(default=False)
 
 
-class User(models.Model):
-    username = models.CharField(max_length=100)
-    password = models.CharField(max_length=100)
-    email = models.CharField(max_length=100)
-    # birth_date = models.DateField(default=datetime.date.today())
-    # verified = models.BooleanField()
+# class User(models.Model):
+#     username = models.CharField(max_length=100)
+#     password = models.CharField(max_length=100)
+#     email = models.CharField(max_length=100)
+#     # birth_date = models.DateField(default=datetime.date.today())
+#     # verified = models.BooleanField()
+#     first_name = models.CharField(max_length=100)
+#     last_name = models.CharField(max_length=100)
+#     profile_picture_url = models.CharField(max_length=100)
+#     phone_number = models.CharField(max_length=100)
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, username, password=None):
+        if not email:
+            raise ValueError("The Email field must be set")
+        if not username:
+            raise ValueError("The Username field must be set")
+
+        email = self.normalize_email(email)
+        user = self.model(email=email, username=username, date_joined=timezone.now())
+
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, username, password=None):
+        user = self.create_user(email, username, password)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
+
+
+class User(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=30, unique=True)
+    date_joined = models.DateTimeField(default=timezone.now)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    bio = models.TextField(null=True)
     profile_picture_url = models.CharField(max_length=100)
+    smokes = models.BooleanField(default=False)
+    has_pets = models.BooleanField(default=False)
     phone_number = models.CharField(max_length=100)
+    # user_role = models.CharField(
+    #     max_length=6,
+    #     choices=UserRole.choices,
+    #     default=UserRole.RENTER,
+    # )
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+
+    def __str__(self):
+        return self.email
 
 
 class Renter(models.Model):

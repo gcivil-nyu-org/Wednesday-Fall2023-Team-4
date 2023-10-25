@@ -83,7 +83,7 @@ DATABASES = {
         'USER': 'django-images',
         'PASSWORD': 'complexpassword123',
         'HOST': 'localhost',
-        'PORT': '5432',
+        'PORT': '8080',
     }
 }
 
@@ -153,6 +153,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = "rrapp.User"
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
