@@ -85,6 +85,10 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '5432',
     },
+    'test': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'rrtestdb',
+    },
 }
 
 """
