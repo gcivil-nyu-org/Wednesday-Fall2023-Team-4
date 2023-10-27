@@ -87,7 +87,7 @@ DATABASES = {
     },
     'test': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'rrtestdb',
+        'NAME': ':memory:',
     },
 }
 
