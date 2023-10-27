@@ -39,7 +39,7 @@ before_script:
   - psql -c 'create database rrtestdb;' -U travis
   - python manage.py migrate auth
   - python manage.py migrate --run-syncdb
-  - python manage.py migrate --database=rrtestdb
+  - python manage.py migrate --database=test
   - python manage.py migrate
   - black .
 
@@ -47,7 +47,7 @@ before_script:
 script:
   - black --check . --skip-string-normalization --exclude settings* --extend-exclude migrations*
   - flake8 .
-  - coverage run --source=rrapp manage.py test
+  - coverage run --source=rrapp manage.py test --settings=roomierendezvous.settings
 
 
 after_script:
