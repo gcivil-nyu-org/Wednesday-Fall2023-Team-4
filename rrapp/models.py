@@ -112,15 +112,15 @@ class Rentee(models.Model):
 
 class Listing(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(default=timezone.now())
+    created_at = models.DateTimeField(default=timezone.now)
     # TODO enum
     status = models.CharField(max_length=100)
     title = models.CharField(max_length=100)
     description = models.TextField(default="")
     monthly_rent = models.IntegerField(default=1000)
-    date_available_from = models.DateField(default=datetime.date.today())
+    date_available_from = models.DateField(default=timezone.now)
     date_available_to = models.DateField(
-        default=datetime.date.today() + datetime.timedelta(days=30)
+        default=timezone.now
     )
     property_type = models.CharField(
         max_length=20,

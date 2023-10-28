@@ -175,6 +175,7 @@ class ListingNewView(generic.CreateView):
 
 
 def listing_delete(request, user_id, pk):
+    #TODO:add the check  if request.user.is_authenticated():
     listing = get_object_or_404(Listing, pk=pk, user_id=user_id)
     listing.delete()
     # Always return an HttpResponseRedirect after successfully dealing
