@@ -157,9 +157,9 @@ class Listing(models.Model):
     utilities_included = models.BooleanField(default=True)
     # TODO : can we use a nested field? like preferences = Preference()
     age_range = IntegerRangeField(
-        default=NumericRange(1, 101),
+        default=NumericRange(18, 60),
         blank=True,
-        validators=[RangeMinValueValidator(1), RangeMaxValueValidator(100)],
+        validators=[RangeMinValueValidator(18), RangeMaxValueValidator(100)],
     )
     smoking_allowed = models.BooleanField(default=False)
     pets_allowed = models.CharField(
