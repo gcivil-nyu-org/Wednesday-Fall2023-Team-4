@@ -88,9 +88,7 @@ class ListingUpdateView(generic.UpdateView):
         'pets_allowed',
         'food_groups_allowed',
     ]
-    # TODO
     success_url = 'rrapp:listing_detail'
-
     # pass the arguments to the url
     def get_success_url(self):
         user_id = self.kwargs['user_id']
@@ -101,11 +99,12 @@ class ListingUpdateView(generic.UpdateView):
 class ListingNewView(generic.UpdateView):
     model = Listing
     template_name = "rrapp/listing_new.html"
-    success_url = 'rrapp:listing_new'
+    success_url = 'rrapp:my_listings'
 
     def get_success_url(self):
+        print('success')
         user_id = self.kwargs['user_id']
-        return reverse('rrapp:listing_new', args=(user_id,))
+        return reverse('rrapp:my_listings', args=(user_id,))
 
     def get_object(self, queryset=None):
         try:
