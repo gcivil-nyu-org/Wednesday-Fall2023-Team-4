@@ -89,7 +89,7 @@ class ListingUpdateView(generic.UpdateView):
         'food_groups_allowed',
     ]
     success_url = 'rrapp:listing_detail'
-    # pass the arguments to the url
+
     def get_success_url(self):
         user_id = self.kwargs['user_id']
         listing_id = self.kwargs['pk']
