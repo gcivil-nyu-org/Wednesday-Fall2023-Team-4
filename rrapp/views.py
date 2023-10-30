@@ -28,8 +28,9 @@ def home(request):
 def loginPage(request):
     page = 'login'
     if request.user.is_authenticated:
-        return HttpResponseRedirect(reverse('rrapp:my_listings',
-                                            args=(request.user.id,)))
+        return HttpResponseRedirect(
+            reverse('rrapp:my_listings', args=(request.user.id,))
+        )
     if request.method == 'POST':
         email = request.POST.get('email').lower()
         password = request.POST.get('password')
@@ -42,12 +43,14 @@ def loginPage(request):
             try:
                 Renter.objects.get(user=user)
                 login(request, user)
-                return HttpResponseRedirect(reverse('rrapp:my_listings',
-                                                    args=(request.user.id,)))
+                return HttpResponseRedirect(
+                    reverse('rrapp:my_listings', args=(request.user.id,))
+                )
             except Exception:
                 login(request, user)
-                return HttpResponseRedirect(reverse('rrapp:rentee_listings',
-                                                    args=(request.user.id,)))
+                return HttpResponseRedirect(
+                    reverse('rrapp:rentee_listings', args=(request.user.id,))
+                )
         else:
             messages.error(request, 'Username OR password does not exit')
     context = {'page': page}
@@ -76,14 +79,16 @@ def registerPage(request):
                 user_type = Renter.objects.create(user=user)
                 user_type.save()
                 login(request, user)
-                return HttpResponseRedirect(reverse('rrapp:my_listings',
-                                                    args=(user_id,)))
+                return HttpResponseRedirect(
+                    reverse('rrapp:my_listings', args=(user_id,))
+                )
             else:
                 user_type = Rentee.objects.create(user=user)
                 user_type.save()
                 login(request, user)
-                return HttpResponseRedirect(reverse('rrapp:rentee_listings',
-                                                    args=(user_id,)))
+                return HttpResponseRedirect(
+                    reverse('rrapp:rentee_listings', args=(user_id,))
+                )
         else:
             messages.error(request, 'An error occurred during registration')
 
