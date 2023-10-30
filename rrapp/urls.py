@@ -14,21 +14,20 @@ urlpatterns = [
     ),
     # ex: /rrapp/5/listings/
     path(
-        'renter/<int:user_id>/listings/', 
-        views.ListingIndexView.as_view(), 
+        'renter/<int:user_id>/listings/',
+        views.ListingIndexView.as_view(),
         name='my_listings'
     ),
     # ex: /rrapp/5/listings/new
     path(
-        'renter/<int:user_id>/listings/new', 
-        views.ListingNewView.as_view(), 
+        'renter/<int:user_id>/listings/new',
+        views.ListingNewView.as_view(),
         name='listing_new'
     ),
     # ex: /rrapp/5/delete/1
-    path('renter/<int:user_id>/delete/<int:pk>', 
-         views.listing_delete, 
+    path('renter/<int:user_id>/delete/<int:pk>',
+         views.listing_delete,
          name='listing_delete'),
-         
     path(
         'renter/<int:user_id>/listings/<int:pk>/modify',
         views.ListingUpdateView.as_view(),
