@@ -41,7 +41,6 @@ before_script:
   - python manage.py makemigrations rrapp
   - python manage.py makemigrations auth
   - python manage.py migrate
-  - black .
 
 
 script:
