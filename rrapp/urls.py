@@ -8,14 +8,12 @@ urlpatterns = [
     # path('', views.IndexView.as_view(), name='index'),
     # ex: /rrapp/
     path('', views.home, name='home'),
-
     # ex: /rrapp/login
     path('login/', views.loginPage, name="login"),
     # ex: /rrapp/logout
     path('logout/', views.logoutUser, name="logout"),
     # ex: /rrapp/register
     path('register/', views.registerPage, name="register"),
-
     # ex: /rrapp/5/listings/1
     path(
         '<int:user_id>/listings/<int:pk>',
