@@ -15,7 +15,6 @@ from psycopg2.extras import NumericRange
 from django.contrib.postgres.serializers import RangeSerializer
 from django.db.migrations.writer import MigrationWriter
 
-# from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 
@@ -88,16 +87,6 @@ class Amenities(models.Model):
     parking = models.BooleanField(default=False)
 
 
-# class User(models.Model):
-#     username = models.CharField(max_length=100)
-#     password = models.CharField(max_length=100)
-#     email = models.CharField(max_length=100)
-#     # birth_date = models.DateField(default=datetime.date.today())
-#     # verified = models.BooleanField()
-#     first_name = models.CharField(max_length=100)
-#     last_name = models.CharField(max_length=100)
-#     profile_picture_url = models.CharField(max_length=100)
-#     phone_number = models.CharField(max_length=100)
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, username, password=None):
         if not email:
@@ -131,11 +120,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     smokes = models.BooleanField(default=False)
     has_pets = models.BooleanField(default=False)
     phone_number = models.CharField(max_length=100)
-    # user_role = models.CharField(
-    #     max_length=6,
-    #     choices=UserRole.choices,
-    #     default=UserRole.RENTER,
-    # )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 

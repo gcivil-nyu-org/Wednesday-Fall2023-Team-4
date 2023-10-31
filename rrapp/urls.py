@@ -7,15 +7,13 @@ urlpatterns = [
     # # ex: /rrapp/
     # path('', views.IndexView.as_view(), name='index'),
     # ex: /rrapp/
-    path('', views.home, name='home'),
-
+    path('', views.HomeView.as_view(), name='home'),
     # ex: /rrapp/login
-    path('login/', views.loginPage, name="login"),
+    path('login/', views.LoginView.as_view(), name="login"),
     # ex: /rrapp/logout
-    path('logout/', views.logoutUser, name="logout"),
+    path('logout/', views.LogoutView.as_view(), name="logout"),
     # ex: /rrapp/register
-    path('register/', views.registerPage, name="register"),
-
+    path('register/', views.RegisterView.as_view(), name="register"),
     # ex: /rrapp/5/listings/1
     path(
         '<int:user_id>/listings/<int:pk>',

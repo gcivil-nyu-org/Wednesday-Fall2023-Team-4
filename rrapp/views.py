@@ -18,19 +18,39 @@ from .models import Listing, User, Renter, Rentee
 from .forms import MyUserCreationForm
 
 
-# class IndexView(generic.View):
-#     def get(self, request, *args, **kwargs):
-#         return HttpResponse("Hello, world. You're at the rrapp index.")
-def home(request):
-    return render(request, 'rrapp/home.html')
+class HomeView(generic.View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'rrapp/home.html')
+# def home(request):
+#     return render(request, 'rrapp/home.html')
 
 
-def loginPage(request):
-    page = 'login'
-    if request.user.is_authenticated:
-        return HttpResponseRedirect(reverse('rrapp:my_listings',
-                                            args=(request.user.id,)))
-    if request.method == 'POST':
+class LoginView(generic.View):
+    context = {'page': 'login'}
+
+    def dispatch(self, request, *args, **kwargs):
+        # will redirect to the home page if a user tries to 
+        # access the register page while logged in
+        if request.user.is_authenticated:
+            if (len(Renter.objects.all()) > 0 and
+                user.id in [i.user.id for i in Renter.objects.all()]
+            ):
+                login(request, user)
+                return HttpResponseRedirect(
+                    reverse('rrapp:my_listings', args=(request.user.id,))
+                )
+            else:
+                login(request, user)
+                return HttpResponseRedirect(
+                    reverse('rrapp:rentee_listings', args=(request.user.id,))
+                )
+        # else process dispatch as it otherwise normally would
+        return super(LoginView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return render(request, 'rrapp/login_register.html', self.context)
+
+    def post(self, request, *args, **kwargs):
         email = request.POST.get('email').lower()
         password = request.POST.get('password')
         try:
@@ -39,30 +59,45 @@ def loginPage(request):
             messages.error(request, 'User does not exist')
         user = authenticate(request, email=email, password=password)
         if user is not None:
-            try:
-                Renter.objects.get(user=user)
+            if (len(Renter.objects.all()) > 0 and
+                user.id in [i.user.id for i in Renter.objects.all()]
+            ):
                 login(request, user)
-                return HttpResponseRedirect(reverse('rrapp:my_listings',
-                                                    args=(request.user.id,)))
-            except Exception:
+                return HttpResponseRedirect(
+                    reverse('rrapp:my_listings', args=(request.user.id,))
+                )
+            else:
                 login(request, user)
-                return HttpResponseRedirect(reverse('rrapp:rentee_listings',
-                                                    args=(request.user.id,)))
+                return HttpResponseRedirect(
+                    reverse('rrapp:rentee_listings', args=(request.user.id,))
+                )
         else:
             messages.error(request, 'Username OR password does not exit')
-    context = {'page': page}
-    return render(request, 'rrapp/login_register.html', context)
+        return render(request, 'rrapp/login_register.html', self.context)
 
 
-def logoutUser(request):
-    logout(request)
-    return render(request, 'rrapp/home.html')
+class LogoutView(generic.View):
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return render(request, 'rrapp/home.html')
 
 
-def registerPage(request):
-    form = MyUserCreationForm()
+class RegisterView(generic.View):
+    initial = {'key': 'value'}
 
-    if request.method == 'POST':
+    def dispatch(self, request, *args, **kwargs):
+        # will redirect to the home page if a user tries to 
+        # access the register page while logged in
+        if request.user.is_authenticated:
+            return render(request, 'rrapp/home.html')
+        # else process dispatch as it otherwise normally would
+        return super(RegisterView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        form = MyUserCreationForm(initial=self.initial)
+        return render(request, 'rrapp/login_register.html', {'form': form})
+
+    def post(self, request, *args, **kwargs):
         form = MyUserCreationForm(request.POST)
         renter_or_rentee = request.POST.get('renter_or_rentee')
         if form.is_valid():
@@ -76,18 +111,49 @@ def registerPage(request):
                 user_type = Renter.objects.create(user=user)
                 user_type.save()
                 login(request, user)
-                return HttpResponseRedirect(reverse('rrapp:my_listings',
-                                                    args=(user_id,)))
+                return HttpResponseRedirect(
+                    reverse('rrapp:my_listings', args=(user_id,))
+                )
             else:
                 user_type = Rentee.objects.create(user=user)
                 user_type.save()
                 login(request, user)
-                return HttpResponseRedirect(reverse('rrapp:rentee_listings',
-                                                    args=(user_id,)))
+                return HttpResponseRedirect(
+                    reverse('rrapp:rentee_listings', args=(user_id,))
+                )
         else:
             messages.error(request, 'An error occurred during registration')
 
-    return render(request, 'rrapp/login_register.html', {'form': form})
+        return render(request, 'rrapp/login_register.html', {'form': form})
+
+        # if request.method == 'POST':
+        #     form = MyUserCreationForm(request.POST)
+        #     renter_or_rentee = request.POST.get('renter_or_rentee')
+        #     if form.is_valid():
+        #         user = form.save(commit=False)
+        #         if not user.email[-4:] == '.edu':
+        #             messages.error(request, 'Email format is not correct')
+        #             return render(request, 'rrapp/login_register.html', {'form': form})
+        #         user.save()
+        #         user_id = user.id
+        #         if renter_or_rentee == 'Renter':
+        #             user_type = Renter.objects.create(user=user)
+        #             user_type.save()
+        #             login(request, user)
+        #             return HttpResponseRedirect(
+        #                 reverse('rrapp:my_listings', args=(user_id,))
+        #             )
+        #         else:
+        #             user_type = Rentee.objects.create(user=user)
+        #             user_type.save()
+        #             login(request, user)
+        #             return HttpResponseRedirect(
+        #                 reverse('rrapp:rentee_listings', args=(user_id,))
+        #             )
+        #     else:
+        #         messages.error(request, 'An error occurred during registration')
+
+        # return render(request, 'rrapp/login_register.html', {'form': form})
 
 
 @method_decorator(login_required, name='dispatch')
