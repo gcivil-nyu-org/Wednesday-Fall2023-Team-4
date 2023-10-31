@@ -119,9 +119,7 @@ class Listing(models.Model):
     description = models.TextField(default="")
     monthly_rent = models.IntegerField(default=1000)
     date_available_from = models.DateField(default=timezone.now)
-    date_available_to = models.DateField(
-        default=timezone.now
-    )
+    date_available_to = models.DateField(default=timezone.now)
     property_type = models.CharField(
         max_length=20,
         choices=PropertyType.choices,
