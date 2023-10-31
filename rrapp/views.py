@@ -30,15 +30,15 @@ class LoginView(generic.View):
         # will redirect to the home page if a user tries to
         # access the register page while logged in
         if request.user.is_authenticated:
-            if len(Renter.objects.all()) > 0 and user.id in [
+            if len(Renter.objects.all()) > 0 and request.user.id in [
                 i.user.id for i in Renter.objects.all()
             ]:
-                login(request, user)
+                login(request, request.user)
                 return HttpResponseRedirect(
                     reverse('rrapp:my_listings', args=(request.user.id,))
                 )
             else:
-                login(request, user)
+                login(request, request.user)
                 return HttpResponseRedirect(
                     reverse('rrapp:rentee_listings', args=(request.user.id,))
                 )
