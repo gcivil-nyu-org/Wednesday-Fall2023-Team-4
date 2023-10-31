@@ -1,5 +1,5 @@
 from typing import Any
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, render
 
 # Create your views here.
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -15,7 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from .models import Listing, User, Renter, Rentee
-from .forms import MyUserCreationForm
+from .forms import ListingForm, MyUserCreationForm
 
 
 class HomeView(generic.View):
