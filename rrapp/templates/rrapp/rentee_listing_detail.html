@@ -20,7 +20,7 @@
                                 </a>
                             </li>
                             <li class="breadcrumb-item">
-                                <a class="link-body-emphasis fw-semibold text-decoration-none" href="{% url 'rrapp:my_listings' object.user.id %}">
+                                <a class="link-body-emphasis fw-semibold text-decoration-none" href="{% url 'rrapp:rentee_listings' user_id %}">
                                     My Listings
                                 </a>
                             </li>
@@ -301,9 +301,14 @@
                             </div>
                         </div>
 
-                        <div class="col-6 p-2">
+                        <div class="col-3 p-2">
                             <div class="board w-100 h-100 rounded-3 back-left">
                                 <div class="p-2 text-left">Preferences :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.baking_oven }}</div>
                             </div>
                         </div>
 
@@ -340,12 +345,12 @@
                             </div>
                         </div>
 
-                        <div class="col-3 p-2">
+                        <div class="col-6 p-2">
                             <div class="board w-100 h-100 rounded-3 back-left">
                                 <div class="p-2 text-left">Food Allowed :</div>
                             </div>
                         </div>
-                        <div class="col-3 p-2">
+                        <div class="col-6 p-2">
                             <div class="board w-100 h-100 rounded-3 back-right">
                                 <div class="p-2 text-right">{{ object.food_groups_allowed }}</div>
                             </div>
@@ -354,10 +359,16 @@
                     </div>
                     
                     <div class="d-inline-flex gap-4 mb-5 p-4">
-                        <a href="{% url 'rrapp:rentee_listings' request.user.id %}" >
-                            <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right">Shortlist</button>
-                        </a>
-                        <a href="{% url 'rrapp:rentee_listings' request.user.id %}" >
+                        <form method="POST">
+                            {% csrf_token %}
+                            {% if saved %}
+                                <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-left">Saved</button>
+                            {% else %}
+                                <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-left">Save</button>
+                            {% endif %}
+                        </form>
+
+                        <a href="{% url 'rrapp:rentee_listings' user_id %}" >
                             <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right">Back</button>
                         </a>
                     </div>
@@ -395,19 +406,12 @@
 
         .cus-btn-left {
             --bs-btn-color: #FFFFFF;
-            --bs-btn-bg: #00796B;
-            --bs-btn-active-bg: #009688;
-            --bs-btn-hover-bg: #009688;
+            --bs-btn-bg: #FFC107;
+            --bs-btn-active-bg: #FFE0B2;
+            --bs-btn-hover-bg: #FFE0B2;
             --bs-btn-hover-color: #fff;
         }
 
-        .cus-btn-mid {
-            --bs-btn-color: #FFFFFF;
-            --bs-btn-bg: #FFA000;
-            --bs-btn-active-bg: #FFC107;
-            --bs-btn-hover-bg: #FFC107;
-            --bs-btn-hover-color: #fff;
-        }
         .cus-btn-right {
             --bs-btn-color: #FFFFFF;
             --bs-btn-bg: #2E3236;
