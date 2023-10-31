@@ -88,16 +88,6 @@ class Amenities(models.Model):
     parking = models.BooleanField(default=False)
 
 
-# class User(models.Model):
-#     username = models.CharField(max_length=100)
-#     password = models.CharField(max_length=100)
-#     email = models.CharField(max_length=100)
-#     # birth_date = models.DateField(default=datetime.date.today())
-#     # verified = models.BooleanField()
-#     first_name = models.CharField(max_length=100)
-#     last_name = models.CharField(max_length=100)
-#     profile_picture_url = models.CharField(max_length=100)
-#     phone_number = models.CharField(max_length=100)
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, username, password=None):
         if not email:
