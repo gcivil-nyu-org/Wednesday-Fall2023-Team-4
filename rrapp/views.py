@@ -15,7 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from .models import Listing, User, Renter, Rentee
-from .forms import ListingForm, MyUserCreationForm
+from .forms import MyUserCreationForm
 
 
 class HomeView(generic.View):
@@ -123,35 +123,6 @@ class RegisterView(generic.View):
             messages.error(request, 'An error occurred during registration')
 
         return render(request, 'rrapp/login_register.html', {'form': form})
-
-        # if request.method == 'POST':
-        #     form = MyUserCreationForm(request.POST)
-        #     renter_or_rentee = request.POST.get('renter_or_rentee')
-        #     if form.is_valid():
-        #         user = form.save(commit=False)
-        #         if not user.email[-4:] == '.edu':
-        #             messages.error(request, 'Email format is not correct')
-        #             return render(request, 'rrapp/login_register.html', {'form': form})
-        #         user.save()
-        #         user_id = user.id
-        #         if renter_or_rentee == 'Renter':
-        #             user_type = Renter.objects.create(user=user)
-        #             user_type.save()
-        #             login(request, user)
-        #             return HttpResponseRedirect(
-        #                 reverse('rrapp:my_listings', args=(user_id,))
-        #             )
-        #         else:
-        #             user_type = Rentee.objects.create(user=user)
-        #             user_type.save()
-        #             login(request, user)
-        #             return HttpResponseRedirect(
-        #                 reverse('rrapp:rentee_listings', args=(user_id,))
-        #             )
-        #     else:
-        #         messages.error(request, 'An error occurred during registration')
-
-        # return render(request, 'rrapp/login_register.html', {'form': form})
 
 
 @method_decorator(login_required, name='dispatch')
