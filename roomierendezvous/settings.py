@@ -83,12 +83,8 @@ DATABASES = {
         'USER': 'django-images',
         'PASSWORD': 'complexpassword123',
         'HOST': 'localhost',
-        'PORT': '8080',
-    },
-    'test': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
-    },
+        'PORT': '5432',
+    }
 }
 
 """

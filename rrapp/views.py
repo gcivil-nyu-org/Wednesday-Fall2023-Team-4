@@ -21,20 +21,18 @@ from .forms import MyUserCreationForm
 class HomeView(generic.View):
     def get(self, request, *args, **kwargs):
         return render(request, 'rrapp/home.html')
-# def home(request):
-#     return render(request, 'rrapp/home.html')
 
 
 class LoginView(generic.View):
     context = {'page': 'login'}
 
     def dispatch(self, request, *args, **kwargs):
-        # will redirect to the home page if a user tries to 
+        # will redirect to the home page if a user tries to
         # access the register page while logged in
         if request.user.is_authenticated:
-            if (len(Renter.objects.all()) > 0 and
-                user.id in [i.user.id for i in Renter.objects.all()]
-            ):
+            if len(Renter.objects.all()) > 0 and user.id in [
+                i.user.id for i in Renter.objects.all()
+            ]:
                 login(request, user)
                 return HttpResponseRedirect(
                     reverse('rrapp:my_listings', args=(request.user.id,))
@@ -59,9 +57,9 @@ class LoginView(generic.View):
             messages.error(request, 'User does not exist')
         user = authenticate(request, email=email, password=password)
         if user is not None:
-            if (len(Renter.objects.all()) > 0 and
-                user.id in [i.user.id for i in Renter.objects.all()]
-            ):
+            if len(Renter.objects.all()) > 0 and user.id in [
+                i.user.id for i in Renter.objects.all()
+            ]:
                 login(request, user)
                 return HttpResponseRedirect(
                     reverse('rrapp:my_listings', args=(request.user.id,))
@@ -86,7 +84,7 @@ class RegisterView(generic.View):
     initial = {'key': 'value'}
 
     def dispatch(self, request, *args, **kwargs):
-        # will redirect to the home page if a user tries to 
+        # will redirect to the home page if a user tries to
         # access the register page while logged in
         if request.user.is_authenticated:
             return render(request, 'rrapp/home.html')
