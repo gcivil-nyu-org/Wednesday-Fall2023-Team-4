@@ -109,19 +109,17 @@ class ListingUpdateView(generic.UpdateView):
 
 
 class ListingNewView(generic.CreateView):
-    
     model = Listing
     success_url = 'rrapp:my_listings'
     form_class = ListingForm
     template_name = "rrapp/listing_new.html"
-    
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
         context_data["user_id"] = self.kwargs["user_id"]
         return context_data
 
-    def post(self, request: HttpRequest, *args : str, **kwargs : Any) -> HttpResponse:
+    def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
         """handle user login post req
 
         Args:
@@ -136,7 +134,7 @@ class ListingNewView(generic.CreateView):
 
         if form.is_valid():
             print('valid form', form.data)
-        
+
         listing = Listing.objects.create(
             user=u,
             status=form_data.get('status'),
@@ -170,12 +168,13 @@ class ListingNewView(generic.CreateView):
             ),
         )
         listing.save()
-        return HttpResponseRedirect(reverse('rrapp:my_listings', args=(kwargs["user_id"],)))
-
+        return HttpResponseRedirect(
+            reverse('rrapp:my_listings', args=(kwargs["user_id"],))
+        )
 
 
 def listing_delete(request, user_id, pk):
-    #TODO:add the check  if request.user.is_authenticated():
+    # TODO:add the check  if request.user.is_authenticated():
     listing = get_object_or_404(Listing, pk=pk, user_id=user_id)
     listing.delete()
     # Always return an HttpResponseRedirect after successfully dealing
