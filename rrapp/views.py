@@ -15,7 +15,7 @@ from django.utils.decorators import method_decorator
 
 from .models import Listing, User, Renter, Rentee
 from .forms import MyUserCreationForm
-
+from django import forms
 
 class HomeView(generic.View):
     def get(self, request, *args, **kwargs):
