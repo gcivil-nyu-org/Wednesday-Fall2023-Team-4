@@ -14,10 +14,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from .models import Listing, User, Renter, Rentee
+from .models import Listing, User, Renter, Rentee, SavedListing
 from .forms import MyUserCreationForm, ListingForm
-from .models import Listing, User, Rentee, SavedListing
-from .forms import ListingForm
 
 
 class HomeView(generic.View):
