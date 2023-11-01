@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
-import datetime
 
 from django.contrib.postgres.fields import IntegerRangeField
 from django.contrib.postgres.validators import (
