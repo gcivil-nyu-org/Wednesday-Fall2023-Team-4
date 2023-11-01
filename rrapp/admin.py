@@ -2,7 +2,10 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import User, Renter, Rentee, Listing, SavedListing
+from .models import Renter, Rentee, Listing, SavedListing
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 # from .models import User, Listing
 
