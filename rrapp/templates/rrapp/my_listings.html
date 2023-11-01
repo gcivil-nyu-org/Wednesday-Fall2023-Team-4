@@ -7,7 +7,14 @@
     </head>
     <body class = "d-flex align-items-stretch flex-row" style="height:100%;">
         <div class="bg-dark" style="width:18%;">
-            It's a sidebar
+            <div class = "d-flex flex-column align-items-center">
+                <div class = "p-3">
+                    <a href="{% url 'rrapp:rentee_listings' user_id %}" class="btn btn-warning">Swtich Status</a>
+                </div>
+                <div class = "p-3">
+                    <a class="btn btn-danger">Log out</a>
+                </div>
+            </div>
         </div>
         <div class="flex-fill text-center">
             <div class="container p-3">

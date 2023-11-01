@@ -16,22 +16,30 @@ urlpatterns = [
     path('register/', views.RegisterView.as_view(), name="register"),
     # ex: /rrapp/5/listings/1
     path(
-        '<int:user_id>/listings/<int:pk>',
+        'renter/<int:user_id>/listings/<int:pk>/',
         views.ListingDetailView.as_view(),
         name='listing_detail',
     ),
     # ex: /rrapp/5/listings/
     path(
-        '<int:user_id>/listings/', views.ListingIndexView.as_view(), name='my_listings'
+        'renter/<int:user_id>/listings/',
+        views.ListingIndexView.as_view(),
+        name='my_listings',
     ),
     # ex: /rrapp/5/listings/new
     path(
-        '<int:user_id>/listings/new', views.ListingNewView.as_view(), name='listing_new'
+        'renter/<int:user_id>/listings/new',
+        views.ListingNewView.as_view(),
+        name='listing_new',
     ),
     # ex: /rrapp/5/delete/1
-    path('<int:user_id>/delete/<int:pk>', views.listing_delete, name='listing_delete'),
     path(
-        '<int:user_id>/listings/<int:pk>/modify',
+        'renter/<int:user_id>/delete/<int:pk>',
+        views.listing_delete,
+        name='listing_delete',
+    ),
+    path(
+        'renter/<int:user_id>/listings/<int:pk>/modify',
         views.ListingUpdateView.as_view(),
         name='listing_detail_modify',
     ),

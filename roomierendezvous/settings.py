@@ -83,7 +83,7 @@ DATABASES = {
         'USER': 'django-images',
         'PASSWORD': 'complexpassword123',
         'HOST': 'localhost',
-        'PORT': '8080',
+        'PORT': '5432',
     }
 }
 
@@ -104,12 +104,12 @@ DATABASES = {
 if 'TRAVIS' in os.environ:
     DATABASES = {
         'default': {
-            'ENGINE':   'django.db.backends.postgresql_psycopg2',
-            'NAME':     'rrtestdb',
-            'USER':     'travis',
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'rrtestdb',
+            'USER': 'travis',
             'PASSWORD': '',
-            'HOST':     'localhost',
-            'PORT':     '5433',
+            'HOST': 'localhost',
+            'PORT': '5433',
         }
     }
 

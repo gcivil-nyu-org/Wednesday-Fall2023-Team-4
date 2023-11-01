@@ -16,6 +16,8 @@ from django.utils.decorators import method_decorator
 
 from .models import Listing, User, Renter, Rentee
 from .forms import MyUserCreationForm, ListingForm
+from .models import Listing, User, Rentee, SavedListing
+from .forms import ListingForm
 
 
 class HomeView(generic.View):
@@ -97,7 +99,6 @@ class RegisterView(generic.View):
 
     def post(self, request, *args, **kwargs):
         form = MyUserCreationForm(request.POST)
-        renter_or_rentee = request.POST.get('renter_or_rentee')
         if form.is_valid():
             user = form.save(commit=False)
             if not user.email[-4:] == '.edu':
@@ -105,20 +106,15 @@ class RegisterView(generic.View):
                 return render(request, 'rrapp/login_register.html', {'form': form})
             user.save()
             user_id = user.id
-            if renter_or_rentee == 'Renter':
-                user_type = Renter.objects.create(user=user)
-                user_type.save()
-                login(request, user)
-                return HttpResponseRedirect(
-                    reverse('rrapp:my_listings', args=(user_id,))
-                )
-            else:
-                user_type = Rentee.objects.create(user=user)
-                user_type.save()
-                login(request, user)
-                return HttpResponseRedirect(
-                    reverse('rrapp:rentee_listings', args=(user_id,))
-                )
+
+            type_renter= Renter.objects.create(user=user)
+            type_rentee = Rentee.objects.create(user=user)
+            type_renter.save()
+            type_rentee.save()
+            login(request, user)
+            return HttpResponseRedirect(
+                reverse('rrapp:rentee_listings', args=(user_id,))
+            )
         else:
             messages.error(request, 'An error occurred during registration')
 
@@ -150,14 +146,42 @@ class ListingDetailView(generic.DetailView):
     model = Listing
     template_name = "rrapp/listing_detail.html"
 
+    def get_context_data(self, **kwargs: Any):
+        context_data = super().get_context_data(**kwargs)
+        context_data["user_id"] = self.kwargs["user_id"]
+        return context_data
+
 
 @method_decorator(login_required, name='dispatch')
 class ListingDetailRenteeView(generic.DetailView):
     model = Listing
     template_name = "rrapp/rentee_listing_detail.html"
-
-
-@method_decorator(login_required, name='dispatch')
+    def get_context_data(self, **kwargs: Any):
+        context_data = super().get_context_data(**kwargs)
+        context_data["user_id"] = self.kwargs["user_id"]
+        context_data["saved"] = self.check_state(self.kwargs["user_id"], self.kwargs["pk"])
+        # print("saved: ", context_data["saved"])
+        return context_data
+    
+    def check_state(self, user_id, listing_id):
+        # print(user_id, listing_id)
+        if SavedListing.objects.filter(rentee_id__user = user_id, saved_listings = listing_id).exists():
+            return True
+        else:
+            return False
+    def post(self, request, *args, **kwargs):
+        listing_id = self.kwargs['pk'] 
+        user_id = self.kwargs['user_id']
+        save_state = self.check_state(user_id, listing_id)
+        if save_state:
+            SavedListing.objects.filter(rentee_id__user = user_id, saved_listings = listing_id).delete()
+        else:
+            rentee = Rentee.objects.get(user = user_id)
+            listing = Listing.objects.get(id = listing_id)
+            SavedListing.objects.create(rentee_id = rentee, saved_listings = listing)
+        return HttpResponseRedirect(request.path_info)  # redirect to the same page
+    
+    
 class ListingResultsView(generic.ListView):
     template_name = "rrapp/rentee_listings.html"
     context_object_name = "queried_listings_page"
@@ -209,10 +233,8 @@ class ListingUpdateView(generic.UpdateView):
         'pets_allowed',
         'food_groups_allowed',
     ]
-    # TODO
     success_url = 'rrapp:listing_detail'
 
-    # pass the arguments to the url
     def get_success_url(self):
         user_id = self.kwargs['user_id']
         listing_id = self.kwargs['pk']
@@ -225,11 +247,17 @@ class ListingNewView(generic.CreateView):
     success_url = 'rrapp:my_listings'
     form_class = ListingForm
     template_name = "rrapp/listing_new.html"
+    success_url = 'rrapp:listing_new'
 
-    def get_context_data(self, **kwargs: Any):
-        context_data = super().get_context_data(**kwargs)
-        context_data["user_id"] = self.kwargs["user_id"]
-        return context_data
+    def get_success_url(self):
+        user_id = self.kwargs['user_id']
+        return reverse('rrapp:listing_new', args=(user_id,))
+
+    def get_object(self, queryset=None):
+        try:
+            return self.request.user
+        except Listing.DoesNotExist:
+            return Listing.objects.create(user=self.request.user)
 
     def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
         """handle user login post req

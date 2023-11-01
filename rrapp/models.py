@@ -132,18 +132,23 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Renter(models.Model):
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
+        related_name="renter",
     )
 
 
 class Rentee(models.Model):
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
+        related_name="rentee",
     )
 
+class SavedListing(models.Model):
+    rentee_id = models.ForeignKey(Rentee, related_name="saved_listing", on_delete=models.CASCADE, null=True)
+    saved_listings = models.ForeignKey("Listing", related_name="rentee", on_delete=models.CASCADE, null=True)
 
 class Listing(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
