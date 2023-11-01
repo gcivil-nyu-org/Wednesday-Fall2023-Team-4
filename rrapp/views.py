@@ -16,7 +16,6 @@ from django.utils.decorators import method_decorator
 
 from .models import Listing, User, Renter, Rentee
 from .forms import MyUserCreationForm, ListingForm
-from django import forms
 
 
 class HomeView(generic.View):
@@ -218,7 +217,6 @@ class ListingUpdateView(generic.UpdateView):
         user_id = self.kwargs['user_id']
         listing_id = self.kwargs['pk']
         return reverse('rrapp:listing_detail', args=(user_id, listing_id))
-
 
 
 @method_decorator(login_required, name='dispatch')
