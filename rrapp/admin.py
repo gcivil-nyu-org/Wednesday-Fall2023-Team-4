@@ -4,6 +4,8 @@ from django.contrib import admin
 
 from .models import User, Renter, Rentee, Listing
 
+# from .models import User, Listing
+
 admin.site.register(User)
 admin.site.register(Renter)
 admin.site.register(Rentee)
