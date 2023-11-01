@@ -14,10 +14,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from .models import Listing, User, Renter, Rentee
+from .models import Listing, User, Renter, Rentee, SavedListing
 from .forms import MyUserCreationForm, ListingForm
-from .models import Listing, User, Rentee, SavedListing
-from .forms import ListingForm
 
 
 class HomeView(generic.View):
@@ -107,7 +105,7 @@ class RegisterView(generic.View):
             user.save()
             user_id = user.id
 
-            type_renter= Renter.objects.create(user=user)
+            type_renter = Renter.objects.create(user=user)
             type_rentee = Rentee.objects.create(user=user)
             type_renter.save()
             type_rentee.save()
@@ -156,32 +154,40 @@ class ListingDetailView(generic.DetailView):
 class ListingDetailRenteeView(generic.DetailView):
     model = Listing
     template_name = "rrapp/rentee_listing_detail.html"
+
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
         context_data["user_id"] = self.kwargs["user_id"]
-        context_data["saved"] = self.check_state(self.kwargs["user_id"], self.kwargs["pk"])
+        context_data["saved"] = self.check_state(
+            self.kwargs["user_id"], self.kwargs["pk"]
+        )
         # print("saved: ", context_data["saved"])
         return context_data
-    
+
     def check_state(self, user_id, listing_id):
         # print(user_id, listing_id)
-        if SavedListing.objects.filter(rentee_id__user = user_id, saved_listings = listing_id).exists():
+        if SavedListing.objects.filter(
+            rentee_id__user=user_id, saved_listings=listing_id
+        ).exists():
             return True
         else:
             return False
+
     def post(self, request, *args, **kwargs):
-        listing_id = self.kwargs['pk'] 
+        listing_id = self.kwargs['pk']
         user_id = self.kwargs['user_id']
         save_state = self.check_state(user_id, listing_id)
         if save_state:
-            SavedListing.objects.filter(rentee_id__user = user_id, saved_listings = listing_id).delete()
+            SavedListing.objects.filter(
+                rentee_id__user=user_id, saved_listings=listing_id
+            ).delete()
         else:
-            rentee = Rentee.objects.get(user = user_id)
-            listing = Listing.objects.get(id = listing_id)
-            SavedListing.objects.create(rentee_id = rentee, saved_listings = listing)
+            rentee = Rentee.objects.get(user=user_id)
+            listing = Listing.objects.get(id=listing_id)
+            SavedListing.objects.create(rentee_id=rentee, saved_listings=listing)
         return HttpResponseRedirect(request.path_info)  # redirect to the same page
-    
-    
+
+
 class ListingResultsView(generic.ListView):
     template_name = "rrapp/rentee_listings.html"
     context_object_name = "queried_listings_page"
