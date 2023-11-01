@@ -53,8 +53,8 @@ class LoginView(generic.View):
             #         reverse('rrapp:rentee_listings', args=(request.user.id,))
             #     )
             return HttpResponseRedirect(
-                    reverse('rrapp:rentee_listings', args=(request.user.id,))
-                )
+                reverse('rrapp:rentee_listings', args=(request.user.id,))
+            )
         # else process dispatch as it otherwise normally would
         return super(LoginView, self).dispatch(request, *args, **kwargs)
 
@@ -104,7 +104,7 @@ class RegisterView(generic.View):
         # will redirect to the home page if a user tries to
         # access the register page while logged in
         if request.user.is_authenticated:
-#            return render(request, 'rrapp/home.html')
+            #            return render(request, 'rrapp/home.html')
             return HttpResponseRedirect(
                 reverse('rrapp:rentee_listings', args=(request.user.id,))
             )
