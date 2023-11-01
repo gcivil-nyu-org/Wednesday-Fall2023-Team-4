@@ -36,6 +36,11 @@ class ListingDetailView(generic.DetailView):
     model = Listing
     template_name = "rrapp/listing_detail.html"
 
+    def get_context_data(self, **kwargs: Any):
+        context_data = super().get_context_data(**kwargs)
+        context_data["user_id"] = self.kwargs["user_id"]
+        return context_data
+
 
 class ListingDetailRenteeView(generic.DetailView):
     model = Listing
