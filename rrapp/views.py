@@ -99,7 +99,6 @@ class RegisterView(generic.View):
 
     def post(self, request, *args, **kwargs):
         form = MyUserCreationForm(request.POST)
-        renter_or_rentee = request.POST.get('renter_or_rentee')
         if form.is_valid():
             user = form.save(commit=False)
             if not user.email[-4:] == '.edu':
@@ -107,20 +106,15 @@ class RegisterView(generic.View):
                 return render(request, 'rrapp/login_register.html', {'form': form})
             user.save()
             user_id = user.id
-            if renter_or_rentee == 'Renter':
-                user_type = Renter.objects.create(user=user)
-                user_type.save()
-                login(request, user)
-                return HttpResponseRedirect(
-                    reverse('rrapp:my_listings', args=(user_id,))
-                )
-            else:
-                user_type = Rentee.objects.create(user=user)
-                user_type.save()
-                login(request, user)
-                return HttpResponseRedirect(
-                    reverse('rrapp:rentee_listings', args=(user_id,))
-                )
+
+            type_renter= Renter.objects.create(user=user)
+            type_rentee = Rentee.objects.create(user=user)
+            type_renter.save()
+            type_rentee.save()
+            login(request, user)
+            return HttpResponseRedirect(
+                reverse('rrapp:rentee_listings', args=(user_id,))
+            )
         else:
             messages.error(request, 'An error occurred during registration')
 
