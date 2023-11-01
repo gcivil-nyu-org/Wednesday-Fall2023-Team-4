@@ -17,6 +17,7 @@ from .models import Listing, User, Renter, Rentee
 from .forms import MyUserCreationForm
 from django import forms
 
+
 class HomeView(generic.View):
     def get(self, request, *args, **kwargs):
         return render(request, 'rrapp/home.html')
