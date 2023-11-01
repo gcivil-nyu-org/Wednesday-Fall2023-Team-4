@@ -9,10 +9,10 @@
         <div class="bg-dark" style="width:18%;">
             <div class = "d-flex flex-column align-items-center">
                 <div class = "p-3">
-                    <a href="{% url 'rrapp:rentee_listings' user_id %}" class="btn btn-warning">Swtich Status</a>
+                    <a href="{% url 'rrapp:rentee_listings' user_id %}" class="btn btn-warning">Switch Status</a>
                 </div>
                 <div class = "p-3">
-                    <a class="btn btn-danger">Log out</a>
+                    <a href="{% url 'rrapp:logout' %}" class="btn btn-danger">Logout</a>
                 </div>
             </div>
         </div>
@@ -73,9 +73,6 @@
                                 <a href="?page={{ latest_listings.paginator.num_pages }}" class="btn btn-primary">last &raquo;</a>
                             {% endif %}
                         </span>
-                    </div>
-                    <div class = "p-3">
-                            <a href="{% url 'rrapp:logout' %}" class="btn btn-primary">Logout</a>
                     </div>
             </div>
         </div>
