@@ -1,7 +1,44 @@
+from django.forms import ModelForm
+from django.contrib.auth.forms import UserCreationForm
 from django import forms
 import datetime
 
-from .models import PropertyType, RoomType, Pets, FoodGroup, Listing
+from .models import User, PropertyType, RoomType, Pets, FoodGroup, Listing
+
+
+class MyUserCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = [
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+            'phone_number',
+            'profile_picture_url',
+            'smokes',
+            'has_pets',
+            'smokes',
+            'password1',
+            'password2',
+        ]
+
+
+class UserForm(ModelForm):
+    class Meta:
+        model = User
+        fields = [
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+            'phone_number',
+            'profile_picture_url',
+            'smokes',
+            'has_pets',
+            'smokes',
+            'bio',
+        ]
 
 
 class ListingForm(forms.ModelForm):
@@ -213,7 +250,7 @@ class ListingForm(forms.ModelForm):
             attrs={"class": "form-control", "placeholder": "Select availability"}
         ),
     )
-    # TODO : can we use a nested field? like preferences = Preference(label = "
+    # TODO : can we use a nested field?
     # age_range_0 = forms.IntegerField(label = "age_range_0",
     #     initial=18,
     #     required=False,

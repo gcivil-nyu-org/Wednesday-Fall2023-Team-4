@@ -104,12 +104,12 @@ DATABASES = {
 if 'TRAVIS' in os.environ:
     DATABASES = {
         'default': {
-            'ENGINE':   'django.db.backends.postgresql_psycopg2',
-            'NAME':     'rrtestdb',
-            'USER':     'travis',
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'rrtestdb',
+            'USER': 'travis',
             'PASSWORD': '',
-            'HOST':     'localhost',
-            'PORT':     '5433',
+            'HOST': 'localhost',
+            'PORT': '5433',
         }
     }
 
@@ -153,6 +153,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = "rrapp.User"
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
