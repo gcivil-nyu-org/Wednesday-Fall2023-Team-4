@@ -1,5 +1,4 @@
 from django import forms
-from django.utils import timezone
 import datetime
 
 from .models import PropertyType, RoomType, Pets, FoodGroup, Listing
