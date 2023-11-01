@@ -253,7 +253,6 @@ class ListingNewView(generic.CreateView):
     success_url = 'rrapp:my_listings'
     form_class = ListingForm
     template_name = "rrapp/listing_new.html"
-    success_url = 'rrapp:listing_new'
 
     def get_success_url(self):
         user_id = self.kwargs['user_id']

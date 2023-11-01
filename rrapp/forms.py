@@ -250,8 +250,7 @@ class ListingForm(forms.ModelForm):
             attrs={"class": "form-control", "placeholder": "Select availability"}
         ),
     )
-    # TODO : can we use a nested field? like preferences = Preference(label = "
-    # TODO : can we use a nested field? like preferences", )
+    # TODO : can we use a nested field?
     # age_range_0 = forms.IntegerField(label = "age_range_0",
     #     initial=18,
     #     required=False,
