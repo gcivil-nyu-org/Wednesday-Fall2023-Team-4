@@ -61,7 +61,7 @@ deploy:
     env: $AWS_ENV_NAME
     bucket_name: $AWS_BUCKET_NAME
     on:
-      branch: master
+      branch: develop
   - provider: elasticbeanstalk
     access_key_id: $AWS_ACCESS_KEY_ID
     secret_access_key: $AWS_SECRET_ACCESS_KEY
@@ -70,7 +70,7 @@ deploy:
     env: $AWS_ENV_NAME
     bucket_name: $AWS_BUCKET_NAME
     on:
-      branch: develop
+      branch: master
 
 after_deploy:
   - ./scripts/after_deploy_1.sh
