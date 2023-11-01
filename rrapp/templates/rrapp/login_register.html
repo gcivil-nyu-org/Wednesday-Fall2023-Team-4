@@ -1,108 +1,70 @@
-<!-- <!DOCTYPE html>
-<html>
-
-<head>
+<!doctype html>
+<html lang="en">
+  <head>
     <meta charset="utf-8">
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  </head>
+  <body class = "align-items-center" style="height:100%;width:100%;">
+    {% extends 'rrapp/main.html' %}
+    {% block content %}
+    {% if page == 'login' %}
+    <div class = "w-100 align-items-center px-5" >
+    <div class = "d-flex flex-column align-items-center board rounded-3 m-4" style="background-color:#F8F8F8">
+      <h1 class="font-monospace display-5 fw-medium text-body-emphasis">Find your roomie here</h1>
 
-<body>
-
-    <div> -->
-
-{% extends 'rrapp/main.html' %}
-
-{% block content %}
-<main class="auth layout">
-
-  {% if page == 'login' %}
-  <div class="container">
-    <div class="layout__box">
-      <div class="layout__boxHeader">
-        <div class="layout__boxTitle">
-          <h2>Login</h2>
+      <form class="form row w-90 text-center align-items-center p-3" action="" method="POST">
+        {% csrf_token %}
+        <div class="col-5">
+          <input id="email" name="email" type="email" class="form-control" placeholder="Email" aria-label="Email">
         </div>
-      </div>
-      <div class="layout__body">
-        <h3 class="auth__tagline">Find your roomie</h3>
-
-        <form class="form" action="" method="POST">
-          {% csrf_token %}
-          <div class="form__group form__group">
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" placeholder="e.g. abc123@nyu.edu" />
-          </div>
-          <div class="form__group">
-            <label for="password">Password</label>
-            <input id="password" name="password" type="password"
-              placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" />
-          </div>
-
-          <button class="btn btn--main" type="submit">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-              <title>lock</title>
-              <path
-                d="M27 12h-1v-2c0-5.514-4.486-10-10-10s-10 4.486-10 10v2h-1c-0.553 0-1 0.447-1 1v18c0 0.553 0.447 1 1 1h22c0.553 0 1-0.447 1-1v-18c0-0.553-0.447-1-1-1zM8 10c0-4.411 3.589-8 8-8s8 3.589 8 8v2h-16v-2zM26 30h-20v-16h20v16z">
-              </path>
-              <path
-                d="M15 21.694v4.306h2v-4.306c0.587-0.348 1-0.961 1-1.694 0-1.105-0.895-2-2-2s-2 0.895-2 2c0 0.732 0.413 1.345 1 1.694z">
-              </path>
-            </svg>
-            Login
-          </button>
-        </form>
-
-        <div class="auth__action">
-          <p>Haven't registered yet?</p>
-          <a href="{% url 'rrapp:register' %}" class="btn btn--link">Register</a>
+        <div class="col-5">
+          <input id="password" name="password" type="password" class="form-control" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" aria-label="Password">
         </div>
-      </div>
+        <div class="col-2">
+          <button type="submit" class="btn btn-primary">Sign in</button>
+        </div>
+      </form>
+        <div class="col m-2">
+          <a href="{% url 'rrapp:register' %}">
+          <button class="btn btn-secondary">Register</button>
+          </a>
+        </div>
     </div>
-  </div>
+    </div>
 
-  {% else %}
-  <div class="container">
-    <div class="layout__box">
-      <div class="layout__boxHeader">
-        <div class="layout__boxTitle">
-          <h2>Register</h2>
-        </div>
-      </div>
-      <div class="layout__body">
-        <h3 class="auth__tagline">Find your roomie</h3>
 
-        <form class="form" action="" method="POST">
+    {% else %}
+
+    <div class = "w-100 align-items-center px-5" >
+      <div class = "d-flex flex-column align-items-center board rounded-3 m-4" style="background-color:#F8F8F8">
+        <h1 class="font-monospace display-5 fw-medium text-body-emphasis">Find your roomie here</h1>
+
+        <form class="form row w-90 text-center align-items-center p-3" action="" method="POST">
           {% csrf_token %}
 
           {% for field in form %}
-          <div class="form__group form__group">
-            <label for="roomie_name">{{field.label}}</label>
-            {{field}}
-          </div>
+            <div class="col-md-6">
+              <label for="roomie_name">{{field.label}}</label>
+              <input type="text" class="form-control" id="roomie_name">
+            </div>
           {% endfor %}
+          <div class="col align-items-center p-2 m-2">
 
-
-          <button class="btn btn--main" type="submit">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-              <title>lock</title>
-              <path
-                d="M27 12h-1v-2c0-5.514-4.486-10-10-10s-10 4.486-10 10v2h-1c-0.553 0-1 0.447-1 1v18c0 0.553 0.447 1 1 1h22c0.553 0 1-0.447 1-1v-18c0-0.553-0.447-1-1-1zM8 10c0-4.411 3.589-8 8-8s8 3.589 8 8v2h-16v-2zM26 30h-20v-16h20v16z">
-              </path>
-              <path
-                d="M15 21.694v4.306h2v-4.306c0.587-0.348 1-0.961 1-1.694 0-1.105-0.895-2-2-2s-2 0.895-2 2c0 0.732 0.413 1.345 1 1.694z">
-              </path>
-            </svg>
-
-            Register
-          </button>
-        </form>
-
-        <div class="auth__action">
-          <p>Already registered?</p>
-          <a href="{% url 'rrapp:login' %}" class="btn btn--link">Login</a>
+            <button type="submit" class="btn btn-primary">Register</button>
         </div>
+        </form>
+          <div class="col pb-2">
+            <a href="{% url 'rrapp:login' %}">
+            <button class="btn btn-secondary">Login</button>
+            </a>
+          </div>
       </div>
     </div>
-  </div>
-  {% endif %}
-</main>
-{% endblock content %}
+      {% endif %}
+    {% endblock content %}
+  <body>
+</html>
+
+
+
