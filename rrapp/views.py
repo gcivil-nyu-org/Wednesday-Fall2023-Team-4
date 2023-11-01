@@ -2,6 +2,7 @@ from typing import Any
 from django.shortcuts import get_object_or_404, render
 
 # Create your views here.
+from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
@@ -14,7 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from .models import Listing, User, Renter, Rentee
-from .forms import MyUserCreationForm
+from .forms import MyUserCreationForm, ListingForm
 from django import forms
 
 
@@ -133,7 +134,11 @@ class ListingIndexView(generic.ListView):
     def get_queryset(self):
         """Return the last five published questions."""
         user_id = self.kwargs["user_id"]
-        return Listing.objects.filter(user=user_id).order_by("-created_at")[:10]
+        all_listings = Listing.objects.filter(user=user_id).order_by("-created_at")
+        paginator = Paginator(all_listings, 10)
+        page_number = self.request.GET.get("page")
+        latest_listings_page = paginator.get_page(page_number)
+        return latest_listings_page
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
@@ -156,11 +161,15 @@ class ListingDetailRenteeView(generic.DetailView):
 @method_decorator(login_required, name='dispatch')
 class ListingResultsView(generic.ListView):
     template_name = "rrapp/rentee_listings.html"
-    context_object_name = "queried_listings"
+    context_object_name = "queried_listings_page"
 
     def get_queryset(self):
         """Return the last five published questions."""
-        return Listing.objects.order_by("-created_at")[:10]
+        all_listings = Listing.objects.all().order_by('-created_at')
+        paginator = Paginator(all_listings, 10)
+        page_number = self.request.GET.get("page")
+        queried_listings_page = paginator.get_page(page_number)
+        return queried_listings_page
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
@@ -211,29 +220,35 @@ class ListingUpdateView(generic.UpdateView):
         return reverse('rrapp:listing_detail', args=(user_id, listing_id))
 
 
+
 @method_decorator(login_required, name='dispatch')
-class ListingNewView(generic.UpdateView):
+class ListingNewView(generic.CreateView):
     model = Listing
+    success_url = 'rrapp:my_listings'
+    form_class = ListingForm
     template_name = "rrapp/listing_new.html"
-    success_url = 'rrapp:listing_new'
 
-    def get_success_url(self):
-        user_id = self.kwargs['user_id']
-        return reverse('rrapp:listing_new', args=(user_id,))
-
-    def get_object(self, queryset=None):
-        try:
-            return self.request.user
-        except Listing.DoesNotExist:
-            return Listing.objects.create(user=self.request.user)
+    def get_context_data(self, **kwargs: Any):
+        context_data = super().get_context_data(**kwargs)
+        context_data["user_id"] = self.kwargs["user_id"]
+        return context_data
 
     def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+        """handle user login post req
+
+        Args:
+            request (HttpRequest): http request object
+
+        Returns:
+            HttpResponse: redirect or login view with error hints
+        """
+        form = self.form_class(request.POST)
         u = User.objects.get(pk=self.kwargs['user_id'])
-        # l = Listing.objects.create(user=u)
         form_data = self.get_form().data
-        print('@@@@@@@@@@@@@ ', form_data)
-        # print(self.get_form().data.save())
-        # self.get_form().data.save()
+
+        if form.is_valid():
+            print('valid form', form.data)
+
         listing = Listing.objects.create(
             user=u,
             status=form_data.get('status'),
@@ -249,17 +264,17 @@ class ListingNewView(generic.UpdateView):
             zip_code=form_data.get('zip_code'),
             city=form_data.get('city'),
             country=form_data.get('country'),
-            washer=form_data.get('washer') == 'on',
-            dryer=form_data.get('dryer') == 'on',
-            dishwasher=form_data.get('dishwasher') == 'on',
-            microwave=form_data.get('microwave') == 'on',
-            baking_oven=form_data.get('baking_oven') == 'on',
-            parking=form_data.get('parking') == 'on',
+            washer=form_data.get('washer') == 'true',
+            dryer=form_data.get('dryer') == 'true',
+            dishwasher=form_data.get('dishwasher') == 'true',
+            microwave=form_data.get('microwave') == 'true',
+            baking_oven=form_data.get('baking_oven') == 'true',
+            parking=form_data.get('parking') == 'true',
             number_of_bedrooms=form_data.get('number_of_bedrooms'),
             number_of_bathrooms=form_data.get('number_of_bathrooms'),
-            furnished=form_data.get('furnished') == 'on',
-            utilities_included=form_data.get('utilities_included') == 'on',
-            smoking_allowed=form_data.get('smoking_allowed') == 'on',
+            furnished=form_data.get('furnished') == 'true',
+            utilities_included=form_data.get('utilities_included') == 'true',
+            smoking_allowed=form_data.get('smoking_allowed') == 'true',
             pets_allowed=form_data.get('pets_allowed'),
             food_groups_allowed=form_data.get('food_groups_allowed'),
             age_range=NumericRange(
@@ -267,62 +282,14 @@ class ListingNewView(generic.UpdateView):
             ),
         )
         listing.save()
-        return super().post(request, *args, **kwargs)
-
-    def get_form_class(self):
-        class _Form(forms.ModelForm):
-            class Meta:
-                model = Listing
-                fields = [
-                    'status',
-                    'title',
-                    'description',
-                    'monthly_rent',
-                    'date_available_from',
-                    'date_available_to',
-                    'property_type',
-                    'room_type',
-                    'address1',
-                    'address2',
-                    'zip_code',
-                    'city',
-                    'country',
-                    'washer',
-                    'dryer',
-                    'dishwasher',
-                    'microwave',
-                    'baking_oven',
-                    'parking',
-                    'number_of_bedrooms',
-                    'number_of_bathrooms',
-                    'furnished',
-                    'utilities_included',
-                    'age_range',
-                    'smoking_allowed',
-                    'pets_allowed',
-                    'food_groups_allowed',
-                ]
-
-        return _Form
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-
-        self.object.user = self.request.user
-        self.object.save()
-
-        form.save_m2m()
-
-        return super(generic.edit.ModelFormMixin, self).form_valid(form)
-
-    def get_context_data(self, **kwargs: Any):
-        context_data = super().get_context_data(**kwargs)
-        context_data["user_id"] = self.kwargs["user_id"]
-        return context_data
+        return HttpResponseRedirect(
+            reverse('rrapp:my_listings', args=(kwargs["user_id"],))
+        )
 
 
 @login_required(login_url='login')
 def listing_delete(request, user_id, pk):
+    # TODO:add the check  if request.user.is_authenticated():
     listing = get_object_or_404(Listing, pk=pk, user_id=user_id)
     listing.delete()
     # Always return an HttpResponseRedirect after successfully dealing

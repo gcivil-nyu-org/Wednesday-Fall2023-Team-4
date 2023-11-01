@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
-import datetime
 
 from django.contrib.postgres.fields import IntegerRangeField
 from django.contrib.postgres.validators import (
@@ -148,16 +147,14 @@ class Rentee(models.Model):
 
 class Listing(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(default=timezone.now())
+    created_at = models.DateTimeField(default=timezone.now)
     # TODO enum
     status = models.CharField(max_length=100)
     title = models.CharField(max_length=100)
     description = models.TextField(default="")
     monthly_rent = models.IntegerField(default=1000)
-    date_available_from = models.DateField(default=datetime.date.today())
-    date_available_to = models.DateField(
-        default=datetime.date.today() + datetime.timedelta(days=30)
-    )
+    date_available_from = models.DateField(default=timezone.now)
+    date_available_to = models.DateField(default=timezone.now)
     property_type = models.CharField(
         max_length=20,
         choices=PropertyType.choices,
@@ -193,9 +190,9 @@ class Listing(models.Model):
     utilities_included = models.BooleanField(default=True)
     # TODO : can we use a nested field? like preferences = Preference()
     age_range = IntegerRangeField(
-        default=NumericRange(1, 101),
+        default=NumericRange(18, 60),
         blank=True,
-        validators=[RangeMinValueValidator(1), RangeMaxValueValidator(100)],
+        validators=[RangeMinValueValidator(18), RangeMaxValueValidator(100)],
     )
     smoking_allowed = models.BooleanField(default=False)
     pets_allowed = models.CharField(
