@@ -146,9 +146,15 @@ class Rentee(models.Model):
         related_name="rentee",
     )
 
+
 class SavedListing(models.Model):
-    rentee_id = models.ForeignKey(Rentee, related_name="saved_listing", on_delete=models.CASCADE, null=True)
-    saved_listings = models.ForeignKey("Listing", related_name="rentee", on_delete=models.CASCADE, null=True)
+    rentee_id = models.ForeignKey(
+        Rentee, related_name="saved_listing", on_delete=models.CASCADE, null=True
+    )
+    saved_listings = models.ForeignKey(
+        "Listing", related_name="rentee", on_delete=models.CASCADE, null=True
+    )
+
 
 class Listing(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
