@@ -19,6 +19,16 @@ from .forms import MyUserCreationForm, ListingForm
 
 
 class HomeView(generic.View):
+    def dispatch(self, request, *args, **kwargs):
+        # will redirect to the home page if a user tries to
+        # access the register page while logged in
+        if request.user.is_authenticated:
+            return HttpResponseRedirect(
+                reverse('rrapp:rentee_listings', args=(request.user.id,))
+            )
+        # else process dispatch as it otherwise normally would
+        return super(HomeView, self).dispatch(request, *args, **kwargs)
+
     def get(self, request, *args, **kwargs):
         return render(request, 'rrapp/home.html')
 
@@ -30,18 +40,21 @@ class LoginView(generic.View):
         # will redirect to the home page if a user tries to
         # access the register page while logged in
         if request.user.is_authenticated:
-            if len(Renter.objects.all()) > 0 and request.user.id in [
-                i.user.id for i in Renter.objects.all()
-            ]:
-                login(request, request.user)
-                return HttpResponseRedirect(
-                    reverse('rrapp:my_listings', args=(request.user.id,))
-                )
-            else:
-                login(request, request.user)
-                return HttpResponseRedirect(
-                    reverse('rrapp:rentee_listings', args=(request.user.id,))
-                )
+            # if len(Renter.objects.all()) > 0 and request.user.id in [
+            #     i.user.id for i in Renter.objects.all()
+            # ]:
+            #     login(request, request.user)
+            #     return HttpResponseRedirect(
+            #         reverse('rrapp:my_listings', args=(request.user.id,))
+            #     )
+            # else:
+            #     login(request, request.user)
+            #     return HttpResponseRedirect(
+            #         reverse('rrapp:rentee_listings', args=(request.user.id,))
+            #     )
+            return HttpResponseRedirect(
+                reverse('rrapp:rentee_listings', args=(request.user.id,))
+            )
         # else process dispatch as it otherwise normally would
         return super(LoginView, self).dispatch(request, *args, **kwargs)
 
@@ -57,18 +70,22 @@ class LoginView(generic.View):
             messages.error(request, 'User does not exist')
         user = authenticate(request, email=email, password=password)
         if user is not None:
-            if len(Renter.objects.all()) > 0 and user.id in [
-                i.user.id for i in Renter.objects.all()
-            ]:
-                login(request, user)
-                return HttpResponseRedirect(
-                    reverse('rrapp:my_listings', args=(request.user.id,))
-                )
-            else:
-                login(request, user)
-                return HttpResponseRedirect(
-                    reverse('rrapp:rentee_listings', args=(request.user.id,))
-                )
+            # if len(Renter.objects.all()) > 0 and user.id in [
+            #     i.user.id for i in Renter.objects.all()
+            # ]:
+            #     login(request, user)
+            #     return HttpResponseRedirect(
+            #         reverse('rrapp:my_listings', args=(request.user.id,))
+            #     )
+            # else:
+            #     login(request, user)
+            #     return HttpResponseRedirect(
+            #         reverse('rrapp:rentee_listings', args=(request.user.id,))
+            #     )
+            login(request, user)
+            return HttpResponseRedirect(
+                reverse('rrapp:rentee_listings', args=(request.user.id,))
+            )
         else:
             messages.error(request, 'Username OR password does not exit')
         return render(request, 'rrapp/login_register.html', self.context)
@@ -87,7 +104,10 @@ class RegisterView(generic.View):
         # will redirect to the home page if a user tries to
         # access the register page while logged in
         if request.user.is_authenticated:
-            return render(request, 'rrapp/home.html')
+            #            return render(request, 'rrapp/home.html')
+            return HttpResponseRedirect(
+                reverse('rrapp:rentee_listings', args=(request.user.id,))
+            )
         # else process dispatch as it otherwise normally would
         return super(RegisterView, self).dispatch(request, *args, **kwargs)
 
