@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from django.conf import settings
 
 from django.contrib.postgres.fields import IntegerRangeField
 from django.contrib.postgres.validators import (
@@ -133,7 +134,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Renter(models.Model):
     user = models.OneToOneField(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="renter",
     )
@@ -141,7 +142,7 @@ class Renter(models.Model):
 
 class Rentee(models.Model):
     user = models.OneToOneField(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="rentee",
     )
