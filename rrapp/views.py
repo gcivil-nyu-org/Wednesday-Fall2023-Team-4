@@ -188,6 +188,7 @@ class ListingDetailRenteeView(generic.DetailView):
         return HttpResponseRedirect(request.path_info)  # redirect to the same page
 
 
+@method_decorator(login_required, name='dispatch')
 class ListingResultsView(generic.ListView):
     template_name = "rrapp/rentee_listings.html"
     context_object_name = "queried_listings_page"
