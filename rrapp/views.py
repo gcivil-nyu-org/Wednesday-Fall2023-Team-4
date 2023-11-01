@@ -107,7 +107,6 @@ class RegisterView(generic.View):
         # will redirect to the home page if a user tries to
         # access the register page while logged in
         if request.user.is_authenticated:
-            #            return render(request, 'rrapp/home.html')
             return HttpResponseRedirect(
                 reverse('rrapp:rentee_listings', args=(request.user.id,))
             )
