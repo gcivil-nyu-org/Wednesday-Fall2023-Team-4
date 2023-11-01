@@ -4,8 +4,16 @@ from . import views
 
 app_name = "rrapp"
 urlpatterns = [
+    # # ex: /rrapp/
+    # path('', views.IndexView.as_view(), name='index'),
     # ex: /rrapp/
-    path('', views.IndexView.as_view(), name='index'),
+    path('', views.HomeView.as_view(), name='home'),
+    # ex: /rrapp/login
+    path('login/', views.LoginView.as_view(), name="login"),
+    # ex: /rrapp/logout
+    path('logout/', views.LogoutView.as_view(), name="logout"),
+    # ex: /rrapp/register
+    path('register/', views.RegisterView.as_view(), name="register"),
     # ex: /rrapp/5/listings/1
     path(
         'renter/<int:user_id>/listings/<int:pk>/',
