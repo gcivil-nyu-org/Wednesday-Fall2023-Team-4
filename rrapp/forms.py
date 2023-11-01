@@ -4,6 +4,9 @@ from django import forms
 import datetime
 
 from .models import User, PropertyType, RoomType, Pets, FoodGroup, Listing
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class MyUserCreationForm(UserCreationForm):
