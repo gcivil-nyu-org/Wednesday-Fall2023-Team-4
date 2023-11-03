@@ -1,5 +1,6 @@
 from typing import Any
 from django.shortcuts import get_object_or_404, render
+from django.db.models import Q
 
 # Create your views here.
 from django.core.paginator import Paginator
@@ -210,6 +211,10 @@ class ListingDetailRenteeView(generic.DetailView):
         return HttpResponseRedirect(request.path_info)  # redirect to the same page
 
 
+from django.db.models import Q
+
+# ... (your existing imports) ...
+
 @method_decorator(login_required, name='dispatch')
 class ListingResultsView(generic.ListView):
     template_name = "rrapp/rentee_listings.html"
@@ -220,17 +225,47 @@ class ListingResultsView(generic.ListView):
         return super().dispatch(*args, **kwargs)
     
     def get_queryset(self):
-        """Return the last five published questions."""
         all_listings = Listing.objects.all().order_by('-created_at')
-
-        # Get the sorting option from the request GET parameters
         sort_option = self.request.GET.get('sort', 'created_at')
+        
+        # Apply sorting
         if sort_option not in ['created_at', 'monthly_rent', 'number_of_bedrooms', 
                                'number_of_bathrooms', 'washer', 'dryer', 'furnished', 
                                'status']:
-            sort_option = 'created_at'# Default to sorting by creation date
-
+            sort_option = 'created_at'
         all_listings = all_listings.order_by(sort_option)
+
+        # Apply filters
+        filters = Q()
+
+        monthly_rent = self.request.GET.get('monthly_rent')
+        if monthly_rent:
+            filters &= Q(monthly_rent__lte=monthly_rent)
+
+        number_of_bedrooms = self.request.GET.get('number_of_bedrooms')
+        if number_of_bedrooms:
+            filters &= Q(number_of_bedrooms__lte=number_of_bedrooms)
+
+        number_of_bathrooms = self.request.GET.get('number_of_bathrooms')
+        if number_of_bathrooms:
+            filters &= Q(number_of_bathrooms__lte=number_of_bathrooms)
+
+        washer = self.request.GET.get('washer')
+        if washer == 'on':
+            filters &= Q(washer=True)
+
+        dryer = self.request.GET.get('dryer')
+        if dryer == 'on':
+            filters &= Q(dryer=True)
+
+        utilities_included = self.request.GET.get('utilities_included')
+        if utilities_included == 'on':
+            filters &= Q(utilities_included=True)
+
+        # Continue filtering for other fields if needed
+
+        # Combine filters
+        all_listings = all_listings.filter(filters)
 
         paginator = Paginator(all_listings, 10)
         page_number = self.request.GET.get("page")
@@ -241,6 +276,8 @@ class ListingResultsView(generic.ListView):
         context_data = super().get_context_data(**kwargs)
         context_data["user_id"] = self.kwargs["user_id"]
         return context_data
+
+
 
 
 @method_decorator(login_required, name='dispatch')

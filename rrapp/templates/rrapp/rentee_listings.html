@@ -39,21 +39,61 @@
                     </div>
                     <div class="mb-3">
                         <form method="get" action="{% url 'rrapp:rentee_listings' user_id %}">
-                            <label for="sort-select" class="form-label">Sort by:</label>
-                            <select class="form-select" id="sort-select" name="sort">
-                                <option value="created_at" {% if request.GET.sort == 'created_at' %}selected{% endif %}>Creation Date</option>
-                                <option value="monthly_rent" {% if request.GET.sort == 'monthly_rent' %}selected{% endif %}>Monthly Rent</option>
-                                <option value="number_of_bathrooms" {% if request.GET.sort == 'number_of_bathrooms' %}selected{% endif %}>Number of Bathrooms</option>
-                                <option value="number_of_bedrooms" {% if request.GET.sort == 'number_of_bedrooms' %}selected{% endif %}>Number of Bedrooms</option>
-                                <option value="washer" {% if request.GET.sort == 'washer' %}selected{% endif %}>Washer</option>
-                                <option value="dryer" {% if request.GET.sort == 'dryer' %}selected{% endif %}>Dryer</option>
-                                <option value="furnished" {% if request.GET.sort == 'furnished' %}selected{% endif %}>Furnished</option>
-                                <option value="status" {% if request.GET.sort == 'status' %}selected{% endif %}>Status</option>
-                                <!-- Add more options for other fields if needed -->
-                            </select>
-                    
-                            <button type="submit" class="btn btn-primary mt-2">Apply Sorting</button>
-                        </form>
+                            <label class="form-label">Filter by:</label>
+                            <div class="mb-3 row">
+                                <!-- Monthly Rent Filter -->
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text">Maximum Monthly Rent</span>
+                                        <input type="number" class="form-control" id="filter-monthly_rent" name="monthly_rent" value="{{ request.GET.monthly_rent }}" min="0">
+                                    </div>
+                                </div>
+                            
+                                <!-- Number of Bedrooms Filter -->
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text">Maximum Number of Bedrooms</span>
+                                        <input type="number" class="form-control" id="filter-number_of_bedrooms" name="number_of_bedrooms" value="{{ request.GET.number_of_bedrooms }}" min="0">
+                                    </div>
+                                </div>
+                            
+                                <!-- Number of Bathrooms Filter -->
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text">Maximum Number of Bathrooms</span>
+                                        <input type="number" class="form-control" id="filter-number_of_bathrooms" name="number_of_bathrooms" value="{{ request.GET.number_of_bathrooms }}" min="0">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3 row">
+                                <!-- Washer Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-washer" name="washer" {% if request.GET.washer == 'true' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-washer">Washer</label>
+                                    </div>
+                                </div>
+                            
+                                <!-- Dryer Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-dryer" name="dryer" {% if request.GET.dryer == 'true' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-dryer">Dryer</label>
+                                    </div>
+                                </div>
+                            
+                                <!-- Utilities Included Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-utilities_included" name="utilities_included" {% if request.GET.utilities_included == 'true' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-utilities_included">Utilities Included</label>
+                                    </div>
+                                </div>
+                            </div>                            
+                        
+                            <button type="submit" class="btn btn-primary mt-2">Apply Filtering</button>
+                        </form>      
                     </div>
                     <div style="width:70%;">
                         {% if queried_listings_page %}
