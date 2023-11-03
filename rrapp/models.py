@@ -50,14 +50,9 @@ class Pets(models.TextChoices):
     NONE = "none", _("None")
     ALL = "all", _("All")
 
-
-# class Address(models.Model):
-#     line1 = models.CharField(max_length=100)
-#     line2 = models.CharField(max_length=100)
-#     state = models.CharField(max_length=100)
-#     country = models.CharField(max_length=100)
-#     zipcode = models.CharField(max_length=10)
-
+class Status(models.TextChoices):
+    ACTIVE = "active", _("Active")
+    INACTIVE = "inactive", _("Inactive")
 
 class Preference(models.Model):
     age_range = IntegerRangeField(
@@ -112,13 +107,28 @@ class CustomUserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=30, unique=True)
+    birth_date = models.DateField(default=timezone.now)
     date_joined = models.DateTimeField(default=timezone.now)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    bio = models.TextField(null=True)
-    profile_picture_url = models.CharField(max_length=100)
+    bio = models.TextField(default="")
+    profile_picture = models.ImageField(
+        upload_to="profile_pictures/",
+        height_field=None,
+        width_field=None,
+        default="profile_pictures/DefaultProfilePicture.jpg",
+    )
     smokes = models.BooleanField(default=False)
-    has_pets = models.BooleanField(default=False)
+    pets = models.CharField(
+        max_length=20,
+        choices=Pets.choices,
+        default=Pets.NONE,
+    )
+    food_group = models.CharField(
+        max_length=20,
+        choices=FoodGroup.choices,
+        default=FoodGroup.ALL,
+    )
     phone_number = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -160,8 +170,11 @@ class SavedListing(models.Model):
 class Listing(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
-    # TODO enum
-    status = models.CharField(max_length=100)
+    status = models.CharField(
+        max_length=100,
+        choices=Status.choices,
+        default=Status.ACTIVE,
+    )
     title = models.CharField(max_length=100)
     description = models.TextField(default="")
     monthly_rent = models.IntegerField(default=1000)
@@ -177,18 +190,20 @@ class Listing(models.Model):
         choices=RoomType.choices,
         default=RoomType.PRIVATE,
     )
-    # TODO : can we use nested address field?
+
     address1 = models.CharField("Address line 1", max_length=1024, default="")
 
     address2 = models.CharField("Address line 2", max_length=1024, default="")
 
     zip_code = models.CharField("ZIP / Postal code", max_length=12, default="11201")
 
-    city = models.CharField("City", max_length=1024, default="New York")
+    city = models.CharField("City", max_length=100, default="New York")
+
+    state = models.CharField("State", max_length=10, default="New York")
 
     country = models.CharField("Country", max_length=3, default="USA")
 
-    # TODO: can we use a nested field?
+    # utilities
     washer = models.BooleanField(default=True)
     dryer = models.BooleanField(default=True)
     dishwasher = models.BooleanField(default=True)
@@ -200,7 +215,8 @@ class Listing(models.Model):
     number_of_bathrooms = models.IntegerField(default=1)
     furnished = models.BooleanField(default=True)
     utilities_included = models.BooleanField(default=True)
-    # TODO : can we use a nested field? like preferences = Preference()
+
+    # preferences
     age_range = IntegerRangeField(
         default=NumericRange(18, 60),
         blank=True,

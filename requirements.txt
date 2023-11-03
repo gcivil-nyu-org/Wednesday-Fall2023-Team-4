@@ -12,3 +12,4 @@ six==1.16.0
 sqlparse==0.4.4
 typing_extensions==4.8.0
 urllib3==1.26.16
+Pillow==10.1.0
