@@ -44,7 +44,7 @@
                                 <!-- Monthly Rent Filter -->
                                 <div class="col-md-4">
                                     <div class="input-group">
-                                        <span class="input-group-text">Maximum Monthly Rent</span>
+                                        <span class="input-group-text">Monthly Rent</span>
                                         <input type="number" class="form-control" id="filter-monthly_rent" name="monthly_rent" value="{{ request.GET.monthly_rent }}" min="0">
                                     </div>
                                 </div>
@@ -52,7 +52,7 @@
                                 <!-- Number of Bedrooms Filter -->
                                 <div class="col-md-4">
                                     <div class="input-group">
-                                        <span class="input-group-text">Maximum Number of Bedrooms</span>
+                                        <span class="input-group-text">Number of Bedrooms</span>
                                         <input type="number" class="form-control" id="filter-number_of_bedrooms" name="number_of_bedrooms" value="{{ request.GET.number_of_bedrooms }}" min="0">
                                     </div>
                                 </div>
@@ -60,7 +60,7 @@
                                 <!-- Number of Bathrooms Filter -->
                                 <div class="col-md-4">
                                     <div class="input-group">
-                                        <span class="input-group-text">Maximum Number of Bathrooms</span>
+                                        <span class="input-group-text">Number of Bathrooms</span>
                                         <input type="number" class="form-control" id="filter-number_of_bathrooms" name="number_of_bathrooms" value="{{ request.GET.number_of_bathrooms }}" min="0">
                                     </div>
                                 </div>
@@ -96,6 +96,22 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="filter-furnished" name="furnished" {% if request.GET.furnished == 'true' %}checked{% endif %}>
                                         <label class="form-check-label" for="filter-furnished">Furnished</label>
+                                    </div>
+                                </div>
+
+                                <!-- Dishwasher Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-dishwasher" name="dishwasher" {% if request.GET.dishwasher == 'true' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-dishwasher">Dishwasher</label>
+                                    </div>
+                                </div>
+
+                                <!-- Parking Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-parking" name="parking" {% if request.GET.parking == 'true' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-parking">Parking</label>
                                     </div>
                                 </div>
 
