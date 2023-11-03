@@ -246,6 +246,7 @@ class ListingUpdateView(generic.UpdateView):
         'address2',
         'zip_code',
         'city',
+        'state',
         'country',
         'washer',
         'dryer',
