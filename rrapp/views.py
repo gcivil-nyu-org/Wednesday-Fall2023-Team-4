@@ -215,9 +215,21 @@ class ListingResultsView(generic.ListView):
     template_name = "rrapp/rentee_listings.html"
     context_object_name = "queried_listings_page"
 
+    @method_decorator(login_required, name='dispatch')
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
     def get_queryset(self):
         """Return the last five published questions."""
         all_listings = Listing.objects.all().order_by('-created_at')
+
+        # Get the sorting option from the request GET parameters
+        sort_option = self.request.GET.get('sort', 'created_at')
+        if sort_option not in ['created_at', 'monthly_rent', 'number_of_bedrooms']:
+            sort_option = 'created_at'  # Default to sorting by creation date
+
+        all_listings = all_listings.order_by(sort_option)
+
         paginator = Paginator(all_listings, 10)
         page_number = self.request.GET.get("page")
         queried_listings_page = paginator.get_page(page_number)
