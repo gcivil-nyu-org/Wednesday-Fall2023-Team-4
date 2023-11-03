@@ -50,9 +50,11 @@ class Pets(models.TextChoices):
     NONE = "none", _("None")
     ALL = "all", _("All")
 
+
 class Status(models.TextChoices):
     ACTIVE = "active", _("Active")
     INACTIVE = "inactive", _("Inactive")
+
 
 class Preference(models.Model):
     age_range = IntegerRangeField(
