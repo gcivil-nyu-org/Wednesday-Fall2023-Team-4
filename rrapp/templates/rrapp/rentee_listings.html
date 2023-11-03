@@ -90,9 +90,39 @@
                                         <label class="form-check-label" for="filter-utilities_included">Utilities Included</label>
                                     </div>
                                 </div>
+
+                                <!-- Furnished Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-furnished" name="furnished" {% if request.GET.furnished == 'true' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-furnished">Furnished</label>
+                                    </div>
+                                </div>
+
+                                <!-- Room Type Filter -->
+                                <div class="col-md-4">
+                                    <label for="filter-room-type" class="form-label">Room Type</label>
+                                    <select class="form-select" id="filter-room-type" name="room_type">
+                                        <option value="">Select Room Type</option>
+                                        <option value="private" {% if request.GET.room_type == 'private' %}selected{% endif %}>Private</option>
+                                        <option value="shared" {% if request.GET.room_type == 'shared' %}selected{% endif %}>Shared</option>
+                                    </select>
+                                </div>
+
+                                <!-- Food Groups Allowed Filter -->
+                                <div class="col-md-4">
+                                    <label for="filter-food-groups-allowed" class="form-label">Food Groups Allowed</label>
+                                    <select class="form-select" id="filter-food-groups-allowed" name="food_groups_allowed">
+                                        <option value="">Select Food Groups</option>
+                                        <option value="all" {% if request.GET.food_groups_allowed == 'all' %}selected{% endif %}>All</option>
+                                        <option value="vegan" {% if request.GET.food_groups_allowed == 'vegan' %}selected{% endif %}>Vegan</option>
+                                        <option value="vegetarian" {% if request.GET.food_groups_allowed == 'vegetarian' %}selected{% endif %}>Vegetarian</option>
+                                        <option value="non_vegetarian" {% if request.GET.food_groups_allowed == 'non_vegetarian' %}selected{% endif %}>Non-Vegetarian</option>
+                                    </select>
+                                </div>
                             </div>                            
                         
-                            <button type="submit" class="btn btn-primary mt-2">Apply Filtering</button>
+                            <button type="submit" class="btn btn-primary mt-2">Filter</button>
                         </form>      
                     </div>
                     <div style="width:70%;">

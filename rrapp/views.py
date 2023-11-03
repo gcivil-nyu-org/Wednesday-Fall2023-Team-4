@@ -257,6 +257,18 @@ class ListingResultsView(generic.ListView):
         if utilities_included == 'on':
             filters &= Q(utilities_included=True)
 
+        furnished=self.request.GET.get('furnished')
+        if furnished=='on':
+            filters &= Q(furnished=True)
+
+        room_type = self.request.GET.get('room_type')
+        if room_type:
+            filters &= Q(room_type=room_type)
+
+        food_groups_allowed = self.request.GET.get('food_groups_allowed')
+        if food_groups_allowed:
+            filters &= Q(food_groups_allowed=food_groups_allowed)
+
         # Continue filtering for other fields if needed
 
         # Combine filters
