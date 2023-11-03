@@ -1,7 +1,7 @@
 {% block content_main %}
 <form method="post">
     {% csrf_token %}
-    {{ form }}
+    {{ form.as_div }}
     <input type="submit" value="Update">
 </form>
 {% endblock %}

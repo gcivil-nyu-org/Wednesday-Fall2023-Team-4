@@ -40,13 +40,13 @@
       <div class = "d-flex flex-column align-items-center board rounded-3 m-4" style="background-color:#F8F8F8">
         <h1 class="font-monospace display-5 fw-medium text-body-emphasis">Find your roomie here</h1>
 
-        <form class="form row w-90 text-center align-items-center p-3" action="" method="POST">
+        <form class="form row w-90 p-3" action="" method="POST">
           {% csrf_token %}
 
           {% for field in form %}
             <div class="col-md-6">
               <label for="roomie_name">{{field.label}}</label>
-              <input type="text" class="form-control" id="roomie_name">
+              {{field}}
             </div>
           {% endfor %}
           <div class="col align-items-center p-2 m-2">

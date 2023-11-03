@@ -3,7 +3,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 import datetime
 
-from .models import User, PropertyType, RoomType, Pets, FoodGroup, Listing
+from .models import PropertyType, RoomType, Pets, FoodGroup, Listing
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class MyUserCreationForm(UserCreationForm):
@@ -15,10 +18,10 @@ class MyUserCreationForm(UserCreationForm):
             'username',
             'email',
             'phone_number',
-            'profile_picture_url',
+            'profile_picture',
             'smokes',
-            'has_pets',
-            'smokes',
+            'pets',
+            'food_group',
             'password1',
             'password2',
         ]
@@ -33,10 +36,10 @@ class UserForm(ModelForm):
             'username',
             'email',
             'phone_number',
-            'profile_picture_url',
+            'profile_picture',
             'smokes',
-            'has_pets',
-            'smokes',
+            'pets',
+            'food_group',
             'bio',
         ]
 
@@ -57,6 +60,7 @@ class ListingForm(forms.ModelForm):
             'address2',
             'zip_code',
             'city',
+            'state',
             'country',
             'washer',
             'dryer',
@@ -159,6 +163,15 @@ class ListingForm(forms.ModelForm):
         ),
     )
 
+    state = forms.CharField(
+        label="State",
+        max_length=10,
+        initial="New York",
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "Enter state"}
+        ),
+    )
+
     country = forms.CharField(
         label="Country",
         max_length=3,
@@ -168,7 +181,6 @@ class ListingForm(forms.ModelForm):
         ),
     )
 
-    # # TODO: can we use a nested field?
     washer = forms.BooleanField(
         label="washer",
         initial=True,
@@ -250,8 +262,7 @@ class ListingForm(forms.ModelForm):
             attrs={"class": "form-control", "placeholder": "Select availability"}
         ),
     )
-    # TODO : can we use a nested field? like preferences = Preference(label = "
-    # TODO : can we use a nested field? like preferences", )
+
     # age_range_0 = forms.IntegerField(label = "age_range_0",
     #     initial=18,
     #     required=False,
