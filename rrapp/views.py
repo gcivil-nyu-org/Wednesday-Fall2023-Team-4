@@ -210,11 +210,6 @@ class ListingDetailRenteeView(generic.DetailView):
             SavedListing.objects.create(rentee_id=rentee, saved_listings=listing)
         return HttpResponseRedirect(request.path_info)  # redirect to the same page
 
-
-from django.db.models import Q
-
-# ... (your existing imports) ...
-
 @method_decorator(login_required, name='dispatch')
 class ListingResultsView(generic.ListView):
     template_name = "rrapp/rentee_listings.html"
