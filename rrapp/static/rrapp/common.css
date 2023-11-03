@@ -1,0 +1,63 @@
+html,body{
+    height:100%;
+    width:100%;
+    padding: 0;
+    margin: 0;
+}
+
+.left-bar{
+    width: 18%;
+}
+
+.right-page{
+    width: 82%;
+}
+
+.cus-btn-left {
+    --bs-btn-color: #FFFFFF;
+    --bs-btn-bg: #00796B;
+    --bs-btn-active-bg: #009688;
+    --bs-btn-hover-bg: #009688;
+    --bs-btn-hover-color: #fff;
+}
+
+.cus-btn-mid {
+    --bs-btn-color: #FFFFFF;
+    --bs-btn-bg: #FFA000;
+    --bs-btn-active-bg: #FFC107;
+    --bs-btn-hover-bg: #FFC107;
+    --bs-btn-hover-color: #fff;
+}
+.cus-btn-right {
+    --bs-btn-color: #FFFFFF;
+    --bs-btn-bg: #2E3236;
+    --bs-btn-active-bg: #455A64;
+    --bs-btn-hover-bg: #455A64;
+    --bs-btn-hover-color: #fff;
+}
+
+.back-left {
+    background-color: #00796B;
+}
+.back-right {
+    background-color: #2E3236;
+}
+.text-left {
+    color: #FFFFFF;
+}
+.text-right {
+    color: #FFFFFF;
+}
+
+.breadcrumb-item.avtive {
+    color: var(--bs-breadcrumb-item-active-color);
+}
+
+.board{
+    border: var(--bs-border-width) var(--bs-border-style) #dee2e6!important;
+}
+
+.grey-block{
+    background-color:#F9F9F9;
+    border: var(--bs-border-width) var(--bs-border-style) #dee2e6!important;
+}
