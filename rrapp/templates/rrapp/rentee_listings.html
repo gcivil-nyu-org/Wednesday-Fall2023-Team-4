@@ -40,10 +40,15 @@
                     <div class="mb-3">
                         <form method="get" action="{% url 'rrapp:rentee_listings' user_id %}">
                             <label for="sort-select" class="form-label">Sort by:</label>
-                            <select class="form-select" id="sort-select" name="sort" multiple>
-                                <option value="created_at" {% if 'created_at' in request.GET.sort %}selected{% endif %}>Creation Date</option>
-                                <option value="monthly_rent" {% if 'monthly_rent' in request.GET.sort %}selected{% endif %}>Monthly Rent</option>
-                                <option value="number_of_bedrooms" {% if 'number_of_bedrooms' in request.GET.sort %}selected{% endif %}>Number of Bedrooms</option>
+                            <select class="form-select" id="sort-select" name="sort">
+                                <option value="created_at" {% if request.GET.sort == 'created_at' %}selected{% endif %}>Creation Date</option>
+                                <option value="monthly_rent" {% if request.GET.sort == 'monthly_rent' %}selected{% endif %}>Monthly Rent</option>
+                                <option value="number_of_bathrooms" {% if request.GET.sort == 'number_of_bathrooms' %}selected{% endif %}>Number of Bathrooms</option>
+                                <option value="number_of_bedrooms" {% if request.GET.sort == 'number_of_bedrooms' %}selected{% endif %}>Number of Bedrooms</option>
+                                <option value="washer" {% if request.GET.sort == 'washer' %}selected{% endif %}>Washer</option>
+                                <option value="dryer" {% if request.GET.sort == 'dryer' %}selected{% endif %}>Dryer</option>
+                                <option value="furnished" {% if request.GET.sort == 'furnished' %}selected{% endif %}>Furnished</option>
+                                <option value="status" {% if request.GET.sort == 'status' %}selected{% endif %}>Status</option>
                                 <!-- Add more options for other fields if needed -->
                             </select>
                     
