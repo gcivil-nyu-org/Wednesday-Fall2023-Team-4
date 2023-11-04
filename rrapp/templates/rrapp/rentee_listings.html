@@ -142,7 +142,7 @@
                             <div class="col-md-6 mx-auto">
                                 <label for="sort-select" class="form-label">Sort by:</label>
                                 <div class="d-flex justify-content-center">
-                                    <select class="form-select text-wrap" id="sort-select" name="sort" onchange="changeSort()" style="width: 120px;">
+                                    <select class="form-select" id="sort-select" name="sort" onchange="changeSort()" style="width: 250px;">
                                         <option value="">-- Select Sorting Option --</option>
                                         <option value="monthly_rent" {% if request.GET.sort == 'monthly_rent' %}selected{% endif %}>Monthly Rent</option>
                                         <option value="number_of_bedrooms" {% if request.GET.sort == 'number_of_bedrooms' %}selected{% endif %}>Number of Bedrooms</option>
