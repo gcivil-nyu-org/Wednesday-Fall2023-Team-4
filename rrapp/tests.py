@@ -1,6 +1,5 @@
 from django.test import TestCase
-from yourapp.models import Listing  # Replace 'yourapp' with the actual name of your Django app
-
+from rrapp.models import Listing  
 class ListingTestCase(TestCase):
     def setUp(self):
         # Create a sample listing for testing
