@@ -139,6 +139,17 @@
                             </div>                            
                         
                             <button type="submit" class="btn btn-primary mt-2">Filter</button>
+                            <div class="col-md-6 mx-auto">
+                                <label for="sort-select" class="form-label">Sort by:</label>
+                                <div class="d-flex justify-content-center">
+                                    <select class="form-select text-wrap" id="sort-select" name="sort" onchange="changeSort()" style="width: 120px;">
+                                        <option value="">-- Select Sorting Option --</option>
+                                        <option value="monthly_rent" {% if request.GET.sort == 'monthly_rent' %}selected{% endif %}>Monthly Rent</option>
+                                        <option value="number_of_bedrooms" {% if request.GET.sort == 'number_of_bedrooms' %}selected{% endif %}>Number of Bedrooms</option>
+                                        <option value="number_of_bathrooms" {% if request.GET.sort == 'number_of_bathrooms' %}selected{% endif %}>Number of Bathrooms</option>
+                                    </select>
+                                </div>
+                            </div>             
                         </form>      
                     </div>
                     <div style="width:70%;">
@@ -183,10 +194,18 @@
             function changeSort() {
                 var select = document.getElementById("sort-select");
                 var selectedOption = select.options[select.selectedIndex].value;
-                // Redirect to the same page with the selected sorting option
-                window.location.href = window.location.pathname + "?sort=" + selectedOption;
+                
+                // Get existing filter parameters
+                var queryParams = new URLSearchParams(window.location.search);
+                
+                // Add sorting option to the parameters
+                queryParams.set('sort', selectedOption);
+                
+                // Redirect to the same page with the updated parameters
+                window.location.href = window.location.pathname + "?" + queryParams.toString();
             }
         </script>
+        
     </body>
     <style>
         .breadcrumb-item.avtive {
