@@ -1,8 +1,14 @@
-html,body{
-    height:100%;
+html, body{
+    height: 100%;
     width:100%;
     padding: 0;
     margin: 0;
+}
+
+.back-contianer{
+    display: flex;
+    min-height: 100vh;
+    height: auto;
 }
 
 .left-bar{
@@ -11,6 +17,8 @@ html,body{
 
 .right-page{
     width: 82%;
+    display: flex;
+    flex-direction: column;
 }
 
 .cus-btn-left {

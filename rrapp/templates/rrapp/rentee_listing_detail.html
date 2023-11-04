@@ -7,7 +7,8 @@
         {% load static %}
         <link rel="stylesheet" href="{% static 'rrapp/common.css' %}">
     </head>
-    <body class = "d-flex align-items-stretch flex-row" style="height:100%;">
+    <body class = "align-items-stretch">
+        <div class="back-contianer">
         <div class="bg-dark left-bar">
             <div class = "d-flex flex-column align-items-center">
                 <div class = "p-3">
@@ -323,12 +324,6 @@
 
                         <div class="col-3 p-2">
                             <div class="board w-100 h-100 rounded-3 back-left">
-                                <div class="p-2 text-left">Preferences :</div>
-                            </div>
-                        </div>
-
-                        <div class="col-3 p-2">
-                            <div class="board w-100 h-100 rounded-3 back-left">
                                 <div class="p-2 text-left">Age Range :</div>
                             </div>
                         </div>
@@ -360,12 +355,12 @@
                             </div>
                         </div>
 
-                        <div class="col-6 p-2">
+                        <div class="col-3 p-2">
                             <div class="board w-100 h-100 rounded-3 back-left">
                                 <div class="p-2 text-left">Food Allowed :</div>
                             </div>
                         </div>
-                        <div class="col-6 p-2">
+                        <div class="col-3 p-2">
                             <div class="board w-100 h-100 rounded-3 back-right">
                                 <div class="p-2 text-right">{{ object.food_groups_allowed }}</div>
                             </div>
@@ -387,14 +382,10 @@
                             <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right">Back</button>
                         </a>
                     </div>
+                </div>
             </div>
-        </div>
 
         </div>
+        </div>
     </body>
-    <style>
-        html, body {
-            height: auto;
-        }
-    </style>
 </html>
