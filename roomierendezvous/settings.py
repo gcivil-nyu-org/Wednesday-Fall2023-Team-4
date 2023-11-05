@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-e)vreunf@yli8@c^p%qs4+aujeg8ah6v6#7*480v4^i#6!wou)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "roomierendezvous-dev.us-east-1.elasticbeanstalk.com"]
+ALLOWED_HOSTS = ["127.0.0.1", "roomierendezvous-dev.us-east-1.elasticbeanstalk.com", "roomierendezvous-app-dev.us-east-1.elasticbeanstalk.com"]
 
 
 # Application definition
@@ -104,12 +104,12 @@ DATABASES = {
 if 'TRAVIS' in os.environ:
     DATABASES = {
         'default': {
-            'ENGINE':   'django.db.backends.postgresql_psycopg2',
-            'NAME':     'rrtestdb',
-            'USER':     'travis',
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'rrtestdb',
+            'USER': 'travis',
             'PASSWORD': '',
-            'HOST':     'localhost',
-            'PORT':     '5433',
+            'HOST': 'localhost',
+            'PORT': '5433',
         }
     }
 
@@ -153,6 +153,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = "rrapp.User"
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/

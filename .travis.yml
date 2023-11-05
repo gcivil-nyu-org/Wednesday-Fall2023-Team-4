@@ -37,6 +37,9 @@ install:
 
 before_script:
   - psql -c 'create database rrtestdb;' -U travis
+  - python manage.py makemigrations
+  - python manage.py makemigrations rrapp
+  - python manage.py makemigrations auth
   - python manage.py migrate
 
 
@@ -59,6 +62,6 @@ deploy:
   bucket_name: $AWS_BUCKET_NAME
   on:
     branch: develop
-
+  
 after_deploy:
   - ./scripts/after_deploy_1.sh
