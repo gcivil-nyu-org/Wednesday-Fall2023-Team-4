@@ -1,9 +1,9 @@
-from typing import Any
+from typing import Any, List
 from django.shortcuts import get_object_or_404, render
 
 # Create your views here.
 from django.core.paginator import Paginator
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.views import generic
 
@@ -14,9 +14,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from .models import Listing, Renter, Rentee, SavedListing
 from .forms import MyUserCreationForm, ListingForm
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
@@ -351,3 +354,20 @@ def listing_delete(request, user_id, pk):
     # with POST data. This prevents data from being posted twice if a
     # user hits the Back button.
     return HttpResponseRedirect(reverse('rrapp:my_listings', args=(user_id,)))
+
+
+
+class UsersListView(LoginRequiredMixin, generic.ListView):
+    http_method_names = ['get', ]
+
+    def get_queryset(self):
+        return User.objects.all().exclude(id=self.request.user.id)
+
+    def render_to_response(self, context, **response_kwargs):
+        users: List[AbstractBaseUser] = context['object_list']
+
+        data = [{
+            "username": user.get_username(),
+            "pk": str(user.pk)
+        } for user in users]
+        return JsonResponse(data, safe=False, **response_kwargs)

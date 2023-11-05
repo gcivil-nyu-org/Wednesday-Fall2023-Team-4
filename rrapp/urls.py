@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path, include
 
 from . import views
 
@@ -55,4 +55,7 @@ urlpatterns = [
         views.ListingDetailRenteeView.as_view(),
         name='rentee_listing_detail',
     ),
+    # # messaging paths
+    # path('chat/', include('django_private_chat2.urls', namespace='django_private_chat2')),
+    # path('users/', views.UsersListView.as_view(), name='users_list'),
 ]
