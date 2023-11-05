@@ -252,15 +252,15 @@ class ListingResultsView(generic.ListView):
             filters &= Q(utilities_included=True)
 
         furnished = self.request.GET.get('furnished')
-        if furnished =='on':
+        if furnished == 'on':
             filters &= Q(furnished=True)
 
         dishwasher = self.request.GET.get('dishwasher')
-        if dishwasher =='on':
+        if dishwasher == 'on':
             filters &= Q(dishwasher=True)
 
         parking = self.request.GET.get('parking')
-        if parking =='on':
+        if parking == 'on':
             filters &= Q(parking=True)
 
         room_type = self.request.GET.get('room_type')
