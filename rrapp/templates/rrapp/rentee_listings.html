@@ -159,12 +159,15 @@
                                 <div class="d-flex justify-content-center">
                                     <select class="form-select" id="sort-select" name="sort" onchange="changeSort()" style="width: 250px;">
                                         <option value="">-- Select Sorting Option --</option>
-                                        <option value="monthly_rent" {% if request.GET.sort == 'monthly_rent' %}selected{% endif %}>Monthly Rent</option>
-                                        <option value="number_of_bedrooms" {% if request.GET.sort == 'number_of_bedrooms' %}selected{% endif %}>Number of Bedrooms</option>
-                                        <option value="number_of_bathrooms" {% if request.GET.sort == 'number_of_bathrooms' %}selected{% endif %}>Number of Bathrooms</option>
+                                        <option value="monthly_rent" {% if request.GET.sort == 'monthly_rent' %}selected{% endif %}>Monthly Rent - Low to High</option>
+                                        <option value="-monthly_rent" {% if request.GET.sort == '-monthly_rent' %}selected{% endif %}>Monthly Rent - High to Low</option>
+                                        <option value="number_of_bedrooms" {% if request.GET.sort == 'number_of_bedrooms' %}selected{% endif %}>Number of Bedrooms - Low to High</option>
+                                        <option value="-number_of_bedrooms" {% if request.GET.sort == '-number_of_bedrooms' %}selected{% endif %}>Number of Bedrooms - High to Low</option>
+                                        <option value="number_of_bathrooms" {% if request.GET.sort == 'number_of_bathrooms' %}selected{% endif %}>Number of Bathrooms - Low to High</option>
+                                        <option value="-number_of_bathrooms" {% if request.GET.sort == '-number_of_bathrooms' %}selected{% endif %}>Number of Bathrooms - High to Low</option>
                                     </select>
                                 </div>
-                            </div>             
+                            </div>                                      
                         </form>      
                     </div>
                     <div style="width:70%;">

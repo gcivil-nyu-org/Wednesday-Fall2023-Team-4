@@ -219,11 +219,18 @@ class ListingResultsView(generic.ListView):
     def get_queryset(self):
         all_listings = Listing.objects.all().order_by('-created_at')
         sort_option = self.request.GET.get('sort', 'created_at')
+
+        # Extract the sorting order (Low to High or High to Low)
+        sorting_order = ''  # Default to ascending order
+        if sort_option.startswith('-'):
+            sort_option = sort_option[1:]
+            sorting_order = '-'  # Set to descending order
+
         # Apply sorting
-        if sort_option not in ['monthly_rent', 'number_of_bedrooms',
-                               'number_of_bathrooms']:
+        if sort_option not in ['monthly_rent', 'number_of_bedrooms', 'number_of_bathrooms']:
             sort_option = 'created_at'
-        all_listings = all_listings.order_by(sort_option)
+        all_listings = all_listings.order_by(f'{sorting_order}{sort_option}')
+
         # Apply filters
         filters = Q()
 
