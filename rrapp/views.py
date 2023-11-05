@@ -220,7 +220,7 @@ class ListingResultsView(generic.ListView):
         all_listings = Listing.objects.all().order_by('-created_at')
         sort_option = self.request.GET.get('sort', 'created_at')
         # Apply sorting
-        if sort_option not in ['monthly_rent', 'number_of_bedrooms', 
+        if sort_option not in ['monthly_rent', 'number_of_bedrooms',
                                'number_of_bathrooms']:
             sort_option = 'created_at'
         all_listings = all_listings.order_by(sort_option)
@@ -251,16 +251,16 @@ class ListingResultsView(generic.ListView):
         if utilities_included == 'on':
             filters &= Q(utilities_included=True)
 
-        furnished=self.request.GET.get('furnished')
-        if furnished=='on':
+        furnished = self.request.GET.get('furnished')
+        if furnished =='on':
             filters &= Q(furnished=True)
 
-        dishwasher=self.request.GET.get('dishwasher')
-        if dishwasher=='on':
+        dishwasher = self.request.GET.get('dishwasher')
+        if dishwasher =='on':
             filters &= Q(dishwasher=True)
-        
-        parking=self.request.GET.get('parking')
-        if parking=='on':
+
+        parking = self.request.GET.get('parking')
+        if parking =='on':
             filters &= Q(parking=True)
 
         room_type = self.request.GET.get('room_type')
@@ -271,7 +271,7 @@ class ListingResultsView(generic.ListView):
         if food_groups_allowed:
             filters &= Q(food_groups_allowed=food_groups_allowed)
 
-        pets_allowed= self.request.GET.get('pets_allowed')
+        pets_allowed = self.request.GET.get('pets_allowed')
         if pets_allowed:
             filters &= Q(pets_allowed=pets_allowed)
 
@@ -289,8 +289,6 @@ class ListingResultsView(generic.ListView):
         context_data = super().get_context_data(**kwargs)
         context_data["user_id"] = self.kwargs["user_id"]
         return context_data
-
-
 
 
 @method_decorator(login_required, name='dispatch')
