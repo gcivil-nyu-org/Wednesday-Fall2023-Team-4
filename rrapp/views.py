@@ -210,22 +210,20 @@ class ListingDetailRenteeView(generic.DetailView):
             SavedListing.objects.create(rentee_id=rentee, saved_listings=listing)
         return HttpResponseRedirect(request.path_info)  # redirect to the same page
 
+
 @method_decorator(login_required, name='dispatch')
 class ListingResultsView(generic.ListView):
     template_name = "rrapp/rentee_listings.html"
     context_object_name = "queried_listings_page"
 
-    
     def get_queryset(self):
         all_listings = Listing.objects.all().order_by('-created_at')
         sort_option = self.request.GET.get('sort', 'created_at')
-        
         # Apply sorting
         if sort_option not in ['monthly_rent', 'number_of_bedrooms', 
                                'number_of_bathrooms']:
             sort_option = 'created_at'
         all_listings = all_listings.order_by(sort_option)
-
         # Apply filters
         filters = Q()
 
