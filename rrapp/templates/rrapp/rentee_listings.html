@@ -139,6 +139,18 @@
                                         <option value="non_vegetarian" {% if request.GET.food_groups_allowed == 'non_vegetarian' %}selected{% endif %}>Non-Vegetarian</option>
                                     </select>
                                 </div>
+
+                                <!-- Pets Filter -->
+                                <div class="col-md-4">
+                                    <label for="filter-pets_allowed" class="form-label">Pets Allowed</label>
+                                    <select class="form-select" id="filter-pets_allowed" name="pets_allowed">
+                                        <option value="">Select Pets Type</option>
+                                        <option value="none" {% if request.GET.pets_allowed == 'none' %}selected{% endif %}>None</option>
+                                        <option value="all" {% if request.GET.pets_allowed == 'all' %}selected{% endif %}>All</option>
+                                        <option value="cats" {% if request.GET.pets_allowed == 'cats' %}selected{% endif %}>Cats</option>
+                                        <option value="dogs" {% if request.GET.pets_allowed == 'dogs' %}selected{% endif %}>Dogs</option>
+                                    </select>
+                                </div>
                             </div>                            
                         
                             <button type="submit" class="btn btn-primary mt-2">Filter</button>

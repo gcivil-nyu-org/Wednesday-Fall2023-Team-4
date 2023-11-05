@@ -215,18 +215,14 @@ class ListingResultsView(generic.ListView):
     template_name = "rrapp/rentee_listings.html"
     context_object_name = "queried_listings_page"
 
-    @method_decorator(login_required, name='dispatch')
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
     
     def get_queryset(self):
         all_listings = Listing.objects.all().order_by('-created_at')
         sort_option = self.request.GET.get('sort', 'created_at')
         
         # Apply sorting
-        if sort_option not in ['created_at', 'monthly_rent', 'number_of_bedrooms', 
-                               'number_of_bathrooms', 'washer', 'dryer', 'furnished', 
-                               'status']:
+        if sort_option not in ['monthly_rent', 'number_of_bedrooms', 
+                               'number_of_bathrooms']:
             sort_option = 'created_at'
         all_listings = all_listings.order_by(sort_option)
 
@@ -276,6 +272,10 @@ class ListingResultsView(generic.ListView):
         food_groups_allowed = self.request.GET.get('food_groups_allowed')
         if food_groups_allowed:
             filters &= Q(food_groups_allowed=food_groups_allowed)
+
+        pets_allowed= self.request.GET.get('pets_allowed')
+        if pets_allowed:
+            filters &= Q(pets_allowed=pets_allowed)
 
         # Continue filtering for other fields if needed
 
