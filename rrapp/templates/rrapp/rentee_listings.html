@@ -154,6 +154,7 @@
                             </div>                            
                         
                             <button type="submit" class="btn btn-primary mt-2">Filter</button>
+                            <button type="button" class="btn btn-secondary mt-2" onclick="resetFilters()">Reset</button>
                             <div class="col-md-6 mx-auto">
                                 <label for="sort-select" class="form-label">Sort by:</label>
                                 <div class="d-flex justify-content-center">
@@ -220,6 +221,28 @@
                 queryParams.set('sort', selectedOption);
                 
                 // Redirect to the same page with the updated parameters
+                window.location.href = window.location.pathname + "?" + queryParams.toString();
+            }
+            function resetFilters() {
+        // Get existing filter parameters
+                var queryParams = new URLSearchParams(window.location.search);
+
+                // Remove all filter parameters
+                queryParams.delete('monthly_rent');
+                queryParams.delete('number_of_bedrooms');
+                queryParams.delete('number_of_bathrooms');
+                queryParams.delete('washer');
+                queryParams.delete('dryer');
+                queryParams.delete('utilities_included');
+                queryParams.delete('furnished');
+                queryParams.delete('dishwasher');
+                queryParams.delete('parking');
+                queryParams.delete('room_type');
+                queryParams.delete('food_groups_allowed');
+                queryParams.delete('pets_allowed');
+                queryParams.delete('sort');
+
+                // Redirect to the same page with cleared filters
                 window.location.href = window.location.pathname + "?" + queryParams.toString();
             }
         </script>
