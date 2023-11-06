@@ -44,8 +44,8 @@ before_script:
 
 
 script:
-  - black ./ --skip-string-normalization --exclude settings* --extend-exclude migrations* --extend-exclude venv* -v
-  #- black --check . --skip-string-normalization --exclude settings* --extend-exclude migrations*
+  #- black ./ --skip-string-normalization --exclude settings* --extend-exclude migrations* --extend-exclude venv* -v
+  - black --check . --skip-string-normalization --exclude settings* --extend-exclude migrations*
   - flake8 .
   - coverage run --source=rrapp manage.py test
 
