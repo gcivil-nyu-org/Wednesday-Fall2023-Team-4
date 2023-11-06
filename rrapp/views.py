@@ -1,5 +1,6 @@
 from typing import Any
 from django.shortcuts import get_object_or_404, render
+from django.db.models import Q
 
 # Create your views here.
 from django.core.paginator import Paginator
@@ -216,8 +217,76 @@ class ListingResultsView(generic.ListView):
     context_object_name = "queried_listings_page"
 
     def get_queryset(self):
-        """Return the last five published questions."""
         all_listings = Listing.objects.all().order_by('-created_at')
+        sort_option = self.request.GET.get('sort', 'created_at')
+
+        # Extract the sorting order (Low to High or High to Low)
+        sorting_order = ''  # Default to ascending order
+        if sort_option.startswith('-'):
+            sort_option = sort_option[1:]
+            sorting_order = '-'  # Set to descending order
+
+        # Apply sorting
+        if sort_option not in ['monthly_rent', 'number_of_bedrooms', 'number_of_bathrooms']:
+            sort_option = 'created_at'
+        all_listings = all_listings.order_by(f'{sorting_order}{sort_option}')
+
+        # Apply filters
+        filters = Q()
+
+        monthly_rent = self.request.GET.get('monthly_rent')
+        if monthly_rent:
+            filters &= Q(monthly_rent__lte=monthly_rent)
+
+        number_of_bedrooms = self.request.GET.get('number_of_bedrooms')
+        if number_of_bedrooms:
+            filters &= Q(number_of_bedrooms__lte=number_of_bedrooms)
+
+        number_of_bathrooms = self.request.GET.get('number_of_bathrooms')
+        if number_of_bathrooms:
+            filters &= Q(number_of_bathrooms__lte=number_of_bathrooms)
+
+        washer = self.request.GET.get('washer')
+        if washer == 'on':
+            filters &= Q(washer=True)
+
+        dryer = self.request.GET.get('dryer')
+        if dryer == 'on':
+            filters &= Q(dryer=True)
+
+        utilities_included = self.request.GET.get('utilities_included')
+        if utilities_included == 'on':
+            filters &= Q(utilities_included=True)
+
+        furnished = self.request.GET.get('furnished')
+        if furnished == 'on':
+            filters &= Q(furnished=True)
+
+        dishwasher = self.request.GET.get('dishwasher')
+        if dishwasher == 'on':
+            filters &= Q(dishwasher=True)
+
+        parking = self.request.GET.get('parking')
+        if parking == 'on':
+            filters &= Q(parking=True)
+
+        room_type = self.request.GET.get('room_type')
+        if room_type:
+            filters &= Q(room_type=room_type)
+
+        food_groups_allowed = self.request.GET.get('food_groups_allowed')
+        if food_groups_allowed:
+            filters &= Q(food_groups_allowed=food_groups_allowed)
+
+        pets_allowed = self.request.GET.get('pets_allowed')
+        if pets_allowed:
+            filters &= Q(pets_allowed=pets_allowed)
+
+        # Continue filtering for other fields if needed
+
+        # Combine filters
+        all_listings = all_listings.filter(filters)
+
         paginator = Paginator(all_listings, 10)
         page_number = self.request.GET.get("page")
         queried_listings_page = paginator.get_page(page_number)

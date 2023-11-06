@@ -7,3 +7,4 @@ profile_pictures/*
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+venv/*
