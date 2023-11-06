@@ -227,8 +227,8 @@ class ListingResultsView(generic.ListView):
             sorting_order = '-'  # Set to descending order
 
         # Apply sorting
-        if sort_option not in ['monthly_rent', 
-                               'number_of_bedrooms', 
+        if sort_option not in ['monthly_rent',
+                               'number_of_bedrooms',
                                'number_of_bathrooms']:
             sort_option = 'created_at'
         all_listings = all_listings.order_by(f'{sorting_order}{sort_option}')
