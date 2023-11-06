@@ -12,11 +12,21 @@
                     <a href="{% url 'rrapp:rentee_listings' user_id %}" class="btn btn-warning">Switch Status</a>
                 </div>
                 <div class = "p-3">
+                    <a href="{% url 'rrapp:activate_email' %}" class="btn btn-danger">Activate</a>
+                </div>
+                <div class = "p-3">
                     <a href="{% url 'rrapp:logout' %}" class="btn btn-danger">Logout</a>
                 </div>
             </div>
         </div>
         <div class="flex-fill text-center">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
             <div class="container p-3">
                 <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
                     <ol class="breadcrumb p-3 bg-body-tertiary board rounded-3">

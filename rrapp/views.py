@@ -1,5 +1,5 @@
 from typing import Any
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 
 # Create your views here.
 from django.core.paginator import Paginator
@@ -17,6 +17,17 @@ from django.utils.decorators import method_decorator
 from .models import Listing, Renter, Rentee, SavedListing
 from .forms import MyUserCreationForm, ListingForm
 from django.contrib.auth import get_user_model
+
+from django.urls import reverse_lazy
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
+from django.contrib.messages.views import SuccessMessageMixin
+
+from django.core.mail import EmailMessage
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from .tokens import account_activation_token
 
 User = get_user_model()
 
@@ -93,6 +104,16 @@ class LoginView(generic.View):
             messages.error(request, 'Username OR password does not exit')
         return render(request, 'rrapp/login_register.html', self.context)
 
+class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
+    template_name = 'rrapp/password_reset.html'
+    email_template_name = 'rrapp/password_reset_email.html'
+    subject_template_name = 'rrapp/password_reset_subject.txt'
+    success_url = reverse_lazy('rrapp:password_reset_done')
+
+
+class ConfirmPasswordResetView(PasswordResetConfirmView):
+    success_url = reverse_lazy('rrapp:password_reset_complete')
+
 
 class LogoutView(generic.View):
     def get(self, request, *args, **kwargs):
@@ -136,9 +157,70 @@ class RegisterView(generic.View):
                 reverse('rrapp:rentee_listings', args=(user_id,))
             )
         else:
-            messages.error(request, 'An error occurred during registration')
+            messages.error(request, form.errors)
 
         return render(request, 'rrapp/login_register.html', {'form': form})
+
+
+# def activate(request, uidb64, token):
+#     User = get_user_model()
+#     try:
+#         uid = force_str(urlsafe_base64_decode(uidb64))
+#         user = User.objects.get(pk=uid)
+#     except:
+#         user = None
+
+#     if user is not None and account_activation_token.check_token(user, token):
+#         user.is_active = True
+#         user.save()
+
+#         messages.success(request, "Thank you for your email confirmation. Now you can login your account.")
+#         return redirect('login')
+#     else:
+#         messages.error(request, "Activation link is invalid!")
+
+#     return redirect('homepage')
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_verified = True
+        # user.save()
+        # login(request, user)
+        # return redirect('home')
+        # return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
+        messages.success(request, "Thank you for your email confirmation!")
+#        return render(request, 'rrapp/login_register.html')
+    else:
+        messages.error(request, "Activation link is invalid!")
+
+#    return render(request, 'rrapp/home.html')
+    return redirect('rrapp:home')
+
+@login_required(login_url='login')
+def activateEmail(request):
+    mail_subject = "Activate your user account."
+    message = render_to_string("rrapp/template_activate_account.html", {
+        'user': request.user.username,
+        'domain': get_current_site(request).domain,
+        'uid': urlsafe_base64_encode(force_bytes(request.user.pk)),
+        'token': account_activation_token.make_token(request.user),
+        "protocol": 'https' if request.is_secure() else 'http'
+    })
+    email = EmailMessage(mail_subject, message, to=[request.user.email])
+    if email.send():
+        messages.success(request, f'Dear {request.user}, please go to your email {request.user.email} inbox and click on \
+                received activation link to confirm and complete the registration. Note: Check your spam folder.')
+        # return render(request, 'rrapp/home.html')
+        return redirect('rrapp:home')
+    else:
+        messages.error(request, f'Problem sending email to {request.user.email}, check if you typed it correctly.')
+        # return render(request, 'rrapp/home.html')
+        return redirect('rrapp:home')
 
 
 @method_decorator(login_required, name='dispatch')

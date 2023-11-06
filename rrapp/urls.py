@@ -1,4 +1,5 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views
 
 from . import views
 
@@ -10,10 +11,30 @@ urlpatterns = [
     path('', views.HomeView.as_view(), name='home'),
     # ex: /rrapp/login
     path('login/', views.LoginView.as_view(), name="login"),
+    path('reset_password/', 
+        views.ResetPasswordView.as_view(template_name = "rrapp/password_reset.html"),
+        name='reset_password'),
+    path('reset_password_sent/',
+        auth_views.PasswordResetDoneView.as_view(
+            template_name = "rrapp/password_reset_sent.html"
+            ),
+        name ='password_reset_done'),
+    path('reset/<uidb64>/<token>/',
+         views.ConfirmPasswordResetView.as_view(
+            template_name='rrapp/password_reset_confirm.html'
+            ),
+         name='password_reset_confirm'),
+    path('reset_password_complete/',
+         auth_views.PasswordResetCompleteView.as_view(
+            template_name='rrapp/password_reset_complete.html'
+            ),
+         name='password_reset_complete'),
     # ex: /rrapp/logout
     path('logout/', views.LogoutView.as_view(), name="logout"),
     # ex: /rrapp/register
     path('register/', views.RegisterView.as_view(), name="register"),
+    path('activate/<uidb64>/<token>', views.activate, name='activate'),
+    path('activate_email', views.activateEmail, name='activate_email'),
     # ex: /rrapp/5/listings/1
     path(
         'renter/<int:user_id>/listings/<int:pk>/',
