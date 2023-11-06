@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class RrappConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'rrapp'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "rrapp"
