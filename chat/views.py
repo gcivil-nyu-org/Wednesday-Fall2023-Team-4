@@ -1,6 +1,7 @@
 from django.shortcuts import render
+from django.db.models import Q
 
-from .models import Message, DirectMessage
+from .models import Message, DirectMessage, DirectMessagePermission, Permission
 
 def index(request):
     # from redis import Redis
@@ -20,10 +21,24 @@ def room(request, room_name):
     return render(request, 'chat/room.html', {'room_name': room_name, 'username': username, 'messages': messages})
 
 def conversation(request, receiverUsername):
-    print('Conversation : ', request.user)
     senderUsername = request.user.username
     room_name = '_'.join(sorted([senderUsername, receiverUsername]))
-    print(senderUsername, receiverUsername, room_name)
+    
     messages = DirectMessage.objects.filter(room=room_name)[0:25]
+    
+    try:
+        permissions = list(DirectMessagePermission.objects.filter(
+            Q(sender__exact=senderUsername) | Q(receiver__exact=senderUsername)
+        ))
+        print('here', permissions)
+    except DirectMessagePermission.DoesNotExist:
+        permissions = [DirectMessagePermission.objects.create(sender=senderUsername, receiver=receiverUsername, permission=Permission.ALLOWED)]        
 
-    return render(request, 'chat/conversation.html', {'room_name': room_name, 'sender': senderUsername, 'receiver': receiverUsername, 'messages': messages})
+    allowed_usernames = ['test']
+    for p in permissions:
+        if p.sender == senderUsername:
+            allowed_usernames.append(p.receiver)
+        else:
+            allowed_usernames.append(p.sender)
+
+    return render(request, 'chat/conversation.html', {'room_name': room_name, 'sender': senderUsername, 'receiver': receiverUsername, 'messages': messages, 'allowed_usernames':allowed_usernames})
