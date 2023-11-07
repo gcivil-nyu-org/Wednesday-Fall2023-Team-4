@@ -365,18 +365,19 @@
                         <form method="POST">
                             {% csrf_token %}
                             {% if saved %}
-                                <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-left">Saved</button>
+                                <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-left" name="shortlist">Not for me</button>
                             {% else %}
-                                <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-left">Save</button>
+                                <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-left" name="shortlist">Shortlist</button>
                             {% endif %}
                         </form>
 
                         <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right" onclick="window.history.back()">Back</button>
                     </div>
                     <div>
-                        <a href="{% url 'chat:conversation' object.user.username %}" >
-                            <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right">Message Renter</button>
-                        </a>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-right" name="connection_request">Connect with Renter</button>
+                        </form>
                     </div>
                 </div>
             </div>

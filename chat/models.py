@@ -1,5 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 from django.db import models
+from django.utils import timezone
 
 
 class Message(models.Model):
@@ -35,6 +36,7 @@ class DirectMessagePermission(models.Model):
     permission = models.CharField(
         choices=Permission.choices, default=Permission.ALLOWED
     )
+    created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
-        ordering = ('sender',)
+        ordering = ('created_at',)

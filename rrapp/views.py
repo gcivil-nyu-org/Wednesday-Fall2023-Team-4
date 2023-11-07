@@ -19,6 +19,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from chat.models import DirectMessagePermission, Permission
+
 from .models import Listing, Renter, Rentee, SavedListing
 from .forms import MyUserCreationForm, ListingForm
 
@@ -209,17 +211,36 @@ class ListingDetailRenteeView(generic.DetailView):
             return False
 
     def post(self, request, *args, **kwargs):
+        print('RRAPP :', request.POST, args, kwargs)
         listing_id = self.kwargs["pk"]
         user_id = self.kwargs["user_id"]
         save_state = self.check_state(user_id, listing_id)
-        if save_state:
-            SavedListing.objects.filter(
-                rentee_id__user=user_id, saved_listings=listing_id
-            ).delete()
-        else:
-            rentee = Rentee.objects.get(user=user_id)
+        if "shortlist" in request.POST:
+            if save_state:
+                SavedListing.objects.filter(
+                    rentee_id__user=user_id, saved_listings=listing_id
+                ).delete()
+            else:
+                rentee = Rentee.objects.get(user=user_id)
+                listing = Listing.objects.get(id=listing_id)
+                SavedListing.objects.create(rentee_id=rentee, saved_listings=listing)
+
+        if "connection_request" in request.POST:
             listing = Listing.objects.get(id=listing_id)
-            SavedListing.objects.create(rentee_id=rentee, saved_listings=listing)
+            cur_user = User.objects.get(id=user_id)
+            try :
+                p = list(DirectMessagePermission.objects.filter(sender = cur_user.username, receiver = listing.user.username))
+            except DirectMessagePermission.DoesNotExist:
+                p = None
+            
+            if len(p) > 0:
+                print("permission already exists", p)
+            else:
+                # create DirectMessagePermission object in db
+                print("creating permission")
+                DirectMessagePermission.objects.create(sender = cur_user.username, receiver = listing.user.username, permission = Permission.REQUESTED)
+
+
         return HttpResponseRedirect(request.path_info)  # redirect to the same page
 
 

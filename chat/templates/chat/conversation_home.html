@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Chatty</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    </head>
+
+    <body>
+        <section class="section">
+            <div class = "d-flex flex-column align-items-center">
+                {% if pending_connections %}
+                    <p>Pending Connections : </p>
+                    {%for usr in pending_connections %}
+                        <!-- TODO link to profile of usr -->
+                        <a href="{% url 'chat:conversation' usr.sender %}" class="btn btn-warning">{{usr.sender}}</a> 
+                        <form method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-left" name="connection_accept" value={{usr.sender}}>Accept</button>
+                            <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-left" name="connection_reject">Reject</button>
+                        </form>
+                        <br>
+                    {% endfor %}
+                {% else %}
+                    <p>No pending connections.</p>
+                {% endif %}
+            </div>
+            <div class = "d-flex flex-column align-items-center">
+                {% if active_connections %}
+                    <p>Active Connections : </p>
+                    {%for usr in active_connections %}
+                        <a href="{% url 'chat:conversation' usr %}" class="btn btn-warning">{{usr}}</a> <br>
+                    {% endfor %}
+                {% else %}
+                    <p>No active connections.</p>
+                {% endif %}
+            </div>
+            <div class = "d-flex flex-column align-items-center">
+                {% if requested_connections %}
+                    <p>Requested Connections : </p>
+                    {%for usr in requested_connections %}
+                        <!-- TODO link to profile of usr -->
+                        <a href="{% url 'chat:conversation' usr %}" class="btn btn-warning">{{usr}}</a> <br>
+                    {% endfor %}
+                {% else %}
+                    <p>No requested connections.</p>
+                {% endif %}
+            </div>
+        </section>
+    </body>
+</html>
