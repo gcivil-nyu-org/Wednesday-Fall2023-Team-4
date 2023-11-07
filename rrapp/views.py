@@ -137,7 +137,7 @@ class RegisterView(generic.View):
                 reverse("rrapp:rentee_listings", args=(user_id,))
             )
         else:
-            messages.error(request, "An error occurred during registration")
+            messages.error(request, form.errors)
 
         return render(request, "rrapp/login_register.html", {"form": form})
 
@@ -158,7 +158,10 @@ class ListingIndexView(generic.ListView):
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        context_data["user_id"] = self.kwargs["user_id"]
+        user_id = self.kwargs["user_id"]
+        context_data["user_id"] = user_id
+        context_data["user"] = User.objects.get(id=user_id)
+        context_data["path"] = self.request.path_info.__contains__("renter")
         return context_data
 
 
@@ -169,7 +172,10 @@ class ListingDetailView(generic.DetailView):
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        context_data["user_id"] = self.kwargs["user_id"]
+        user_id = self.kwargs["user_id"]
+        context_data["user_id"] = user_id
+        context_data["user"] = User.objects.get(id=user_id)
+        context_data["path"] = self.request.path_info.__contains__("renter")
         return context_data
 
 
@@ -180,7 +186,10 @@ class ListingDetailRenteeView(generic.DetailView):
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        context_data["user_id"] = self.kwargs["user_id"]
+        user_id = self.kwargs["user_id"]
+        context_data["user_id"] = user_id
+        context_data["user"] = User.objects.get(id=user_id)
+        context_data["path"] = self.request.path_info.__contains__("renter")
         context_data["saved"] = self.check_state(
             self.kwargs["user_id"], self.kwargs["pk"]
         )
@@ -298,7 +307,10 @@ class ListingResultsView(generic.ListView):
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        context_data["user_id"] = self.kwargs["user_id"]
+        user_id = self.kwargs["user_id"]
+        context_data["user_id"] = user_id
+        context_data["user"] = User.objects.get(id=user_id)
+        context_data["path"] = self.request.path_info.__contains__("renter")
         return context_data
 
 
@@ -415,7 +427,36 @@ class ListingNewView(generic.CreateView):
         )
 
 
-@login_required(login_url="login")
+@method_decorator(login_required, name='dispatch')
+class ProfileView(generic.UpdateView):
+    model = User
+    template_name = "rrapp/profile.html"
+    fields = [
+        'username',
+        'birth_date',
+        'first_name',
+        'last_name',
+        'bio',
+        'smokes',
+        'pets',
+        'food_group',
+        'phone_number',
+    ]
+    success_url = 'rrapp:rentee_listings'
+
+    def get_context_data(self, **kwargs: Any):
+        context_data = super().get_context_data(**kwargs)
+        context_data["user_id"] = self.kwargs["pk"]
+        context_data["user"] = User.objects.get(id=self.kwargs["pk"])
+        context_data["path"] = self.request.path_info.__contains__("renter")
+        return context_data
+
+    def get_success_url(self):
+        user_id = self.kwargs['pk']
+        return reverse('rrapp:rentee_listings', args=(user_id,))
+
+
+@login_required(login_url='login')
 def listing_delete(request, user_id, pk):
     # TODO:add the check  if request.user.is_authenticated():
     listing = get_object_or_404(Listing, pk=pk, user_id=user_id)
