@@ -193,7 +193,7 @@ def activate(request, uidb64, token):
         # login(request, user)
         # return redirect('home')
         # return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
-        messages.success(request, "Thank you for your email confirmation!")
+        messages.success(request, "Thank you for your email confirmation. Your email is now activated!")
 #        return render(request, 'rrapp/login_register.html')
     else:
         messages.error(request, "Activation link is invalid!")

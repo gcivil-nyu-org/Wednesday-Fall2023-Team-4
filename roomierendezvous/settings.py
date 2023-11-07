@@ -182,8 +182,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'email@nyu.edu'
-EMAIL_HOST_PASSWORD = 'mypassword'
+EMAIL_HOST_USER = $EMAIL
+EMAIL_HOST_PASSWORD = $EMAIL_PASSWORD
 # EMAIL_HOST_USER = str(os.getenv('EMAIL_USER'))
 # EMAIL_HOST_PASSWORD = str(os.getenv('EMAIL_PASSWORD'))
 
