@@ -228,18 +228,25 @@ class ListingDetailRenteeView(generic.DetailView):
         if "connection_request" in request.POST:
             listing = Listing.objects.get(id=listing_id)
             cur_user = User.objects.get(id=user_id)
-            try :
-                p = list(DirectMessagePermission.objects.filter(sender = cur_user.username, receiver = listing.user.username))
+            try:
+                p = list(
+                    DirectMessagePermission.objects.filter(
+                        sender=cur_user.username, receiver=listing.user.username
+                    )
+                )
             except DirectMessagePermission.DoesNotExist:
                 p = None
-            
+
             if len(p) > 0:
                 print("permission already exists", p)
             else:
                 # create DirectMessagePermission object in db
                 print("creating permission")
-                DirectMessagePermission.objects.create(sender = cur_user.username, receiver = listing.user.username, permission = Permission.REQUESTED)
-
+                DirectMessagePermission.objects.create(
+                    sender=cur_user.username,
+                    receiver=listing.user.username,
+                    permission=Permission.REQUESTED,
+                )
 
         return HttpResponseRedirect(request.path_info)  # redirect to the same page
 
