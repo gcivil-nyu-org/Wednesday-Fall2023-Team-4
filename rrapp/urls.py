@@ -55,4 +55,10 @@ urlpatterns = [
         views.ListingDetailRenteeView.as_view(),
         name="rentee_listing_detail",
     ),
+    # ex: /rrapp/rentee/5/listings/1/rent
+    path(
+        '<int:pk>/profile',
+        views.ProfileView.as_view(),
+        name='profile',
+    ),
 ]
