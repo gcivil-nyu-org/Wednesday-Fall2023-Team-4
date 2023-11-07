@@ -115,10 +115,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=100)
     bio = models.TextField(default="")
     profile_picture = models.ImageField(
-        upload_to="profile_pictures/",
+        upload_to="profile_pictures",
         height_field=None,
         width_field=None,
-        default="profile_pictures/DefaultProfilePicture.jpg",
+        default="DefaultProfile.jpg",
     )
     smokes = models.BooleanField(default=False)
     pets = models.CharField(
@@ -137,8 +137,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
 
     def __str__(self):
         return self.email

@@ -10,16 +10,8 @@
     <body class = "align-items-stretch">
         <div class="back-contianer">
             
-        <div class="bg-dark left-bar">
-            <div class = "d-flex flex-column align-items-center">
-                <div class = "p-3">
-                    <a href="{% url 'rrapp:my_listings' user_id %}" class="btn btn-warning">Switch Status</a>
-                </div>
-                <div class = "p-3">
-                    <a href="{% url 'rrapp:logout' %}" class="btn btn-danger">Log out</a>
-                </div>
-            </div>
-        </div>
+        {% include 'rrapp/left_bar.html' with user=user path=path %}
+
         <div class="text-center right-page">
             <div class="container p-3">
                 <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
@@ -40,7 +32,137 @@
                     <div class="align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
                         <span class="fs-4 fw-semibold">My Listings</span>
                     </div>
+                    <div class="mb-3">
+                        <form method="get" action="{% url 'rrapp:rentee_listings' user_id %}">
+                            <label class="form-label">Filter by:</label>
+                            <div class="mb-3 row">
+                                <!-- Monthly Rent Filter -->
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text">Monthly Rent</span>
+                                        <input type="number" class="form-control" id="filter-monthly_rent" name="monthly_rent" value="{{ request.GET.monthly_rent }}" min="0">
+                                    </div>
+                                </div>
+                            
+                                <!-- Number of Bedrooms Filter -->
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text">Number of Bedrooms</span>
+                                        <input type="number" class="form-control" id="filter-number_of_bedrooms" name="number_of_bedrooms" value="{{ request.GET.number_of_bedrooms }}" min="0">
+                                    </div>
+                                </div>
+                            
+                                <!-- Number of Bathrooms Filter -->
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text">Number of Bathrooms</span>
+                                        <input type="number" class="form-control" id="filter-number_of_bathrooms" name="number_of_bathrooms" value="{{ request.GET.number_of_bathrooms }}" min="0">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3 row">
+                                <!-- Washer Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-washer" name="washer" {% if request.GET.washer == 'on' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-washer">Washer</label>
+                                    </div>
+                                </div>
+                            
+                                <!-- Dryer Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-dryer" name="dryer" {% if request.GET.dryer == 'on' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-dryer">Dryer</label>
+                                    </div>
+                                </div>
+                            
+                                <!-- Utilities Included Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-utilities_included" name="utilities_included" {% if request.GET.utilities_included == 'on' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-utilities_included">Utilities Included</label>
+                                    </div>
+                                </div>
 
+                                <!-- Furnished Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-furnished" name="furnished" {% if request.GET.furnished == 'on' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-furnished">Furnished</label>
+                                    </div>
+                                </div>
+
+                                <!-- Dishwasher Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-dishwasher" name="dishwasher" {% if request.GET.dishwasher == 'on' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-dishwasher">Dishwasher</label>
+                                    </div>
+                                </div>
+
+                                <!-- Parking Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-parking" name="parking" {% if request.GET.parking == 'on' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-parking">Parking</label>
+                                    </div>
+                                </div>
+
+                                <!-- Room Type Filter -->
+                                <div class="col-md-4">
+                                    <label for="filter-room-type" class="form-label">Room Type</label>
+                                    <select class="form-select" id="filter-room-type" name="room_type">
+                                        <option value="">Select Room Type</option>
+                                        <option value="private" {% if request.GET.room_type == 'private' %}selected{% endif %}>Private</option>
+                                        <option value="shared" {% if request.GET.room_type == 'shared' %}selected{% endif %}>Shared</option>
+                                    </select>
+                                </div>
+
+                                <!-- Food Groups Allowed Filter -->
+                                <div class="col-md-4">
+                                    <label for="filter-food-groups-allowed" class="form-label">Food Groups Allowed</label>
+                                    <select class="form-select" id="filter-food-groups-allowed" name="food_groups_allowed">
+                                        <option value="">Select Food Groups</option>
+                                        <option value="all" {% if request.GET.food_groups_allowed == 'all' %}selected{% endif %}>All</option>
+                                        <option value="vegan" {% if request.GET.food_groups_allowed == 'vegan' %}selected{% endif %}>Vegan</option>
+                                        <option value="vegetarian" {% if request.GET.food_groups_allowed == 'vegetarian' %}selected{% endif %}>Vegetarian</option>
+                                        <option value="non_vegetarian" {% if request.GET.food_groups_allowed == 'non_vegetarian' %}selected{% endif %}>Non-Vegetarian</option>
+                                    </select>
+                                </div>
+
+                                <!-- Pets Filter -->
+                                <div class="col-md-4">
+                                    <label for="filter-pets_allowed" class="form-label">Pets Allowed</label>
+                                    <select class="form-select" id="filter-pets_allowed" name="pets_allowed">
+                                        <option value="">Select Pets Type</option>
+                                        <option value="none" {% if request.GET.pets_allowed == 'none' %}selected{% endif %}>None</option>
+                                        <option value="all" {% if request.GET.pets_allowed == 'all' %}selected{% endif %}>All</option>
+                                        <option value="cats" {% if request.GET.pets_allowed == 'cats' %}selected{% endif %}>Cats</option>
+                                        <option value="dogs" {% if request.GET.pets_allowed == 'dogs' %}selected{% endif %}>Dogs</option>
+                                    </select>
+                                </div>
+                            </div>                            
+                        
+                            <button type="submit" class="btn btn-primary mt-2">Filter</button>
+                            <button type="button" class="btn btn-secondary mt-2" onclick="resetFilters()">Reset</button>
+                            <div class="col-md-6 mx-auto">
+                                <label for="sort-select" class="form-label">Sort by:</label>
+                                <div class="d-flex justify-content-center">
+                                    <select class="form-select" id="sort-select" name="sort" onchange="changeSort()" style="width: 250px;">
+                                        <option value="">-- Select Sorting Option --</option>
+                                        <option value="monthly_rent" {% if request.GET.sort == 'monthly_rent' %}selected{% endif %}>Monthly Rent - Low to High</option>
+                                        <option value="-monthly_rent" {% if request.GET.sort == '-monthly_rent' %}selected{% endif %}>Monthly Rent - High to Low</option>
+                                        <option value="number_of_bedrooms" {% if request.GET.sort == 'number_of_bedrooms' %}selected{% endif %}>Number of Bedrooms - Low to High</option>
+                                        <option value="-number_of_bedrooms" {% if request.GET.sort == '-number_of_bedrooms' %}selected{% endif %}>Number of Bedrooms - High to Low</option>
+                                        <option value="number_of_bathrooms" {% if request.GET.sort == 'number_of_bathrooms' %}selected{% endif %}>Number of Bathrooms - Low to High</option>
+                                        <option value="-number_of_bathrooms" {% if request.GET.sort == '-number_of_bathrooms' %}selected{% endif %}>Number of Bathrooms - High to Low</option>
+                                    </select>
+                                </div>
+                            </div>                                      
+                        </form>      
+                    </div>
                     <div style="width:70%;">
                         {% if queried_listings_page %}
                             <div class="list-group scrollarea">
@@ -79,6 +201,44 @@
 
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+        <script>
+            function changeSort() {
+                var select = document.getElementById("sort-select");
+                var selectedOption = select.options[select.selectedIndex].value;
+                
+                // Get existing filter parameters
+                var queryParams = new URLSearchParams(window.location.search);
+                
+                // Add sorting option to the parameters
+                queryParams.set('sort', selectedOption);
+                
+                // Redirect to the same page with the updated parameters
+                window.location.href = window.location.pathname + "?" + queryParams.toString();
+            }
+            function resetFilters() {
+        // Get existing filter parameters
+                var queryParams = new URLSearchParams(window.location.search);
+
+                // Remove all filter parameters
+                queryParams.delete('monthly_rent');
+                queryParams.delete('number_of_bedrooms');
+                queryParams.delete('number_of_bathrooms');
+                queryParams.delete('washer');
+                queryParams.delete('dryer');
+                queryParams.delete('utilities_included');
+                queryParams.delete('furnished');
+                queryParams.delete('dishwasher');
+                queryParams.delete('parking');
+                queryParams.delete('room_type');
+                queryParams.delete('food_groups_allowed');
+                queryParams.delete('pets_allowed');
+                queryParams.delete('sort');
+
+                // Redirect to the same page with cleared filters
+                window.location.href = window.location.pathname + "?" + queryParams.toString();
+            }
+        </script>
+        </div>
     </div>
     </body>
     <style>
