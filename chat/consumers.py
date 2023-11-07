@@ -5,26 +5,21 @@ from asgiref.sync import sync_to_async
 
 from .models import Message, DirectMessage
 
+
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'chat_%s' % self.room_name
 
         # Join room
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
-        )
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
 
         await self.accept()
-    
+
     async def disconnect(self, close_code):
         # Leave room
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
-    
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
     # Receive message from web socket
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -37,23 +32,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Send message to room group
         await self.channel_layer.group_send(
             self.room_group_name,
-            {
-                'type': 'chat_message',
-                'message': message,
-                'username': username
-            }
+            {'type': 'chat_message', 'message': message, 'username': username},
         )
-    
+
     # Receive message from room group
     async def chat_message(self, event):
         message = event['message']
         username = event['username']
 
         # Send message to WebSocket
-        await self.send(text_data=json.dumps({
-            'message': message,
-            'username': username
-        }))
+        await self.send(
+            text_data=json.dumps({'message': message, 'username': username})
+        )
 
     @sync_to_async
     def save_message(self, username, room, message):
@@ -66,20 +56,14 @@ class ChatDmConsumer(AsyncWebsocketConsumer):
         self.room_group_name = 'chat_dm_%s' % self.room_name
 
         # Join room
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
-        )
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
 
         await self.accept()
-    
+
     async def disconnect(self, close_code):
         # Leave room
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
-    
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
     # Receive message from web socket
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -97,10 +81,10 @@ class ChatDmConsumer(AsyncWebsocketConsumer):
                 'type': 'chat_message',
                 'message': message,
                 'senderUsername': senderUsername,
-                'receiverUsername': receiverUsername
-            }
+                'receiverUsername': receiverUsername,
+            },
         )
-    
+
     # Receive message from room group
     async def chat_message(self, event):
         message = event['message']
@@ -108,12 +92,18 @@ class ChatDmConsumer(AsyncWebsocketConsumer):
         receiverUsername = event['receiverUsername']
 
         # Send message to WebSocket
-        await self.send(text_data=json.dumps({
-            'message': message,
-            'senderUsername': senderUsername,
-            'receiverUsername': receiverUsername
-        }))
+        await self.send(
+            text_data=json.dumps(
+                {
+                    'message': message,
+                    'senderUsername': senderUsername,
+                    'receiverUsername': receiverUsername,
+                }
+            )
+        )
 
     @sync_to_async
     def save_message(self, senderUsername, receiverUsername, room, message):
-        DirectMessage.objects.create(sender=senderUsername, receiver=receiverUsername, room=room, content=message)
+        DirectMessage.objects.create(
+            sender=senderUsername, receiver=receiverUsername, room=room, content=message
+        )

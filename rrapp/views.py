@@ -471,7 +471,9 @@ def listing_delete(request, user_id, pk):
 
 
 class UsersListView(LoginRequiredMixin, generic.ListView):
-    http_method_names = ['get', ]
+    http_method_names = [
+        'get',
+    ]
 
     def get_queryset(self):
         return User.objects.all().exclude(id=self.request.user.id)
@@ -479,9 +481,5 @@ class UsersListView(LoginRequiredMixin, generic.ListView):
     def render_to_response(self, context, **response_kwargs):
         users: List[AbstractBaseUser] = context['object_list']
 
-        data = [{
-            "username": user.get_username(),
-            "pk": str(user.pk)
-        } for user in users]
+        data = [{"username": user.get_username(), "pk": str(user.pk)} for user in users]
         return JsonResponse(data, safe=False, **response_kwargs)
-

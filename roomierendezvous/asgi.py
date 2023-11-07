@@ -21,9 +21,11 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "roomierendezvous.settings")
 django_asgi_app = get_asgi_application()
 
 print('RR: ', chat.routing.websocket_urlpatterns)
-application = ProtocolTypeRouter({
-    "http": django_asgi_app,
-    "websocket": AllowedHostsOriginValidator(
-        AuthMiddlewareStack(URLRouter(chat.routing.websocket_urlpatterns))
-    ),
-})
+application = ProtocolTypeRouter(
+    {
+        "http": django_asgi_app,
+        "websocket": AllowedHostsOriginValidator(
+            AuthMiddlewareStack(URLRouter(chat.routing.websocket_urlpatterns))
+        ),
+    }
+)
