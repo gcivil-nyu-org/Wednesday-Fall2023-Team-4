@@ -57,8 +57,8 @@ urlpatterns = [
     ),
     # ex: /rrapp/rentee/5/listings/1/rent
     path(
-        '<int:pk>/profile',
+        "<int:pk>/profile",
         views.ProfileView.as_view(),
-        name='profile',
+        name="profile",
     ),
 ]

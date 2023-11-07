@@ -427,22 +427,22 @@ class ListingNewView(generic.CreateView):
         )
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class ProfileView(generic.UpdateView):
     model = User
     template_name = "rrapp/profile.html"
     fields = [
-        'username',
-        'birth_date',
-        'first_name',
-        'last_name',
-        'bio',
-        'smokes',
-        'pets',
-        'food_group',
-        'phone_number',
+        "username",
+        "birth_date",
+        "first_name",
+        "last_name",
+        "bio",
+        "smokes",
+        "pets",
+        "food_group",
+        "phone_number",
     ]
-    success_url = 'rrapp:rentee_listings'
+    success_url = "rrapp:rentee_listings"
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
@@ -452,11 +452,11 @@ class ProfileView(generic.UpdateView):
         return context_data
 
     def get_success_url(self):
-        user_id = self.kwargs['pk']
-        return reverse('rrapp:rentee_listings', args=(user_id,))
+        user_id = self.kwargs["pk"]
+        return reverse("rrapp:rentee_listings", args=(user_id,))
 
 
-@login_required(login_url='login')
+@login_required(login_url="login")
 def listing_delete(request, user_id, pk):
     # TODO:add the check  if request.user.is_authenticated():
     listing = get_object_or_404(Listing, pk=pk, user_id=user_id)
