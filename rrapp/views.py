@@ -136,7 +136,7 @@ class RegisterView(generic.View):
                 reverse('rrapp:rentee_listings', args=(user_id,))
             )
         else:
-            messages.error(request, 'An error occurred during registration')
+            messages.error(request, form.errors)
 
         return render(request, 'rrapp/login_register.html', {'form': form})
 
@@ -160,6 +160,7 @@ class ListingIndexView(generic.ListView):
         user_id = self.kwargs["user_id"]
         context_data["user_id"] = user_id
         context_data["user"] = User.objects.get(id=user_id)
+        context_data["path"] = self.request.path_info.__contains__("renter")
         return context_data
 
 
@@ -170,7 +171,10 @@ class ListingDetailView(generic.DetailView):
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        context_data["user_id"] = self.kwargs["user_id"]
+        user_id = self.kwargs["user_id"]
+        context_data["user_id"] = user_id
+        context_data["user"] = User.objects.get(id=user_id)
+        context_data["path"] = self.request.path_info.__contains__("renter")
         return context_data
 
 
@@ -181,7 +185,10 @@ class ListingDetailRenteeView(generic.DetailView):
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        context_data["user_id"] = self.kwargs["user_id"]
+        user_id = self.kwargs["user_id"]
+        context_data["user_id"] = user_id
+        context_data["user"] = User.objects.get(id=user_id)
+        context_data["path"] = self.request.path_info.__contains__("renter")
         context_data["saved"] = self.check_state(
             self.kwargs["user_id"], self.kwargs["pk"]
         )
@@ -227,7 +234,10 @@ class ListingResultsView(generic.ListView):
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        context_data["user_id"] = self.kwargs["user_id"]
+        user_id = self.kwargs["user_id"]
+        context_data["user_id"] = user_id
+        context_data["user"] = User.objects.get(id=user_id)
+        context_data["path"] = self.request.path_info.__contains__("renter")
         return context_data
 
 
@@ -365,6 +375,7 @@ class ProfileView(generic.UpdateView):
         context_data = super().get_context_data(**kwargs)
         context_data["user_id"] = self.kwargs["pk"]
         context_data["user"] = User.objects.get(id=self.kwargs["pk"])
+        context_data["path"] = self.request.path_info.__contains__("renter")
         return context_data
 
     def get_success_url(self):
