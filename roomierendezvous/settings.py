@@ -32,12 +32,14 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "roomierendezvous-dev.us-east-1.elasticbeanstalk.com",
     "roomierendezvous-app-dev.us-east-1.elasticbeanstalk.com",
+    "production-team4-2-dev.us-west-2.elasticbeanstalk.com"
 ]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'rrapp.apps.RrappConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -46,6 +48,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'storages',
+    'chat',
+    'channels',
     'widget_tweaks',
 ]
 
@@ -78,8 +82,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "roomierendezvous.wsgi.application"
-
+WSGI_APPLICATION = 'roomierendezvous.wsgi.application'
+ASGI_APPLICATION = "roomierendezvous.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -183,4 +187,15 @@ STATIC_URL = "static/"
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# chat config
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
