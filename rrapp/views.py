@@ -198,7 +198,9 @@ class ListingDetailRenteeView(generic.DetailView):
         context_data["saved"] = self.check_state(
             self.kwargs["user_id"], self.kwargs["pk"]
         )
-        # print("saved: ", context_data["saved"])
+        context_data["cur_permission"] = self.cur_permission(
+            self.kwargs["user_id"], self.kwargs["pk"]
+        )
         return context_data
 
     def check_state(self, user_id, listing_id):
@@ -209,6 +211,33 @@ class ListingDetailRenteeView(generic.DetailView):
             return True
         else:
             return False
+    
+    def cur_permission(self, user_id, listing_id):
+        # print(user_id, listing_id)
+        listing = Listing.objects.get(id=listing_id)
+        cur_user = User.objects.get(id=user_id)
+        try:
+            p = list(
+                DirectMessagePermission.objects.filter(
+                    sender=cur_user.username, receiver=listing.user.username
+                )
+            )
+
+            p_equivalent = list(
+                DirectMessagePermission.objects.filter(
+                    receiver=cur_user.username, sender=listing.user.username
+                )
+            )
+        except DirectMessagePermission.DoesNotExist:
+            p = None
+        
+        if len(p) > 0:
+            print(p[0].permission)
+            return p[0].permission
+        else:
+            if len(p_equivalent) > 0:
+                return p_equivalent[0].permission
+            return None
 
     def post(self, request, *args, **kwargs):
         print('RRAPP :', request.POST, args, kwargs)

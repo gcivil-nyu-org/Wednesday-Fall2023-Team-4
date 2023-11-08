@@ -136,8 +136,9 @@ class ConversationHomeView(generic.View):
             p.permission = Permission.ALLOWED
             p.save()
         elif "connection_reject" in request.POST:
+            print(request.POST)
             p = DirectMessagePermission.objects.get(
-                sender=request.POST["connection_accept"], receiver=request.user.username
+                sender=request.POST["connection_reject"], receiver=request.user.username
             )
             p.delete()
         else:

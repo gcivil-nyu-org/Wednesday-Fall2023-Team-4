@@ -373,11 +373,45 @@
 
                         <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right" onclick="window.history.back()">Back</button>
                     </div>
+
                     <div>
-                        <form method="POST">
-                            {% csrf_token %}
-                            <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-right" name="connection_request">Connect with Renter</button>
-                        </form>
+                        {% if cur_permission %}
+                            {% if cur_permission == 'allowed' %}
+                            
+                                <div>
+                                    {% csrf_token %}
+                                    <a href="{% url 'chat:conversation' object.user.username %}" >
+                                        <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right">Message Renter</button>
+                                    </a>
+                                </div>
+                            {% endif %}
+                            
+                            {%if cur_permission == 'requested' %}
+                                <div>
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right" name="connection_request" disabled>Waiting for approval</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                            
+                            {%if cur_permission == 'blocked' %}
+                                <div>
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right" name="connection_request" disabled>Cannot connect</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div>
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-right" name="connection_request">Connect with Renter</button>
+                                </form>
+                            </div>
+                        {% endif %}
+
                     </div>
                 </div>
             </div>
