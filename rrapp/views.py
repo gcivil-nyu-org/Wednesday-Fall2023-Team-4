@@ -211,7 +211,7 @@ class ListingDetailRenteeView(generic.DetailView):
             return True
         else:
             return False
-    
+
     def cur_permission(self, user_id, listing_id):
         # print(user_id, listing_id)
         listing = Listing.objects.get(id=listing_id)
@@ -230,7 +230,7 @@ class ListingDetailRenteeView(generic.DetailView):
             )
         except DirectMessagePermission.DoesNotExist:
             p = None
-        
+
         if len(p) > 0:
             print(p[0].permission)
             return p[0].permission
