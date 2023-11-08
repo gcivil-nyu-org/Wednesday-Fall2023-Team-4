@@ -55,18 +55,6 @@ class LoginView(generic.View):
         # will redirect to the home page if a user tries to
         # access the register page while logged in
         if request.user.is_authenticated:
-            # if len(Renter.objects.all()) > 0 and request.user.id in [
-            #     i.user.id for i in Renter.objects.all()
-            # ]:
-            #     login(request, request.user)
-            #     return HttpResponseRedirect(
-            #         reverse('rrapp:my_listings', args=(request.user.id,))
-            #     )
-            # else:
-            #     login(request, request.user)
-            #     return HttpResponseRedirect(
-            #         reverse('rrapp:rentee_listings', args=(request.user.id,))
-            #     )
             return HttpResponseRedirect(
                 reverse("rrapp:rentee_listings", args=(request.user.id,))
             )
@@ -85,18 +73,6 @@ class LoginView(generic.View):
             messages.error(request, "User does not exist")
         user = authenticate(request, email=email, password=password)
         if user is not None:
-            # if len(Renter.objects.all()) > 0 and user.id in [
-            #     i.user.id for i in Renter.objects.all()
-            # ]:
-            #     login(request, user)
-            #     return HttpResponseRedirect(
-            #         reverse('rrapp:my_listings', args=(request.user.id,))
-            #     )
-            # else:
-            #     login(request, user)
-            #     return HttpResponseRedirect(
-            #         reverse('rrapp:rentee_listings', args=(request.user.id,))
-            #     )
             login(request, user)
             return HttpResponseRedirect(
                 reverse("rrapp:rentee_listings", args=(request.user.id,))
@@ -179,11 +155,9 @@ def activate(request, uidb64, token):
             request,
             "Thank you for your email confirmation. Your email is now activated!",
         )
-    #        return render(request, 'rrapp/login_register.html')
     else:
         messages.error(request, "Activation link is invalid!")
 
-    #    return render(request, 'rrapp/home.html')
     return redirect('rrapp:home')
 
 
