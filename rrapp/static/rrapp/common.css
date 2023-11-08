@@ -31,7 +31,7 @@ html, body{
 
 .cus-btn-mid {
     --bs-btn-color: #FFFFFF;
-    --bs-btn-bg: rgb(255, 162, 0)df;
+    --bs-btn-bg: #FF9800;
     --bs-btn-active-bg: #FFC107;
     --bs-btn-hover-bg: #FFC107;
     --bs-btn-hover-color: #fff;

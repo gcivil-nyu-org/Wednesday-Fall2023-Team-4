@@ -361,7 +361,7 @@
 
                     </div>
                     
-                    <div class="d-inline-flex gap-4 mb-5 p-4">
+                    <div class="d-inline-flex gap-4 p-4">
                         <form method="POST">
                             {% csrf_token %}
                             {% if saved %}
@@ -374,7 +374,7 @@
                         <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right" onclick="window.history.back()">Back</button>
                     </div>
 
-                    <div>
+                    <div class="mb-3">
                         {% if cur_permission %}
                             {% if cur_permission == 'allowed' %}
                             
@@ -385,7 +385,7 @@
                                         <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right">Message Renter</button>
                                     </a> -->
                                     <a href="{% url 'rrapp:public_profile' object.user.id %}" >
-                                        <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right">Contact Renter</button>
+                                        <button type="button" class="btn align-item-center rounded-pill btn-lg btn btn-success">Contact Renter</button>
                                     </a>
                                 </div>
                             {% endif %}
@@ -394,7 +394,7 @@
                                 <div>
                                     <form method="POST">
                                         {% csrf_token %}
-                                        <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right" name="connection_request" disabled>Waiting for approval</button>
+                                        <button type="button" class="btn align-item-center rounded-pillbtn-primary" name="connection_request" disabled>Waiting for approval</button>
                                     </form>
                                 </div>
                             {% endif %}
@@ -403,7 +403,7 @@
                                 <div>
                                     <form method="POST">
                                         {% csrf_token %}
-                                        <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right" name="connection_request" disabled>Cannot connect</button>
+                                        <button type="button" class="btn align-item-center rounded-pill btn-lg btn btn-secondary" name="connection_request" disabled>Cannot connect</button>
                                     </form>
                                 </div>
                             {% endif %}
@@ -411,7 +411,7 @@
                             <div>
                                 <form method="POST">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-right" name="connection_request">Connect with Renter</button>
+                                    <button type="submit" class="btn align-item-center rounded-pill btn-lg btn btn-success" name="connection_request">Connect with Renter</button>
                                 </form>
                             </div>
                         {% endif %}
