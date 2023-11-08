@@ -67,10 +67,4 @@ urlpatterns = [
         views.PublicProfileView.as_view(),
         name='public_profile',
     ),
-    # # messaging paths
-    # path(
-    #     'chat/',
-    #     include('django_private_chat2.urls', namespace='django_private_chat2')
-    # ),
-    # path('users/', views.UsersListView.as_view(), name='users_list'),
 ]
