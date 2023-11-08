@@ -28,6 +28,13 @@
         </div>
       </form>
         <div class="col m-2">
+          <p>Forgot Password?</p>
+          <a href="{% url 'rrapp:reset_password' %}">
+          <button class="btn btn-secondary">Reset Password</button>
+          </a>
+        </div>
+        <div class="col m-2">
+          <p>Haven't signed up yet?</p>
           <a href="{% url 'rrapp:register' %}">
           <button class="btn btn-secondary">Register</button>
           </a>
@@ -57,6 +64,7 @@
         </div>
         </form>
           <div class="col pb-2">
+            <p>Already registered?</p>
             <a href="{% url 'rrapp:login' %}">
             <button class="btn btn-secondary">Login</button>
             </a>
