@@ -11,24 +11,32 @@ urlpatterns = [
     path("", views.HomeView.as_view(), name="home"),
     # ex: /rrapp/login
     path('login/', views.LoginView.as_view(), name="login"),
-    path('reset_password/', 
-        views.ResetPasswordView.as_view(template_name = "rrapp/password_reset.html"),
-        name='reset_password'),
-    path('reset_password_sent/',
+    path(
+        'reset_password/',
+        views.ResetPasswordView.as_view(template_name="rrapp/password_reset.html"),
+        name='reset_password',
+    ),
+    path(
+        'reset_password_sent/',
         auth_views.PasswordResetDoneView.as_view(
-            template_name = "rrapp/password_reset_sent.html"
-            ),
-        name ='password_reset_done'),
-    path('reset/<uidb64>/<token>/',
-         views.ConfirmPasswordResetView.as_view(
+            template_name="rrapp/password_reset_sent.html"
+        ),
+        name='password_reset_done',
+    ),
+    path(
+        'reset/<uidb64>/<token>/',
+        views.ConfirmPasswordResetView.as_view(
             template_name='rrapp/password_reset_confirm.html'
-            ),
-         name='password_reset_confirm'),
-    path('reset_password_complete/',
-         auth_views.PasswordResetCompleteView.as_view(
+        ),
+        name='password_reset_confirm',
+    ),
+    path(
+        'reset_password_complete/',
+        auth_views.PasswordResetCompleteView.as_view(
             template_name='rrapp/password_reset_complete.html'
-            ),
-         name='password_reset_complete'),
+        ),
+        name='password_reset_complete',
+    ),
     # ex: /rrapp/logout
     path("logout/", views.LogoutView.as_view(), name="logout"),
     # ex: /rrapp/register

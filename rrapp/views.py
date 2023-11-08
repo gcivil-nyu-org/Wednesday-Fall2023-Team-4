@@ -105,6 +105,7 @@ class LoginView(generic.View):
             messages.error(request, "Username OR password does not exit")
         return render(request, "rrapp/login_register.html", self.context)
 
+
 class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
     template_name = 'rrapp/password_reset.html'
     email_template_name = 'rrapp/password_reset_email.html'
@@ -162,11 +163,12 @@ class RegisterView(generic.View):
 
         return render(request, "rrapp/login_register.html", {"form": form})
 
+
 def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
     if user is not None and account_activation_token.check_token(user, token):
         user.is_verified = True
@@ -174,32 +176,45 @@ def activate(request, uidb64, token):
         # login(request, user)
         # return redirect('home')
         # return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
-        messages.success(request, "Thank you for your email confirmation. Your email is now activated!")
-#        return render(request, 'rrapp/login_register.html')
+        messages.success(
+            request,
+            "Thank you for your email confirmation. Your email is now activated!",
+        )
+    #        return render(request, 'rrapp/login_register.html')
     else:
         messages.error(request, "Activation link is invalid!")
 
-#    return render(request, 'rrapp/home.html')
+    #    return render(request, 'rrapp/home.html')
     return redirect('rrapp:home')
+
 
 @login_required(login_url='login')
 def activateEmail(request):
     mail_subject = "Activate your user account."
-    message = render_to_string("rrapp/template_activate_account.html", {
-        'user': request.user.username,
-        'domain': get_current_site(request).domain,
-        'uid': urlsafe_base64_encode(force_bytes(request.user.pk)),
-        'token': account_activation_token.make_token(request.user),
-        "protocol": 'https' if request.is_secure() else 'http'
-    })
+    message = render_to_string(
+        "rrapp/template_activate_account.html",
+        {
+            'user': request.user.username,
+            'domain': get_current_site(request).domain,
+            'uid': urlsafe_base64_encode(force_bytes(request.user.pk)),
+            'token': account_activation_token.make_token(request.user),
+            "protocol": 'https' if request.is_secure() else 'http',
+        },
+    )
     email = EmailMessage(mail_subject, message, to=[request.user.email])
     if email.send():
-        messages.success(request, f'Dear {request.user}, please go to your email {request.user.email} inbox and click on \
-                received activation link to confirm and complete the registration. Note: Check your spam folder.')
+        messages.success(
+            request,
+            f'Dear {request.user}, please go to your email {request.user.email} inbox and click on \
+                received activation link to confirm and complete the registration. Note: Check your spam folder.',
+        )
         # return render(request, 'rrapp/home.html')
         return redirect('rrapp:home')
     else:
-        messages.error(request, f'Problem sending email to {request.user.email}, check if you typed it correctly.')
+        messages.error(
+            request,
+            f'Problem sending email to {request.user.email}, check if you typed it correctly.',
+        )
         # return render(request, 'rrapp/home.html')
         return redirect('rrapp:home')
 
