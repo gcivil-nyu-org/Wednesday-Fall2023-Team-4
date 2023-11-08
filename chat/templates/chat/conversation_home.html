@@ -60,8 +60,9 @@
                             </div>
                             <div class="list-group scrollarea">
                                 {%for usr in active_connections %}
-                                    <!-- TODO link to profile of usr -->
-                                    <a href="{% url 'chat:conversation' usr %}" class="btn btn-warning">{{usr}}</a>
+                                    <!-- TODO link to conversation with usr when daphne server works on aws -->
+                                    <!-- <a href="{% url 'chat:conversation' usr %}" class="btn btn-warning">{{usr}}</a> -->
+                                    <a href="{% url 'rrapp:public_profile' usr.id %}" class="btn btn-warning">{{usr.username}}</a>
                                 {% endfor %}
                             </div>
                         {% else %}

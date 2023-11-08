@@ -5,6 +5,7 @@ from django.views import generic
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
+from rrapp.models import User
 from .models import Message, DirectMessage, DirectMessagePermission, Permission
 
 
@@ -101,11 +102,22 @@ class ConversationHomeView(generic.View):
             active_connections = []
 
         all_active_connection_usernames = []
+        all_active_connection_usernamesids = []
         for p in active_connections:
             if p.sender == cur_username:
                 all_active_connection_usernames.append(p.receiver)
+
+                all_active_connection_usernamesids.append(
+                    {
+                        'id': User.objects.get(username=p.receiver).id,
+                        'username': p.receiver,
+                    }
+                )
             else:
                 all_active_connection_usernames.append(p.sender)
+                all_active_connection_usernamesids.append(
+                    {'id': User.objects.get(username=p.sender).id, 'username': p.sender}
+                )
 
         try:
             requested_connections = list(
@@ -123,7 +135,9 @@ class ConversationHomeView(generic.View):
             {
                 'cur_username': cur_username,
                 'pending_connections': pending_connections,
-                'active_connections': all_active_connection_usernames,
+                # TODO : change to usernames after aws daphne integration
+                # 'active_connections': all_active_connection_usernames,
+                'active_connections': all_active_connection_usernamesids,
                 'requested_connections': requested_connections,
             },
         )

@@ -516,6 +516,33 @@ class ProfileView(generic.UpdateView):
         return reverse('rrapp:rentee_listings', args=(user_id,))
 
 
+@method_decorator(login_required, name='dispatch')
+class PublicProfileView(generic.DetailView):
+    model = User
+    template_name = "rrapp/public_profile.html"
+    fields = [
+        'username',
+        'first_name',
+        'last_name',
+        'bio',
+        'smokes',
+        'pets',
+        'food_group',
+    ]
+    # success_url = 'rrapp:rentee_listings'
+
+    def get_context_data(self, **kwargs: Any):
+        context_data = super().get_context_data(**kwargs)
+        context_data["user_id"] = self.kwargs["pk"]
+        context_data["user"] = User.objects.get(id=self.kwargs["pk"])
+        context_data["path"] = self.request.path_info.__contains__("renter")
+        return context_data
+
+    def get_success_url(self):
+        user_id = self.kwargs['pk']
+        return reverse('rrapp:rentee_listings', args=(user_id,))
+
+
 @login_required(login_url='login')
 def listing_delete(request, user_id, pk):
     # TODO:add the check  if request.user.is_authenticated():
