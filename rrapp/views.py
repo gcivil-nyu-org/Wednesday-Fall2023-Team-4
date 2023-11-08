@@ -354,6 +354,15 @@ class ListingUpdateView(generic.UpdateView):
         user_id = self.kwargs["user_id"]
         listing_id = self.kwargs["pk"]
         return reverse("rrapp:listing_detail", args=(user_id, listing_id))
+    
+    def get_context_data(self, **kwargs: Any):
+        context_data = super().get_context_data(**kwargs)
+        context_data["user_id"] = self.kwargs["user_id"]
+        context_data["listing_id"] = self.kwargs["pk"]
+        context_data["list_title"] = Listing.objects.get(id=self.kwargs["pk"]).title
+        context_data["user"] = User.objects.get(id=self.kwargs["user_id"])
+        context_data["path"] = self.request.path_info.__contains__("renter")
+        return context_data
 
 
 @method_decorator(login_required, name="dispatch")
@@ -372,6 +381,13 @@ class ListingNewView(generic.CreateView):
             return self.request.user
         except Listing.DoesNotExist:
             return Listing.objects.create(user=self.request.user)
+        
+    def get_context_data(self, **kwargs: Any):
+        context_data = super().get_context_data(**kwargs)
+        context_data["user_id"] = self.kwargs["user_id"]
+        context_data["user"] = User.objects.get(id=self.kwargs["user_id"])
+        context_data["path"] = self.request.path_info.__contains__("renter")
+        return context_data
 
     def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
         """handle user login post req
