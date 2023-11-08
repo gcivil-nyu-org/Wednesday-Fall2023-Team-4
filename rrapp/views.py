@@ -1,10 +1,10 @@
-from typing import Any
+from typing import Any, List
 from django.shortcuts import get_object_or_404, render
 from django.db.models import Q
 
 # Create your views here.
 from django.core.paginator import Paginator
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.views import generic
 
@@ -15,9 +15,14 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+from chat.models import DirectMessagePermission, Permission
+
 from .models import Listing, Renter, Rentee, SavedListing
 from .forms import MyUserCreationForm, ListingForm
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
@@ -193,7 +198,9 @@ class ListingDetailRenteeView(generic.DetailView):
         context_data["saved"] = self.check_state(
             self.kwargs["user_id"], self.kwargs["pk"]
         )
-        # print("saved: ", context_data["saved"])
+        context_data["cur_permission"] = self.cur_permission(
+            self.kwargs["user_id"], self.kwargs["pk"]
+        )
         return context_data
 
     def check_state(self, user_id, listing_id):
@@ -205,18 +212,71 @@ class ListingDetailRenteeView(generic.DetailView):
         else:
             return False
 
+    def cur_permission(self, user_id, listing_id):
+        # print(user_id, listing_id)
+        listing = Listing.objects.get(id=listing_id)
+        cur_user = User.objects.get(id=user_id)
+        try:
+            p = list(
+                DirectMessagePermission.objects.filter(
+                    sender=cur_user.username, receiver=listing.user.username
+                )
+            )
+
+            p_equivalent = list(
+                DirectMessagePermission.objects.filter(
+                    receiver=cur_user.username, sender=listing.user.username
+                )
+            )
+        except DirectMessagePermission.DoesNotExist:
+            p = None
+
+        if len(p) > 0:
+            print(p[0].permission)
+            return p[0].permission
+        else:
+            if len(p_equivalent) > 0:
+                return p_equivalent[0].permission
+            return None
+
     def post(self, request, *args, **kwargs):
+        print('RRAPP :', request.POST, args, kwargs)
         listing_id = self.kwargs["pk"]
         user_id = self.kwargs["user_id"]
         save_state = self.check_state(user_id, listing_id)
-        if save_state:
-            SavedListing.objects.filter(
-                rentee_id__user=user_id, saved_listings=listing_id
-            ).delete()
-        else:
-            rentee = Rentee.objects.get(user=user_id)
+        if "shortlist" in request.POST:
+            if save_state:
+                SavedListing.objects.filter(
+                    rentee_id__user=user_id, saved_listings=listing_id
+                ).delete()
+            else:
+                rentee = Rentee.objects.get(user=user_id)
+                listing = Listing.objects.get(id=listing_id)
+                SavedListing.objects.create(rentee_id=rentee, saved_listings=listing)
+
+        if "connection_request" in request.POST:
             listing = Listing.objects.get(id=listing_id)
-            SavedListing.objects.create(rentee_id=rentee, saved_listings=listing)
+            cur_user = User.objects.get(id=user_id)
+            try:
+                p = list(
+                    DirectMessagePermission.objects.filter(
+                        sender=cur_user.username, receiver=listing.user.username
+                    )
+                )
+            except DirectMessagePermission.DoesNotExist:
+                p = None
+
+            if len(p) > 0:
+                print("permission already exists", p)
+            else:
+                # create DirectMessagePermission object in db
+                print("creating permission")
+                DirectMessagePermission.objects.create(
+                    sender=cur_user.username,
+                    receiver=listing.user.username,
+                    permission=Permission.REQUESTED,
+                )
+
         return HttpResponseRedirect(request.path_info)  # redirect to the same page
 
 
@@ -472,6 +532,33 @@ class ProfileView(generic.UpdateView):
         return reverse('rrapp:rentee_listings', args=(user_id,))
 
 
+@method_decorator(login_required, name='dispatch')
+class PublicProfileView(generic.DetailView):
+    model = User
+    template_name = "rrapp/public_profile.html"
+    fields = [
+        'username',
+        'first_name',
+        'last_name',
+        'bio',
+        'smokes',
+        'pets',
+        'food_group',
+    ]
+    # success_url = 'rrapp:rentee_listings'
+
+    def get_context_data(self, **kwargs: Any):
+        context_data = super().get_context_data(**kwargs)
+        context_data["user_id"] = self.kwargs["pk"]
+        context_data["user"] = User.objects.get(id=self.kwargs["pk"])
+        context_data["path"] = self.request.path_info.__contains__("renter")
+        return context_data
+
+    def get_success_url(self):
+        user_id = self.kwargs['pk']
+        return reverse('rrapp:rentee_listings', args=(user_id,))
+
+
 @login_required(login_url='login')
 def listing_delete(request, user_id, pk):
     # TODO:add the check  if request.user.is_authenticated():
@@ -480,4 +567,19 @@ def listing_delete(request, user_id, pk):
     # Always return an HttpResponseRedirect after successfully dealing
     # with POST data. This prevents data from being posted twice if a
     # user hits the Back button.
-    return HttpResponseRedirect(reverse("rrapp:my_listings", args=(user_id,)))
+    return HttpResponseRedirect(reverse('rrapp:my_listings', args=(user_id,)))
+
+
+class UsersListView(LoginRequiredMixin, generic.ListView):
+    http_method_names = [
+        'get',
+    ]
+
+    def get_queryset(self):
+        return User.objects.all().exclude(id=self.request.user.id)
+
+    def render_to_response(self, context, **response_kwargs):
+        users: List[AbstractBaseUser] = context['object_list']
+
+        data = [{"username": user.get_username(), "pk": str(user.pk)} for user in users]
+        return JsonResponse(data, safe=False, **response_kwargs)
