@@ -2,6 +2,7 @@
 *__pycache__
 
 media/profile_pictures/*
+profile_pictures/*
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

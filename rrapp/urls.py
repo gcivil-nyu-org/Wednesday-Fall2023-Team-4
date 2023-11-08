@@ -84,10 +84,16 @@ urlpatterns = [
         views.ListingDetailRenteeView.as_view(),
         name="rentee_listing_detail",
     ),
-    # ex: /rrapp/rentee/5/listings/1/rent
+    # ex: /rrapp/user/1/myprofile
     path(
         '<int:pk>/profile',
         views.ProfileView.as_view(),
         name='profile',
+    ),
+    # ex: /rrapp/user/2/profile
+    path(
+        'user/<int:pk>/profile',
+        views.PublicProfileView.as_view(),
+        name='public_profile',
     ),
 ]
