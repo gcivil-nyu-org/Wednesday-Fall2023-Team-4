@@ -41,9 +41,8 @@
                     <div class = "d-flex flex-column align-items-center board rounded-3" style="background-color:#F8F8F8">
                         <h1 class="font-monospace display-5 fw-medium text-body-emphasis my-3">{{ user.email }}</h1>
 
-                        <div class="row w-75 text-center">
                             
-                            <form method="post">
+                            <form method="post" class="row w-75 text-center">
                                 {% csrf_token %}
                                 {% load widget_tweaks %}
                         
@@ -61,12 +60,12 @@
                         
                         
                                 {% for field in form.visible_fields %}
-                                    <div class="m-2" style="display: flex;flex-direction: column;">
+                                        <div class="col-6 p-2">
                                             {{ field.label_tag }}
-                                                            
+                                        </div>                    
                                         {% if form.is_bound %}
                                             {% if field.errors %}
-                                                {% render_field field class="form-control is-invalid" %}
+                                           {% render_field field class="form-check" %}     {% render_field field class="form-control is-invalid" %}
                                                 {% for error in field.errors %}
                                                     <div class="invalid-feedback">
                                                         {{ error }}
@@ -76,10 +75,14 @@
                                                 {% render_field field class="form-control is-valid" %}
                                             {% endif %}
                                         {% else %}
-                                            {% if field.label != 'Smokes'%}
-                                                {% render_field field class="form-control" %}
+                                            {% if "checkbox" in field.field.widget.input_type %}
+                                                <div class="col-6 p-2">    
+                                                    {% render_field field class="form-check" %}
+                                                </div>
                                             {% else %}
-                                                {% render_field field class="form-check" %}
+                                                <div class="col-6 p-2">
+                                                    {% render_field field class="form-control" %}
+                                                </div>
                                             {% endif %}
                                         {% endif %}
                         
@@ -87,14 +90,14 @@
                                             <small class="form-text text-muted">{{ field.help_text }}</small>
                                         {% endif %}
                         
-                                    </div>
                                 {% endfor %}
-                        
-                                <button type="submit" class="btn btn-primary m-2">Save</button>
+                                <div class="col align-self-center m-2">
+                                    <button type="submit" class="btn btn-primary m-2" >Save</button>
+                                </div>
                             </form>
-                        </div>
-                        <div class = "p-3">
-                            <a href="{% url 'rrapp:activate_email' %}" class="btn btn-danger">Activate Your Account</a>
+                            <div class = "p-2">
+                                <a href="{% url 'rrapp:activate_email' %}" class="btn btn-danger">Activate Your Account</a>
+                            </div>
                         </div>
                     </div>
                 </div>
