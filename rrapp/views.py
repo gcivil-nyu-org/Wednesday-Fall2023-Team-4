@@ -175,7 +175,6 @@ def activate(request, uidb64, token):
         # user.save()
         # login(request, user)
         # return redirect('home')
-        # return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
         messages.success(
             request,
             "Thank you for your email confirmation. Your email is now activated!",
@@ -205,15 +204,18 @@ def activateEmail(request):
     if email.send():
         messages.success(
             request,
-            f'Dear {request.user}, please go to your email {request.user.email} inbox and click on \
-                received activation link to confirm and complete the registration. Note: Check your spam folder.',
+            f'Dear {request.user}, please go to your email \
+            {request.user.email} inbox and click on \
+                received activation link to confirm and \
+                complete the registration. Note: Check your spam folder.',
         )
         # return render(request, 'rrapp/home.html')
         return redirect('rrapp:home')
     else:
         messages.error(
             request,
-            f'Problem sending email to {request.user.email}, check if you typed it correctly.',
+            f'Problem sending email to {request.user.email}, \
+            check if you typed it correctly.',
         )
         # return render(request, 'rrapp/home.html')
         return redirect('rrapp:home')
