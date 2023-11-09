@@ -1,8 +1,7 @@
-# Changes
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from .models import Listing, Rentee
+from .models import Listing, Rentee, SavedListing
 
 User = get_user_model()
 
@@ -13,7 +12,7 @@ class ViewsTestCase(TestCase):
         super().setUpClass()
         cls.client = Client()
         cls.user = User.objects.create_user(
-            email="test@example.com", password="testpassword"
+            username="testuser", email="test@example.com", password="testpassword"
         )
 
     @classmethod
@@ -22,21 +21,7 @@ class ViewsTestCase(TestCase):
         super().tearDownClass()
 
 
-class HomeViewTest(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(
-            username="testuser", email="testuser1@example.com", password="testpass"
-        )
-
-
-class LoginViewTest(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(
-            username="testuser", password="testpass", email="testuser2@example.com"
-        )
-
+class LoginViewTest(ViewsTestCase):
     def test_login_view_get(self):
         response = self.client.get(reverse("rrapp:login"))
         self.assertEqual(response.status_code, 200)
@@ -45,7 +30,7 @@ class LoginViewTest(TestCase):
     def test_login_view_post_valid_credentials(self):
         response = self.client.post(
             reverse("rrapp:login"),
-            {"email": "testuser2@example.com", "password": "testpass"},
+            {"email": "test@example.com", "password": "testpassword"},
         )
         self.assertRedirects(
             response, reverse("rrapp:rentee_listings", args=(self.user.id,))
@@ -54,24 +39,13 @@ class LoginViewTest(TestCase):
     def test_login_view_post_invalid_credentials(self):
         response = self.client.post(
             reverse("rrapp:login"),
-            {"email": "testuser@example.com", "password": "wrongpass"},
+            {"email": "test@example.com", "password": "wrongpassword"},
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/login_register.html")
 
 
-class LogoutViewTest(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(
-            username="testuser", email="testuser9@example.com", password="testpass"
-        )
-
-
-class RegisterViewTest(TestCase):
-    def setUp(self):
-        self.client = Client()
-
+class RegisterViewTest(ViewsTestCase):
     def test_register_view_get(self):
         response = self.client.get(reverse("rrapp:register"))
         self.assertEqual(response.status_code, 200)
@@ -81,65 +55,90 @@ class RegisterViewTest(TestCase):
         response = self.client.post(
             reverse("rrapp:register"),
             {
-                "email": "testuser@example.com",
-                "password1": "testpass",
-                "password2": "wrongpass",
+                "email": "test@example.com",
+                "password1": "testpassword",
+                "password2": "wrongpassword",
             },
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/login_register.html")
 
 
-class ListingIndexViewTest(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(
-            username="testuser", email="testuser8@example.com", password="testpass"
-        )
-        self.listing = Listing.objects.create(
+class ListingDetailViewTest(ViewsTestCase):
+    def test_listing_detail_view_authenticated_user(self):
+        self.client.force_login(self.user)
+        listing = Listing.objects.create(
             user=self.user, title="Test Listing", monthly_rent=1000
         )
-
-
-class ListingDetailViewTest(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(
-            username="testuser", email="testuser7@example.com", password="testpass"
+        response = self.client.get(
+            reverse(
+                "rrapp:listing_detail",
+                args=(
+                    self.user.id,
+                    listing.id,
+                ),
+            )
         )
-        self.listing = Listing.objects.create(
-            user=self.user, title="Test Listing", monthly_rent=1000
-        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/listing_detail.html")
 
 
-class ListingDetailRenteeViewTest(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(
-            username="testuser", email="testuser@example.com", password="testpass"
-        )
-        self.rentee = Rentee.objects.create(user=self.user)
-        self.listing = Listing.objects.create(
-            user=User.objects.create_user(
-                username="testuser2",
-                password="testpass2",
-                email="testuser5@example.com",
-            ),
-            title="Test Listing",
-            monthly_rent=1000,
-        )
-
-
-class ListingResultsViewTest(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(
-            username="testuser", email="testuser6@example.com", password="testpass"
-        )
-        self.listing = Listing.objects.create(
+class ListingDetailRenteeViewTest(ViewsTestCase):
+    def test_listing_detail_rentee_view_authenticated_user(self):
+        self.client.force_login(self.user)
+        rentee = Rentee.objects.create(user=self.user)
+        listing = Listing.objects.create(
             user=User.objects.create_user(
                 username="testuser2", password="testpass2", email="testuser@example.com"
             ),
             title="Test Listing",
             monthly_rent=1000,
         )
+        response = self.client.get(
+            reverse(
+                "rrapp:rentee_listing_detail",
+                args=(
+                    self.user.id,
+                    listing.id,
+                ),
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/rentee_listing_detail.html")
+
+    def test_listing_detail_rentee_view_save_listing(self):
+        self.client.force_login(self.user)
+        rentee = Rentee.objects.create(user=self.user)
+        listing = Listing.objects.create(
+            user=User.objects.create_user(
+                username="testuser2", password="testpass2", email="testuser@example.com"
+            ),
+            title="Test Listing",
+            monthly_rent=1000,
+        )
+        response = self.client.post(
+            reverse(
+                "rrapp:rentee_listing_detail",
+                args=(
+                    self.user.id,
+                    listing.id,
+                ),
+            ),
+            {"shortlist": "true"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(
+            SavedListing.objects.filter(
+                rentee_id__user=self.user.id, saved_listings=listing.id
+            ).exists()
+        )
+
+
+class ListingResultsViewTest(ViewsTestCase):
+    def test_listing_results_view_authenticated_user(self):
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("rrapp:rentee_listings", args=(self.user.id,))
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/rentee_listings.html")
