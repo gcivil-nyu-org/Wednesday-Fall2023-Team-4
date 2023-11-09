@@ -12,7 +12,7 @@ class ViewsTestCase(TestCase):
         super().setUpClass()
         cls.client = Client()
         cls.user = User.objects.create_user(
-            email="test@example.com", password="testpassword"
+            username="testuser", email="test@example.com", password="testpassword"
         )
 
     @classmethod
