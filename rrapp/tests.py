@@ -86,7 +86,7 @@ class ListingDetailViewTest(ViewsTestCase):
 class ListingDetailRenteeViewTest(ViewsTestCase):
     def test_listing_detail_rentee_view_authenticated_user(self):
         self.client.force_login(self.user)
-        rentee = Rentee.objects.create(user=self.user)
+        # rentee = Rentee.objects.create(user=self.user)
         listing = Listing.objects.create(
             user=User.objects.create_user(
                 username="testuser2", password="testpass2", email="testuser@example.com"
@@ -108,7 +108,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
 
     def test_listing_detail_rentee_view_save_listing(self):
         self.client.force_login(self.user)
-        rentee = Rentee.objects.create(user=self.user)
+        # rentee = Rentee.objects.create(user=self.user)
         listing = Listing.objects.create(
             user=User.objects.create_user(
                 username="testuser2", password="testpass2", email="testuser@example.com"
