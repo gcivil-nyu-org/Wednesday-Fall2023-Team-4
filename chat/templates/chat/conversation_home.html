@@ -27,16 +27,15 @@
                             </div>
                             <div class="list-group scrollarea">
                                 {%for usr in pending_connections %}
-                                    <!-- TODO link to profile of usr -->
-                                    <a href="{% url 'chat:conversation' usr.sender %}" class="btn btn-warning">{{usr.sender}}</a> 
+                                    <a href="{% url 'rrapp:public_profile' usr.id %}" class="btn btn-warning">{{usr.username}}</a> 
                                     <form method="POST">
                                         {% csrf_token %}
-                                        <button type="submit" class="list-group-item list-group-item-action" name="connection_accept" value={{usr.sender}}>
+                                        <button type="submit" class="list-group-item list-group-item-action" name="connection_accept" value={{usr.username}}>
                                             <span class="fs-5 fw-semi">
                                                 Accept
                                             </span>
                                         </button>
-                                        <button type="submit" class="list-group-item list-group-item-action" name="connection_reject" value={{usr.sender}}>
+                                        <button type="submit" class="list-group-item list-group-item-action" name="connection_reject" value={{usr.username}}>
                                             <span class="fs-5 fw-semi">
                                                 Reject
                                             </span>
@@ -60,9 +59,8 @@
                             </div>
                             <div class="list-group scrollarea">
                                 {%for usr in active_connections %}
-                                    <!-- TODO link to conversation with usr when daphne server works on aws -->
-                                    <!-- <a href="{% url 'chat:conversation' usr %}" class="btn btn-warning">{{usr}}</a> -->
-                                    <a href="{% url 'rrapp:public_profile' usr.id %}" class="btn btn-warning">{{usr.username}}</a>
+                                    <!-- TODO link to websocket conversation with usr when daphne server works on aws -->
+                                    <a href="{% url 'chat:conversation' usr.username %}" class="btn btn-warning">{{usr.username}}</a>
                                 {% endfor %}
                             </div>
                         {% else %}
@@ -80,8 +78,15 @@
                             </div>
                             <div class="list-group scrollarea">
                                 {%for usr in requested_connections %}
-                                    <!-- TODO link to profile of usr -->
-                                    <a href="{% url 'chat:conversation' usr.receiver %}" class="btn btn-warning">{{usr.receiver}}</a>
+                                    <a href="{% url 'rrapp:public_profile' usr.id %}" class="btn btn-warning">{{usr.username}}</a>
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit" class="list-group-item list-group-item-action" name="connection_withdraw" value={{usr.username}}>
+                                            <span class="fs-5 fw-semi">
+                                                Withdraw
+                                            </span>
+                                        </button>
+                                    </form>
                                 {% endfor %}
                             </div>
                         {% else %}
