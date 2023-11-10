@@ -80,7 +80,7 @@ class ConversationHomeView(generic.View):
             )
         except DirectMessagePermission.DoesNotExist:
             pending_connections = []
-        
+
         all_pending_connection_usernamesids = []
         for p in pending_connections:
             all_pending_connection_usernamesids.append(
@@ -123,7 +123,7 @@ class ConversationHomeView(generic.View):
             )
         except DirectMessagePermission.DoesNotExist:
             requested_connections = []
-        
+
         all_requested_connection_usernamesids = []
         for p in requested_connections:
             all_requested_connection_usernamesids.append(
@@ -171,13 +171,19 @@ class ConversationView(generic.View):
             return HttpResponseRedirect(reverse("rrapp:login"))
         # else process dispatch as it otherwise normally would
         return super(ConversationView, self).dispatch(request, *args, **kwargs)
-    
+
     def canDmReceiver(self, senderUsername, receiverUsername):
         try:
             permissions = list(
                 DirectMessagePermission.objects.filter(
-                    (Q(sender__exact=senderUsername) & Q(receiver__exact=receiverUsername)) | 
-                    (Q(sender__exact=receiverUsername) & Q(receiver__exact=senderUsername))
+                    (
+                        Q(sender__exact=senderUsername)
+                        & Q(receiver__exact=receiverUsername)
+                    )
+                    | (
+                        Q(sender__exact=receiverUsername)
+                        & Q(receiver__exact=senderUsername)
+                    )
                 )
             )
         except DirectMessagePermission.DoesNotExist:
@@ -186,11 +192,11 @@ class ConversationView(generic.View):
 
         if len(permissions) == 0:
             return False
-        
+
         p = permissions[0]
         if p.permission != Permission.ALLOWED:
             return False
-        
+
         return True
 
     def get(self, request, receiverUsername, *args, **kwargs):
@@ -199,15 +205,17 @@ class ConversationView(generic.View):
 
         if not self.canDmReceiver(senderUsername, receiverUsername):
             print(senderUsername, receiverUsername)
-            raise PermissionDenied('The receiver needs to accept your request before your can message them.')
-        
+            raise PermissionDenied(
+                'The receiver must accept your request before your can message them.'
+            )
+
         # TODO paginate
         messages = DirectMessage.objects.filter(room=room_name)
 
         # ALLOWED permission exists in DB
         # render the page and handle messages
         receiverUser = User.objects.get(username=receiverUsername)
-        receiverUsernameId = {"username": receiverUsername, "id":receiverUser.id}
+        receiverUsernameId = {"username": receiverUsername, "id": receiverUser.id}
         return render(
             request,
             'chat/conversation_http.html',
@@ -224,11 +232,20 @@ class ConversationView(generic.View):
         receiverUsername = kwargs["receiverUsername"]
 
         if not self.canDmReceiver(senderUsername, receiverUsername):
-            raise PermissionDenied('The receiver needs to accept your request before your can send messages to them.')
-        
+            raise PermissionDenied(
+                'The receiver needs to accept your request before your can send messages to them.'
+            )
+
         if 'chat-message-input' in request.POST:
             room_name = '_'.join(sorted([senderUsername, receiverUsername]))
             print('saving ', request.POST)
-            DirectMessage.objects.create(sender=senderUsername, receiver=receiverUsername, room=room_name, content=request.POST['chat-message-input'])
+            DirectMessage.objects.create(
+                sender=senderUsername,
+                receiver=receiverUsername,
+                room=room_name,
+                content=request.POST['chat-message-input'],
+            )
 
-        return HttpResponseRedirect(reverse("chat:conversation", kwargs={"receiverUsername": receiverUsername}))
+        return HttpResponseRedirect(
+            reverse("chat:conversation", kwargs={"receiverUsername": receiverUsername})
+        )
