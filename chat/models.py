@@ -30,3 +30,4 @@ class DirectMessagePermission(models.Model):
 
     class Meta:
         ordering = ('created_at',)
+        unique_together = (("sender", "receiver"),)
