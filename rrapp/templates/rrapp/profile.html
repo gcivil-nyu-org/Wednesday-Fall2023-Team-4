@@ -17,7 +17,7 @@
                 {% if messages %}
                 <ul class="messages">
                     {% for message in messages %}
-                    <li>{{ message }}</li>
+                        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
                     {% endfor %}
                 </ul>
                 {% endif %}
@@ -95,9 +95,11 @@
                                     <button type="submit" class="btn btn-primary m-2" >Save</button>
                                 </div>
                             </form>
-                            <div class = "p-2">
-                                <a href="{% url 'rrapp:activate_email' %}" class="btn btn-danger">Activate Your Account</a>
-                            </div>
+                            {% if not user.is_verified %}
+                                <div class = "p-2">
+                                    <a href="{% url 'rrapp:activate_email' %}" class="btn btn-danger">Activate Your Account</a>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
