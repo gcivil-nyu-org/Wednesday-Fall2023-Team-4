@@ -95,7 +95,7 @@ DATABASES = {
         'USER': 'django-images',
         'PASSWORD': 'complexpassword123',
         'HOST': 'localhost',
-        'PORT': '8080',
+        'PORT': '5432',
     }
 }
 
@@ -194,14 +194,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "zw3475@nyu.edu"
-EMAIL_HOST_PASSWORD = "@Jamespaul1101"
-# EMAIL_HOST_USER = ""
-# EMAIL_HOST_PASSWORD = ""
-# if 'EMAIL_HOST_USER' in os.environ:
-#     EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-# if 'EMAIL_HOST_PASSWORD' in os.environ:
-#     EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = ""
+if 'EMAIL_HOST_USER' in os.environ:
+    EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+if 'EMAIL_HOST_PASSWORD' in os.environ:
+    EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 
 EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
 
