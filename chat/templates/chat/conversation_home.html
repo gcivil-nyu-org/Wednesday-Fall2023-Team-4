@@ -96,6 +96,32 @@
                         {% endif %}
                         <br>
                     </div>
+
+                    <div>
+                        {% if blocked_connections %}
+                            <div class="align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
+                                <span class="fs-6 fw-semibold">Blocked connections</span>
+                            </div>
+                            <div class="list-group scrollarea">
+                                {%for usr in blocked_connections %}
+                                    <a href="{% url 'rrapp:public_profile' usr.id %}" class="btn btn-warning">{{usr.username}}</a> 
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit" class="list-group-item list-group-item-action" name="connection_unblock" value={{usr.username}}>
+                                            <span class="fs-5 fw-semi">
+                                                Unblock
+                                            </span>
+                                        </button>
+                                    </form>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
+                                <span class="fs-6 fw-semibold">No blocked connections</span>
+                            </div>
+                        {% endif %}
+                        <br>
+                    </div>
                 </section>
             </div>
         </div>
