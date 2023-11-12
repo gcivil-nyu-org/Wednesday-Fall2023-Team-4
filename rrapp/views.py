@@ -584,7 +584,6 @@ class ProfileView(generic.UpdateView):
         user_id = self.kwargs['pk']
         return reverse('rrapp:rentee_listings', args=(user_id,))
 
-
 @method_decorator(login_required, name='dispatch')
 class PublicProfileView(generic.DetailView):
     model = User
@@ -622,6 +621,12 @@ def listing_delete(request, user_id, pk):
     # user hits the Back button.
     return HttpResponseRedirect(reverse('rrapp:my_listings', args=(user_id,)))
 
+@login_required(login_url='login')
+def deteleAccount(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    user.delete()
+    logout(request)
+    return HttpResponseRedirect(reverse('rrapp:home'))
 
 class UsersListView(LoginRequiredMixin, generic.ListView):
     http_method_names = [
