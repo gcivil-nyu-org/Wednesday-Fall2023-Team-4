@@ -15,7 +15,7 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # 'data' is my media folder
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 'data' is my media folder
 MEDIA_URL = '/media/'
 
 
@@ -32,7 +32,11 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "roomierendezvous-dev.us-east-1.elasticbeanstalk.com",
     "roomierendezvous-app-dev.us-east-1.elasticbeanstalk.com",
+<<<<<<< HEAD
     "production-team4-2-dev3.us-west-2.elasticbeanstalk.com"
+=======
+    "production-team4-2-dev.us-west-2.elasticbeanstalk.com",
+>>>>>>> 924659852ebaaa3226ad89b557b18f47a3417d2f
 ]
 
 
@@ -194,8 +198,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "email@nyu.edu"
-EMAIL_HOST_PASSWORD = "**********"
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = ""
+if 'EMAIL_HOST_USER' in os.environ:
+    EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+if 'EMAIL_HOST_PASSWORD' in os.environ:
+    EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 
 EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
 
