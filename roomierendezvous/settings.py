@@ -32,11 +32,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "roomierendezvous-dev.us-east-1.elasticbeanstalk.com",
     "roomierendezvous-app-dev.us-east-1.elasticbeanstalk.com",
-<<<<<<< HEAD
     "production-team4-2-dev3.us-west-2.elasticbeanstalk.com"
-=======
-    "production-team4-2-dev.us-west-2.elasticbeanstalk.com",
->>>>>>> 924659852ebaaa3226ad89b557b18f47a3417d2f
 ]
 
 
