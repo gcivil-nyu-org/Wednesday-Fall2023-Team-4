@@ -63,16 +63,25 @@
                                 {% for field in form.visible_fields %}
                                     <div class="col-6 p-2">
                                         {{ field.label_tag }}
-                                    </div>                    
-                                        
-                                    {% if "checkbox" in field.field.widget.input_type %}
-                                        <div class="col-6 p-2">    
-                                            {% render_field field class="form-check" %}
+                                    </div>
+
+                                    {% if field.label == "Existing photos" %}
+                                        <div class="col-6 p-2">
+                                            {% for photo in field.field.queryset%}
+                                                <img src="{{ photo.image.url }}" alt="Photo" width="100" height="100">
+                                                <input type="checkbox" name="existing_photos" value="{{ photo.pk }}" checked>
+                                            {% endfor %}
                                         </div>
                                     {% else %}
-                                        <div class="col-6 p-2">
-                                            {% render_field field class="form-control" %}
+                                        {% if "checkbox" in field.field.widget.input_type %}
+                                            <div class="col-6 p-2">    
+                                                {% render_field field class="form-check" %}
                                         </div>
+                                        {% else %}
+                                            <div class="col-6 p-2">
+                                                {% render_field field class="form-control" %}
+                                            </div>
+                                        {% endif %}
                                     {% endif %}
                                 {% endfor %}
 

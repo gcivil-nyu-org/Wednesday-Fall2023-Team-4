@@ -21,7 +21,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from chat.models import DirectMessagePermission, Permission
 
-from .models import Listing, Renter, Rentee, SavedListing
+from .models import Listing, Renter, Rentee, SavedListing, Photo
 from .forms import MyUserCreationForm, ListingForm, UserForm, LoginForm
 
 from django.urls import reverse_lazy
@@ -459,6 +459,12 @@ class ListingUpdateView(generic.UpdateView):
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
+            listing = form.save()
+            existing_photos_pks = request.POST.getlist('existing_photos')
+            Photo.objects.filter(listing=listing).exclude(pk__in=existing_photos_pks).delete()
+            
+            for file in request.FILES.getlist('add_photos'):
+                Photo.objects.create(image=file, listing=listing)
             return self.form_valid(form)
         else:       
             return self.form_invalid(form)
@@ -538,6 +544,8 @@ class ListingNewView(generic.CreateView):
                 ),
             )
             listing.save()
+            for file in request.FILES.getlist('add_photos'):
+                Photo.objects.create(image=file, listing=listing)
             return HttpResponseRedirect(
                 reverse("rrapp:my_listings", args=(kwargs["user_id"],))
             )

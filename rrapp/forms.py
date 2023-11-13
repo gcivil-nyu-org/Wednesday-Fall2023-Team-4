@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 import datetime
 
-from .models import PropertyType, RoomType, Pets, FoodGroup, Listing
+from .models import Listing, Photo
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -197,7 +197,8 @@ class ListingForm(ModelForm):
     date_available_to = forms.DateField(
         initial=datetime.date.today() + datetime.timedelta(days=30),
         widget=forms.DateInput(attrs={'type': 'date'}))
-
+    existing_photos = forms.ModelMultipleChoiceField(queryset=Photo.objects.none(), required=False, widget=forms.CheckboxSelectMultiple)
+    add_photos = forms.FileField(required=False, widget=forms.FileInput(attrs={'multiple': True}))
     class Meta:
         model = Listing
         fields = [
@@ -229,7 +230,16 @@ class ListingForm(ModelForm):
             "smoking_allowed",
             "pets_allowed",
             "food_groups_allowed",
+            "existing_photos",
+            "add_photos",
         ]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if isinstance(self.instance, Listing):
+            if self.instance.pk:
+                self.fields['existing_photos'].queryset = Photo.objects.filter(listing=self.instance.pk)
+            else:
+                del self.fields['existing_photos']
 
     def clean_monthly_rent(self):
         monthly_rent = self.cleaned_data.get("monthly_rent")
@@ -247,7 +257,7 @@ class ListingForm(ModelForm):
         date_available_to = self.cleaned_data.get("date_available_to")
         if date_available_to < datetime.date.today():
             raise forms.ValidationError("Date available to cannot be in the past")
-        elif date_available_to < self.date_available_from():
+        elif date_available_to < self.cleaned_data.get("date_available_from"):
             raise forms.ValidationError("Date available to cannot be before date available from")
         return date_available_to
     
