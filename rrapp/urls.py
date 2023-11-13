@@ -106,5 +106,5 @@ urlpatterns = [
         'rentee/<int:user_id>/shortlist/',
         views.ShortListView.as_view(),
         name='shortlist',
-    )
+    ),
 ]

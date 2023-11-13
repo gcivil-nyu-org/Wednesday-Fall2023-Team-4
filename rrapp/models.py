@@ -237,11 +237,15 @@ class Listing(models.Model):
         default=FoodGroup.ALL,
     )
 
+
 def get_uploaded_to(instance, filename):
     return 'listing_photos/{}/{}'.format(instance.listing.id, filename)
 
+
 class Photo(models.Model):
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='photos')
+    listing = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name='photos'
+    )
     image = models.ImageField(upload_to=get_uploaded_to, blank=True, null=True)
 
     def __str__(self):

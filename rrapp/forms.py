@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class LoginForm(forms.Form):
     email = forms.EmailField(
         max_length=100,
@@ -23,11 +24,15 @@ class LoginForm(forms.Form):
         if '@' not in email:
             raise forms.ValidationError("Please enter a valid email")
         elif not User.objects.filter(email=email).exists():
-            raise forms.ValidationError("The user corresponding to the email does not exist")
+            raise forms.ValidationError(
+                "The user corresponding to the email does not exist"
+            )
         elif not email.endswith(".edu"):
-            raise forms.ValidationError("Please enter a valid school email. End with .edu")
+            raise forms.ValidationError(
+                "Please enter a valid school email. End with .edu"
+            )
         return email
-        
+
 
 class MyUserCreationForm(UserCreationForm):
     class Meta:
@@ -45,6 +50,7 @@ class MyUserCreationForm(UserCreationForm):
             "password1",
             "password2",
         ]
+
     def clean_first_name(self):
         first_name = self.cleaned_data.get("first_name")
         if len(first_name) == 0:
@@ -54,7 +60,7 @@ class MyUserCreationForm(UserCreationForm):
         elif not first_name.isalpha():
             raise forms.ValidationError("First name must only contain letters")
         return first_name
-    
+
     def clean_last_name(self):
         last_name = self.cleaned_data.get("last_name")
         if len(last_name) == 0:
@@ -64,7 +70,7 @@ class MyUserCreationForm(UserCreationForm):
         elif not last_name.isalpha():
             raise forms.ValidationError("Last name must only contain letters")
         return last_name
-    
+
     def clean_username(self):
         username = self.cleaned_data.get("username")
         if len(username) == 0:
@@ -72,9 +78,11 @@ class MyUserCreationForm(UserCreationForm):
         elif len(username) > 30:
             raise forms.ValidationError("Username is too long")
         elif not username.isalnum():
-            raise forms.ValidationError("Username must only contain letters and numbers")
+            raise forms.ValidationError(
+                "Username must only contain letters and numbers"
+            )
         return username
-    
+
     def clean_email(self):
         email = self.cleaned_data.get("email")
         if len(email) == 0:
@@ -84,7 +92,9 @@ class MyUserCreationForm(UserCreationForm):
         elif len(email) > 100:
             raise forms.ValidationError("Email is too long")
         elif not email.endswith(".edu"):
-            raise forms.ValidationError("Please enter a valid school email. End with .edu")
+            raise forms.ValidationError(
+                "Please enter a valid school email. End with .edu"
+            )
         elif User.objects.filter(email=email).exists():
             raise forms.ValidationError("The email is already in use")
         return email
@@ -98,7 +108,7 @@ class MyUserCreationForm(UserCreationForm):
         elif not phone_number.isdigit():
             raise forms.ValidationError("Phone number must only contain numbers")
         return phone_number
-    
+
     def clean_password1(self):
         password1 = self.cleaned_data.get("password1")
         if len(password1) == 0:
@@ -110,7 +120,7 @@ class MyUserCreationForm(UserCreationForm):
         elif not any(char.isalpha() for char in password1):
             raise forms.ValidationError("Password must contain at least one letter")
         return password1
-    
+
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
@@ -119,6 +129,7 @@ class MyUserCreationForm(UserCreationForm):
         elif password1 != password2:
             raise forms.ValidationError("Passwords do not match")
         return password2
+
 
 class UserForm(ModelForm):
     birth_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
@@ -137,7 +148,7 @@ class UserForm(ModelForm):
             "phone_number",
             "profile_picture",
         ]
-    
+
     def clean_username(self):
         username = self.cleaned_data.get("username")
         if len(username) == 0:
@@ -145,9 +156,11 @@ class UserForm(ModelForm):
         elif len(username) > 30:
             raise forms.ValidationError("Username is too long")
         elif not username.isalnum():
-            raise forms.ValidationError("Username must only contain letters and numbers")
+            raise forms.ValidationError(
+                "Username must only contain letters and numbers"
+            )
         return username
-    
+
     def clean_first_name(self):
         first_name = self.cleaned_data.get("first_name")
         if len(first_name) == 0:
@@ -157,7 +170,7 @@ class UserForm(ModelForm):
         elif not first_name.isalpha():
             raise forms.ValidationError("First name must only contain letters")
         return first_name
-    
+
     def clean_last_name(self):
         last_name = self.cleaned_data.get("last_name")
         if len(last_name) == 0:
@@ -167,7 +180,7 @@ class UserForm(ModelForm):
         elif not last_name.isalpha():
             raise forms.ValidationError("Last name must only contain letters")
         return last_name
-    
+
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get("phone_number")
         if len(phone_number) == 0:
@@ -177,7 +190,7 @@ class UserForm(ModelForm):
         elif not phone_number.isdigit():
             raise forms.ValidationError("Phone number must only contain numbers")
         return phone_number
-    
+
     def clean_bio(self):
         bio = self.cleaned_data.get("bio")
         if len(bio) > 500:
@@ -190,15 +203,24 @@ class UserForm(ModelForm):
             raise forms.ValidationError("Birth date cannot be in the future")
         return birth_date
 
+
 class ListingForm(ModelForm):
     date_available_from = forms.DateField(
-        initial=datetime.date.today(),
-        widget=forms.DateInput(attrs={'type': 'date'}))
+        initial=datetime.date.today(), widget=forms.DateInput(attrs={'type': 'date'})
+    )
     date_available_to = forms.DateField(
         initial=datetime.date.today() + datetime.timedelta(days=30),
-        widget=forms.DateInput(attrs={'type': 'date'}))
-    existing_photos = forms.ModelMultipleChoiceField(queryset=Photo.objects.none(), required=False, widget=forms.CheckboxSelectMultiple)
-    add_photos = forms.FileField(required=False, widget=forms.FileInput(attrs={'multiple': True}))
+        widget=forms.DateInput(attrs={'type': 'date'}),
+    )
+    existing_photos = forms.ModelMultipleChoiceField(
+        queryset=Photo.objects.none(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    add_photos = forms.FileField(
+        required=False, widget=forms.FileInput(attrs={'multiple': True})
+    )
+
     class Meta:
         model = Listing
         fields = [
@@ -233,11 +255,14 @@ class ListingForm(ModelForm):
             "existing_photos",
             "add_photos",
         ]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if isinstance(self.instance, Listing):
             if self.instance.pk:
-                self.fields['existing_photos'].queryset = Photo.objects.filter(listing=self.instance.pk)
+                self.fields['existing_photos'].queryset = Photo.objects.filter(
+                    listing=self.instance.pk
+                )
             else:
                 del self.fields['existing_photos']
 
@@ -246,33 +271,35 @@ class ListingForm(ModelForm):
         if monthly_rent < 0:
             raise forms.ValidationError("Monthly rent cannot be negative")
         return monthly_rent
-    
+
     def clean_date_available_from(self):
         date_available_from = self.cleaned_data.get("date_available_from")
         if date_available_from < datetime.date.today():
             raise forms.ValidationError("Date available from cannot be in the past")
         return date_available_from
-    
+
     def clean_date_available_to(self):
         date_available_to = self.cleaned_data.get("date_available_to")
         if date_available_to < datetime.date.today():
             raise forms.ValidationError("Date available to cannot be in the past")
         elif date_available_to < self.cleaned_data.get("date_available_from"):
-            raise forms.ValidationError("Date available to cannot be before date available from")
+            raise forms.ValidationError(
+                "Date available to cannot be before date available from"
+            )
         return date_available_to
-    
+
     def clean_number_of_bedrooms(self):
         number_of_bedrooms = self.cleaned_data.get("number_of_bedrooms")
         if number_of_bedrooms < 0:
             raise forms.ValidationError("Number of bedrooms cannot be negative")
         return number_of_bedrooms
-    
+
     def clean_number_of_bathrooms(self):
         number_of_bathrooms = self.cleaned_data.get("number_of_bathrooms")
         if number_of_bathrooms < 0:
             raise forms.ValidationError("Number of bathrooms cannot be negative")
         return number_of_bathrooms
-    
+
     def clean_age_range(self):
         age_range = self.cleaned_data.get("age_range")
         if age_range.lower < 18:
@@ -280,4 +307,3 @@ class ListingForm(ModelForm):
         elif age_range.upper > 100:
             raise forms.ValidationError("Maximum age cannot be greater than 100")
         return age_range
-    

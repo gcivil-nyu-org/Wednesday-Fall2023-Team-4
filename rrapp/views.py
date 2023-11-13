@@ -221,7 +221,8 @@ class ListingIndexView(generic.ListView):
         context_data["user"] = User.objects.get(id=user_id)
         context_data["path"] = self.request.path_info.__contains__("renter")
         return context_data
-    
+
+
 @method_decorator(login_required, name="dispatch")
 class ShortListView(generic.ListView):
     template_name = "rrapp/shortListing.html"
@@ -231,7 +232,9 @@ class ShortListView(generic.ListView):
         """Return the last five published questions."""
         user_id = self.kwargs["user_id"]
         # shortlistings = Listing.objects.filter(user=user_id).order_by("-created_at")
-        shortlistings = SavedListing.objects.filter(rentee_id__user=user_id).order_by("-saved_listings__created_at")
+        shortlistings = SavedListing.objects.filter(rentee_id__user=user_id).order_by(
+            "-saved_listings__created_at"
+        )
         paginator = Paginator(shortlistings, 10)
         page_number = self.request.GET.get("page")
         latest_listings_page = paginator.get_page(page_number)
@@ -244,7 +247,8 @@ class ShortListView(generic.ListView):
         context_data["user"] = User.objects.get(id=user_id)
         context_data["path"] = self.request.path_info.__contains__("renter")
         return context_data
-    
+
+
 @method_decorator(login_required, name="dispatch")
 class ListingDetailView(generic.DetailView):
     model = Listing
@@ -460,11 +464,11 @@ class ListingUpdateView(generic.UpdateView):
         user_id = self.kwargs["user_id"]
         listing_id = self.kwargs["pk"]
         return reverse("rrapp:listing_detail", args=(user_id, listing_id))
-    
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         return super().get(request, *args, **kwargs)
-    
+
     def get_object(self, queryset=None):
         return Listing.objects.get(id=self.kwargs["pk"])
 
@@ -476,20 +480,23 @@ class ListingUpdateView(generic.UpdateView):
         context_data["user"] = User.objects.get(id=self.kwargs["user_id"])
         context_data["path"] = self.request.path_info.__contains__("renter")
         return context_data
-    
+
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
             listing = form.save()
             existing_photos_pks = request.POST.getlist('existing_photos')
-            Photo.objects.filter(listing=listing).exclude(pk__in=existing_photos_pks).delete()
+            Photo.objects.filter(listing=listing).exclude(
+                pk__in=existing_photos_pks
+            ).delete()
 
             for file in request.FILES.getlist('add_photos'):
                 Photo.objects.create(image=file, listing=listing)
             return self.form_valid(form)
-        else:       
+        else:
             return self.form_invalid(form)
+
 
 @method_decorator(login_required, name="dispatch")
 class ListingNewView(generic.CreateView):
@@ -501,14 +508,13 @@ class ListingNewView(generic.CreateView):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         return super().get(request, *args, **kwargs)
-    
+
     def get_object(self, queryset=None):
         return self.request.user
 
     def get_success_url(self):
         user_id = self.kwargs["user_id"]
         return reverse("rrapp:listing_new", args=(user_id,))
-
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
@@ -562,7 +568,8 @@ class ListingNewView(generic.CreateView):
                 pets_allowed=form_data.get("pets_allowed"),
                 food_groups_allowed=form_data.get("food_groups_allowed"),
                 age_range=NumericRange(
-                    int(form_data.get("age_range").lower), int(form_data.get("age_range").upper)
+                    int(form_data.get("age_range").lower),
+                    int(form_data.get("age_range").upper),
                 ),
             )
             listing.save()
@@ -574,6 +581,7 @@ class ListingNewView(generic.CreateView):
         else:
             return self.form_invalid(form)
 
+
 @method_decorator(login_required, name='dispatch')
 class ProfileView(generic.UpdateView):
     model = User
@@ -584,11 +592,11 @@ class ProfileView(generic.UpdateView):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         return super().get(request, *args, **kwargs)
-    
+
     def get_object(self, queryset=None):
         # return self.request.user
         return User.objects.get(id=self.kwargs["pk"])
-    
+
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
         context_data["user_id"] = self.kwargs["pk"]
@@ -599,14 +607,15 @@ class ProfileView(generic.UpdateView):
     def get_success_url(self):
         user_id = self.kwargs['pk']
         return reverse('rrapp:rentee_listings', args=(user_id,))
-    
+
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
             return self.form_valid(form)
-        else:       
+        else:
             return self.form_invalid(form)
+
 
 @method_decorator(login_required, name='dispatch')
 class PublicProfileView(generic.DetailView):
@@ -645,12 +654,14 @@ def listing_delete(request, user_id, pk):
     # user hits the Back button.
     return HttpResponseRedirect(reverse('rrapp:my_listings', args=(user_id,)))
 
+
 @login_required(login_url='login')
 def deteleAccount(request, user_id):
     user = get_object_or_404(User, pk=user_id)
     user.delete()
     logout(request)
     return HttpResponseRedirect(reverse('rrapp:home'))
+
 
 class UsersListView(LoginRequiredMixin, generic.ListView):
     http_method_names = [
