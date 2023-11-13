@@ -9,16 +9,9 @@
     </head>
     <body class = "align-items-stretch">
         <div class="back-contianer">
-        <div class="bg-dark left-bar">
-            <div class = "d-flex flex-column align-items-center">
-                <div class = "p-3">
-                    <a href="{% url 'rrapp:my_listings' user_id %}" class="btn btn-warning">Switch Status</a>
-                </div>
-                <div class = "p-3">
-                    <a href="{% url 'rrapp:logout' %}" class="btn btn-danger">Log out</a>
-                </div>
-            </div>
-        </div>
+        
+        {% include 'rrapp/left_bar.html' with user=user path=path %}
+
         <div class="text-center right-page">
             <div class="container-xxl text-center">
                 <div class="container pt-3">
@@ -31,7 +24,7 @@
                             </li>
                             <li class="breadcrumb-item">
                                 <a class="link-body-emphasis fw-semibold text-decoration-none" href="{% url 'rrapp:rentee_listings' user_id %}">
-                                    My Listings
+                                    Listings
                                 </a>
                             </li>
                             <li class="breadcrumb-item avtive">
@@ -368,19 +361,61 @@
 
                     </div>
                     
-                    <div class="d-inline-flex gap-4 mb-5 p-4">
+                    <div class="d-inline-flex gap-4 p-4">
                         <form method="POST">
                             {% csrf_token %}
                             {% if saved %}
-                                <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-left">Saved</button>
+                                <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-left" name="shortlist">Not for me</button>
                             {% else %}
-                                <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-left">Save</button>
+                                <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-mid" name="shortlist">Shortlist</button>
                             {% endif %}
                         </form>
 
-                        <a href="{% url 'rrapp:rentee_listings' user_id %}" >
-                            <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right">Back</button>
-                        </a>
+                        <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right" onclick="window.history.back()">Back</button>
+                    </div>
+
+                    <div class="mb-3">
+                        {% if cur_permission %}
+                            {% if cur_permission == 'allowed' %}
+                            
+                                <div>
+                                    {% csrf_token %}
+                                    <!-- TODO : change back to websocket chat url after aws daphne integration -->
+                                    <a href="{% url 'chat:conversation' object.user.username %}" >
+                                        <button type="button" class="btn align-item-center rounded-pill btn-lg btn btn-success">Message Renter</button>
+                                    </a>
+                                    <!-- <a href="{% url 'rrapp:public_profile' object.user.id %}" >
+                                        <button type="button" class="btn align-item-center rounded-pill btn-lg btn btn-success">Contact Renter</button>
+                                    </a> -->
+                                </div>
+                            {% endif %}
+                            
+                            {%if cur_permission == 'requested' %}
+                                <div>
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        <button type="button" class="btn align-item-center rounded-pillbtn-primary" name="connection_request" disabled>Waiting for approval</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                            
+                            {%if cur_permission == 'blocked' %}
+                                <div>
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        <button type="button" class="btn align-item-center rounded-pill btn-lg btn btn-secondary" name="connection_request" disabled>Cannot connect</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div>
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn align-item-center rounded-pill btn-lg btn btn-success" name="connection_request">Connect with Renter</button>
+                                </form>
+                            </div>
+                        {% endif %}
+
                     </div>
                 </div>
             </div>

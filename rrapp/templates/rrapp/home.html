@@ -7,7 +7,14 @@
         {% load static %}
         <link rel="stylesheet" href="{% static 'rrapp/common.css' %}">
     </head>
-    <body class = "align-items-center">
+    <body class = "align-items-center" style="height:100%;width:100%;">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
         <div class="px-4 py-5 my-5 text-center">
             <h1 class="display-5 fw-bold text-body-emphasis">Hello, world. You're at the rrapp index.</h1>
             <div class="col-lg-6 mx-auto">

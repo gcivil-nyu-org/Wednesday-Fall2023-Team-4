@@ -44,6 +44,7 @@ before_script:
 
 
 script:
+  #- black ./ --skip-string-normalization --exclude settings* --extend-exclude migrations* --extend-exclude venv* -v
   - black --check . --skip-string-normalization --exclude settings* --extend-exclude migrations*
   - flake8 .
   - coverage run --source=rrapp manage.py test
@@ -62,6 +63,18 @@ deploy:
   bucket_name: $AWS_BUCKET_NAME
   on:
     branch: develop
+  
+  provider: elasticbeanstalk
+  access_key_id: $AWS_ACCESS_KEY_ID
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
+  region: $AWS_REGION
+  app: $AWS_APP_NAME
+  env: $AWS_ENV_NAME
+  bucket_name: $AWS_BUCKET_NAME
+  on:
+    branch: master
+
+  
   
 after_deploy:
   - ./scripts/after_deploy_1.sh
