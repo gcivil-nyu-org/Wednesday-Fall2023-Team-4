@@ -221,8 +221,30 @@ class ListingIndexView(generic.ListView):
         context_data["user"] = User.objects.get(id=user_id)
         context_data["path"] = self.request.path_info.__contains__("renter")
         return context_data
+    
+@method_decorator(login_required, name="dispatch")
+class ShortListView(generic.ListView):
+    template_name = "rrapp/shortListing.html"
+    context_object_name = "latest_listings"
 
+    def get_queryset(self):
+        """Return the last five published questions."""
+        user_id = self.kwargs["user_id"]
+        # shortlistings = Listing.objects.filter(user=user_id).order_by("-created_at")
+        shortlistings = SavedListing.objects.filter(rentee_id__user=user_id).order_by("-saved_listings__created_at")
+        paginator = Paginator(shortlistings, 10)
+        page_number = self.request.GET.get("page")
+        latest_listings_page = paginator.get_page(page_number)
+        return latest_listings_page
 
+    def get_context_data(self, **kwargs: Any):
+        context_data = super().get_context_data(**kwargs)
+        user_id = self.kwargs["user_id"]
+        context_data["user_id"] = user_id
+        context_data["user"] = User.objects.get(id=user_id)
+        context_data["path"] = self.request.path_info.__contains__("renter")
+        return context_data
+    
 @method_decorator(login_required, name="dispatch")
 class ListingDetailView(generic.DetailView):
     model = Listing
@@ -462,7 +484,7 @@ class ListingUpdateView(generic.UpdateView):
             listing = form.save()
             existing_photos_pks = request.POST.getlist('existing_photos')
             Photo.objects.filter(listing=listing).exclude(pk__in=existing_photos_pks).delete()
-            
+
             for file in request.FILES.getlist('add_photos'):
                 Photo.objects.create(image=file, listing=listing)
             return self.form_valid(form)

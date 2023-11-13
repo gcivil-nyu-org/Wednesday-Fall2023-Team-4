@@ -102,4 +102,9 @@ urlpatterns = [
         views.deteleAccount,
         name='deteleAccount',
     ),
+    path(
+        'rentee/<int:user_id>/shortlist/',
+        views.ShortListView.as_view(),
+        name='shortlist',
+    )
 ]
