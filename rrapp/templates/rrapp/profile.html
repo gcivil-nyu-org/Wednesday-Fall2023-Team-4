@@ -14,13 +14,6 @@
             {% include 'rrapp/left_bar.html' with user=user path=path %}
 
             <div class="text-center right-page">
-                {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                    <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
                 <div class="container p-3">
                     <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
                         <ol class="breadcrumb p-3 bg-body-tertiary board rounded-3">
@@ -45,56 +38,42 @@
                             <form method="post" class="row w-75 text-center">
                                 {% csrf_token %}
                                 {% load widget_tweaks %}
-                        
-                                {% for hidden_field in form.hidden_fields %}
-                                    {{ hidden_field }}
-                                {% endfor %}
-                        
-                                {% if form.non_field_errors %}
-                                    <div class="alert alert-danger" role="alert">
-                                    {% for error in form.non_field_errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                    </div>
-                                {% endif %}
-                        
-                        
-                                {% for field in form.visible_fields %}
-                                        <div class="col-6 p-2">
-                                            {{ field.label_tag }}
-                                        </div>                    
-                                        {% if form.is_bound %}
-                                            {% if field.errors %}
-                                           {% render_field field class="form-check" %}     {% render_field field class="form-control is-invalid" %}
-                                                {% for error in field.errors %}
-                                                    <div class="invalid-feedback">
+                                
+                                {% if form.is_bound %}
+                                    {% if form.errors %}
+                                        {% for filed in form%}
+                                            {% if filed.errors %}
+                                                {% for error in filed.errors%}
+                                                    <div class="alert alert-warning" role="alert">
                                                         {{ error }}
                                                     </div>
                                                 {% endfor %}
-                                            {% else %}
-                                                {% render_field field class="form-control is-valid" %}
                                             {% endif %}
-                                        {% else %}
-                                            {% if "checkbox" in field.field.widget.input_type %}
-                                                <div class="col-6 p-2">    
-                                                    {% render_field field class="form-check" %}
-                                                </div>
-                                            {% else %}
-                                                <div class="col-6 p-2">
-                                                    {% render_field field class="form-control" %}
-                                                </div>
-                                            {% endif %}
-                                        {% endif %}
-                        
-                                        {% if field.help_text %}
-                                            <small class="form-text text-muted">{{ field.help_text }}</small>
-                                        {% endif %}
-                        
+                                        {% endfor %}              
+                                    {% endif %}
+                                {% endif %}
+
+                                {% for field in form.visible_fields %}
+                                    <div class="col-6 p-2">
+                                        {{ field.label_tag }}
+                                    </div>                    
+                                        
+                                    {% if "checkbox" in field.field.widget.input_type %}
+                                        <div class="col-6 p-2">    
+                                            {% render_field field class="form-check" %}
+                                        </div>
+                                    {% else %}
+                                        <div class="col-6 p-2">
+                                            {% render_field field class="form-control" %}
+                                        </div>
+                                    {% endif %}
                                 {% endfor %}
+                               
                                 <div class="col align-self-center m-2">
                                     <button type="submit" class="btn btn-primary m-2" >Save</button>
                                 </div>
                             </form>
+                            
                             <div class = "p-2">
                                 <a href="{% url 'rrapp:activate_email' %}" class="btn btn-danger">Activate Your Account</a>
                             </div>
