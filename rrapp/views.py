@@ -67,13 +67,11 @@ class LoginView(generic.View):
         return super(LoginView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        print("Call Get")
         form = LoginForm()
         self.context["form"] = form
         return render(request, "rrapp/login_register.html", self.context)
 
     def post(self, request, *args, **kwargs):
-        print("Call Post")
         loginForm = LoginForm(request.POST)
         if loginForm.is_valid():
             email = loginForm.cleaned_data.get("email")
