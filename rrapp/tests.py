@@ -146,3 +146,72 @@ class ListingResultsViewTest(ViewsTestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/rentee_listings.html")
+
+class ResetPasswordViewTest(ViewsTestCase):
+    def test_reset_password_view_get(self):
+        response = self.client.get(reverse("rrapp:password_reset"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/password_reset.html")
+
+    def test_reset_password_view_post_valid_email(self):
+        response = self.client.post(
+            reverse("rrapp:password_reset"),
+            {"email": "test@example.edu"},
+        )
+        self.assertRedirects(response, reverse("rrapp:password_reset_done"))
+
+    def test_reset_password_view_post_invalid_email(self):
+        response = self.client.post(
+            reverse("rrapp:password_reset"),
+            {"email": "invalid_email@example.edu"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/password_reset.html")
+
+
+class ConfirmPasswordResetViewTest(ViewsTestCase):
+    def test_confirm_password_reset_view_get(self):
+        # Assuming a valid uidb64 and token
+        uidb64 = "<valid_uidb64>"
+        token = "<valid_token>"
+        response = self.client.get(
+            reverse("rrapp:password_reset_confirm", args=(uidb64, token))
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/password_reset_confirm.html")
+
+
+class LogoutViewTest(ViewsTestCase):
+    def test_logout_view(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("rrapp:logout"))
+        self.assertRedirects(response, reverse("rrapp:home"))
+        # Ensure user is logged out
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+
+
+class ActivateEmailViewTest(ViewsTestCase):
+    def test_activate_email_view(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("rrapp:activate_email"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/template_activate_account.html")
+
+
+class ListingIndexViewTest(ViewsTestCase):
+    def test_listing_index_view_authenticated_user(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("rrapp:my_listings", args=(self.user.id,)))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/my_listings.html")
+
+
+class ShortListViewTest(ViewsTestCase):
+    def test_short_list_view_authenticated_user(self):
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("rrapp:short_list", args=(self.user.id,))
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/shortListing.html")
+
