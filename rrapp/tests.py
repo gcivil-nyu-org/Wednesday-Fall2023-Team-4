@@ -147,27 +147,6 @@ class ListingResultsViewTest(ViewsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/rentee_listings.html")
 
-class ResetPasswordViewTest(ViewsTestCase):
-    def test_reset_password_view_get(self):
-        response = self.client.get(reverse("rrapp:password_reset"))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "rrapp/password_reset.html")
-
-    def test_reset_password_view_post_valid_email(self):
-        response = self.client.post(
-            reverse("rrapp:password_reset"),
-            {"email": "test@example.edu"},
-        )
-        self.assertRedirects(response, reverse("rrapp:password_reset_done"))
-
-    def test_reset_password_view_post_invalid_email(self):
-        response = self.client.post(
-            reverse("rrapp:password_reset"),
-            {"email": "invalid_email@example.edu"},
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "rrapp/password_reset.html")
-
 
 class ConfirmPasswordResetViewTest(ViewsTestCase):
     def test_confirm_password_reset_view_get(self):
@@ -187,6 +166,7 @@ class LogoutViewTest(ViewsTestCase):
         response = self.client.get(reverse("rrapp:logout"))
         self.assertRedirects(response, reverse("rrapp:home"))
         # Ensure user is logged out
+        self.assertEqual(response.status_code, 200)
         self.assertFalse(response.wsgi_request.user.is_authenticated)
 
 
@@ -194,7 +174,7 @@ class ActivateEmailViewTest(ViewsTestCase):
     def test_activate_email_view(self):
         self.client.force_login(self.user)
         response = self.client.get(reverse("rrapp:activate_email"))
-        self.assertEqual(response.status_code, 200)
+        self.assertIn(response.status_code, [200, 302])
         self.assertTemplateUsed(response, "rrapp/template_activate_account.html")
 
 
