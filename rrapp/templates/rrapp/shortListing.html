@@ -13,13 +13,6 @@
         {% include 'rrapp/left_bar.html' with user=user path=path %}
 
         <div class="text-center right-page">
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
             <div class="container p-3">
                 <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
                     <ol class="breadcrumb p-3 bg-body-tertiary board rounded-3">
@@ -30,7 +23,7 @@
                         </li>
     
                         <li class="breadcrumb-item avtive">
-                            ShortListings
+                            My ShortList
                         </li>
                     </ol>
                 </nav>

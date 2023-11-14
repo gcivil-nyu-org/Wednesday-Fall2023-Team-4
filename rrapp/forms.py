@@ -105,8 +105,8 @@ class MyUserCreationForm(UserCreationForm):
         phone_number = self.cleaned_data.get("phone_number")
         if len(phone_number) == 0:
             raise forms.ValidationError("Please enter a phone number")
-        elif len(phone_number) > 15:
-            raise forms.ValidationError("Please enter a valid phone number")
+        elif (len(phone_number) > 12) or (len(phone_number) < 10):
+            raise forms.ValidationError("Please enter a valid phone number with length 10-12")
         elif not phone_number.isdigit():
             raise forms.ValidationError("Phone number must only contain numbers")
         return phone_number
@@ -187,8 +187,8 @@ class UserForm(ModelForm):
         phone_number = self.cleaned_data.get("phone_number")
         if len(phone_number) == 0:
             raise forms.ValidationError("Please enter a phone number")
-        elif len(phone_number) > 15:
-            raise forms.ValidationError("Please enter a valid phone number")
+        elif (len(phone_number) > 12) or (len(phone_number) < 10):
+            raise forms.ValidationError("Please enter a valid phone number with length 10-12")
         elif not phone_number.isdigit():
             raise forms.ValidationError("Phone number must only contain numbers")
         return phone_number

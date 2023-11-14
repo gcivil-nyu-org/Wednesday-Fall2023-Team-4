@@ -83,7 +83,7 @@ class LoginView(generic.View):
                     reverse("rrapp:rentee_listings", args=(request.user.id,))
                 )
             else:
-                messages.error(request, "Username OR password does not exit")
+                messages.error(request, "Username OR password does not exist")
         else:
             self.context["form"] = loginForm
         return render(request, "rrapp/login_register.html", self.context)
@@ -138,8 +138,7 @@ class RegisterView(generic.View):
             return HttpResponseRedirect(
                 reverse("rrapp:rentee_listings", args=(user_id,))
             )
-        else:
-            print(form.errors)
+            
         return render(request, "rrapp/login_register.html", {"form": form})
 
 
@@ -654,7 +653,7 @@ def listing_delete(request, user_id, pk):
 
 
 @login_required(login_url='login')
-def deteleAccount(request, user_id):
+def deleteAccount(request, user_id):
     user = get_object_or_404(User, pk=user_id)
     user.delete()
     logout(request)

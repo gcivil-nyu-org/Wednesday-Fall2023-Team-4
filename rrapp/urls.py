@@ -99,8 +99,8 @@ urlpatterns = [
     # ex: /rrapp/user/1/profile/delete
     path(
         'user/<int:user_id>/profile/delete',
-        views.deteleAccount,
-        name='deteleAccount',
+        views.deleteAccount,
+        name='deleteAccount',
     ),
     path(
         'rentee/<int:user_id>/shortlist/',
