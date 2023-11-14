@@ -81,6 +81,8 @@ class MyUserCreationForm(UserCreationForm):
             raise forms.ValidationError(
                 "Username must only contain letters and numbers"
             )
+        elif User.objects.filter(username=username).exists():
+            raise forms.ValidationError("The username is already in use")
         return username
 
     def clean_email(self):

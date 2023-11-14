@@ -12,7 +12,7 @@ class ViewsTestCase(TestCase):
         super().setUpClass()
         cls.client = Client()
         cls.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpassword"
+            username="testuser", email="test@example.edu", password="testpassword123"
         )
 
     @classmethod
@@ -30,7 +30,7 @@ class LoginViewTest(ViewsTestCase):
     def test_login_view_post_valid_credentials(self):
         response = self.client.post(
             reverse("rrapp:login"),
-            {"email": "test@example.com", "password": "testpassword"},
+            {"email": "test@example.edu", "password": "testpassword123"},
         )
         self.assertRedirects(
             response, reverse("rrapp:rentee_listings", args=(self.user.id,))
@@ -39,7 +39,7 @@ class LoginViewTest(ViewsTestCase):
     def test_login_view_post_invalid_credentials(self):
         response = self.client.post(
             reverse("rrapp:login"),
-            {"email": "test@example.com", "password": "wrongpassword"},
+            {"email": "test@example.edu", "password": "wrongpassword"},
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/login_register.html")
@@ -55,9 +55,12 @@ class RegisterViewTest(ViewsTestCase):
         response = self.client.post(
             reverse("rrapp:register"),
             {
-                "email": "test@example.com",
+                "email": "test@example.edu",
                 "password1": "testpassword",
                 "password2": "wrongpassword",
+                "first_name": "Test",
+                "last_name": "User",
+                "phone_number": "1234567890",
             },
         )
         self.assertEqual(response.status_code, 200)
@@ -89,7 +92,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
         # rentee = Rentee.objects.create(user=self.user)
         listing = Listing.objects.create(
             user=User.objects.create_user(
-                username="testuser2", password="testpass2", email="testuser@example.com"
+                username="testuser2", password="testpass2", email="testuser@example.edu"
             ),
             title="Test Listing",
             monthly_rent=1000,
@@ -112,7 +115,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
         print(rentee)
         listing = Listing.objects.create(
             user=User.objects.create_user(
-                username="testuser2", password="testpass2", email="testuser@example.com"
+                username="testuser2", password="testpass2", email="testuser@example.edu"
             ),
             title="Test Listing",
             monthly_rent=1000,
