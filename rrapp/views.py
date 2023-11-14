@@ -491,7 +491,6 @@ class ListingUpdateView(generic.UpdateView):
                 pk__in=existing_photos_pks
             ).delete()
             listing.save()
-            print(request.FILES)
             for file in request.FILES.getlist('add_photos'):
                 Photo.objects.create(image=file, listing=listing)
             return self.form_valid(form)
