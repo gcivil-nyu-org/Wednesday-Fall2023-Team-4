@@ -3,16 +3,6 @@ from django.db import models
 from django.utils import timezone
 
 
-class Message(models.Model):
-    username = models.CharField(max_length=255)
-    room = models.CharField(max_length=255)
-    content = models.TextField()
-    date_added = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ('date_added',)
-
-
 class DirectMessage(models.Model):
     sender = models.CharField(max_length=255)
     receiver = models.CharField(max_length=255)
@@ -40,3 +30,4 @@ class DirectMessagePermission(models.Model):
 
     class Meta:
         ordering = ('created_at',)
+        unique_together = (("sender", "receiver"),)

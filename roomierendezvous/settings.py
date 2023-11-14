@@ -15,7 +15,7 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # 'data' is my media folder
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 'data' is my media folder
 MEDIA_URL = '/media/'
 
 
@@ -32,7 +32,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "roomierendezvous-dev.us-east-1.elasticbeanstalk.com",
     "roomierendezvous-app-dev.us-east-1.elasticbeanstalk.com",
-    "production-team4-2-dev.us-west-2.elasticbeanstalk.com"
+    "production-team4-2-dev.us-west-2.elasticbeanstalk.com",
 ]
 
 

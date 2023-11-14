@@ -13,4 +13,6 @@ class Command(BaseCommand):
             User.objects.create_superuser(
                 username="admin", password="complexpassword123", email="admin@nyu.edu"
             )
-        print("Superuser has been created.")
+            print("Superuser created.")
+        else:
+            print("Superuser already exists.")

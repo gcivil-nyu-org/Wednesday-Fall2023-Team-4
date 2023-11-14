@@ -96,4 +96,15 @@ urlpatterns = [
         views.PublicProfileView.as_view(),
         name='public_profile',
     ),
+    # ex: /rrapp/user/1/profile/delete
+    path(
+        'user/<int:user_id>/profile/delete',
+        views.deleteAccount,
+        name='deleteAccount',
+    ),
+    path(
+        'rentee/<int:user_id>/shortlist/',
+        views.ShortListView.as_view(),
+        name='shortlist',
+    ),
 ]
