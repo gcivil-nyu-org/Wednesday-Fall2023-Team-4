@@ -38,48 +38,44 @@ class ConversationHomeViewTest(ViewsTestCase):
         user5 = User.objects.create_user(
             username="testuser5", email="test5@example.com", password="testpassword"
         )
-        pending_connection = DirectMessagePermission.objects.create(
-            sender=self.user2,
-            receiver=self.user,
+        DirectMessagePermission.objects.create(
+            sender=self.user2.username,
+            receiver=self.user.username,
             permission=Permission.REQUESTED,
         )
-        pending_connections = [pending_connection]
         all_pending_connection_usernamesids = [
             {
                 'id': self.user2.id,
                 'username': self.user2.username,
             }
         ]
-        active_connection = DirectMessagePermission.objects.create(
-            sender=user3,
-            receiver=self.user,
+        DirectMessagePermission.objects.create(
+            sender=user3.username,
+            receiver=self.user.username,
             permission=Permission.ALLOWED,
         )
-        active_connections = [active_connection]
         all_active_connection_usernamesids = [
             {
                 'id': user3.id,
                 'username': user3.username,
             }
         ]
-        requested_connection = DirectMessagePermission.objects.create(
-            sender=self.user,
-            receiver=user4,
+        DirectMessagePermission.objects.create(
+            sender=self.user.username,
+            receiver=user4.username,
             permission=Permission.REQUESTED,
         )
-        requested_connections = [requested_connection]
         all_requested_connection_usernamesids = [
             {
                 'id': user4.id,
                 'username': user4.username,
             }
         ]
-        blocked_connection = DirectMessagePermission.objects.create(
-            sender=self.user,
-            receiver=user5,
+        DirectMessagePermission.objects.create(
+            sender=self.user.username,
+            receiver=user5.username,
             permission=Permission.BLOCKED,
         )
-        blocked_connections = [requested_connection]
         all_blocked_connection_usernamesids = [
             {
                 'id': user5.id,
