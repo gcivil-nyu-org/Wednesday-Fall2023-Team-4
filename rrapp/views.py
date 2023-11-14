@@ -257,6 +257,7 @@ class ListingDetailView(generic.DetailView):
         context_data["user_id"] = user_id
         context_data["user"] = User.objects.get(id=user_id)
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["photos"] = Photo.objects.filter(listing=self.kwargs["pk"])
         return context_data
 
 
@@ -277,6 +278,8 @@ class ListingDetailRenteeView(generic.DetailView):
         context_data["cur_permission"] = self.cur_permission(
             self.kwargs["user_id"], self.kwargs["pk"]
         )
+        context_data["photos"] = Photo.objects.filter(listing=self.kwargs["pk"])
+
         return context_data
 
     def check_state(self, user_id, listing_id):
@@ -487,7 +490,8 @@ class ListingUpdateView(generic.UpdateView):
             Photo.objects.filter(listing=listing).exclude(
                 pk__in=existing_photos_pks
             ).delete()
-
+            listing.save()
+            print(request.FILES)
             for file in request.FILES.getlist('add_photos'):
                 Photo.objects.create(image=file, listing=listing)
             return self.form_valid(form)

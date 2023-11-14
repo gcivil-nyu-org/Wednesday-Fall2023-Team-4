@@ -35,7 +35,7 @@
                         <h1 class="font-monospace display-5 fw-medium text-body-emphasis my-3">{{ user.email }}</h1>
 
                             
-                            <form method="post" class="row w-75 text-center">
+                            <form method="post" enctype="multipart/form-data" class="row w-75 text-center">
                                 {% csrf_token %}
                                 {% load widget_tweaks %}
                                 

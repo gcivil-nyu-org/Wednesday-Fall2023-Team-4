@@ -66,7 +66,7 @@
       <div class = "d-flex flex-column align-items-center board rounded-3" style="background-color:#F8F8F8">
         <h1 class="font-monospace display-5 fw-medium text-body-emphasis">Find your roomie here</h1>
 
-        <form class="row w-75 text-center" action="" method="POST">
+        <form class="row w-75 text-center" enctype="multipart/form-data" action="" method="POST">
           {% csrf_token %}
           {% load widget_tweaks %}
 
