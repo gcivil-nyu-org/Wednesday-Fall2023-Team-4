@@ -48,6 +48,7 @@ script:
   - black --check . --skip-string-normalization --exclude settings* --extend-exclude migrations*
   - flake8 .
   - coverage run --source=rrapp manage.py test
+  - coverage run --source=chat manage.py test
 
 
 after_script:
