@@ -138,7 +138,7 @@ class RegisterView(generic.View):
             return HttpResponseRedirect(
                 reverse("rrapp:rentee_listings", args=(user_id,))
             )
-            
+
         return render(request, "rrapp/login_register.html", {"form": form})
 
 
