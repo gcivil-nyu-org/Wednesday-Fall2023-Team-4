@@ -97,7 +97,7 @@ class ConversationHomeViewTest(ViewsTestCase):
 
     def test_conversation_home_view_authenticated_user_POST_accept(self):
         self.client.force_login(self.user)
-        accpt_connection = DirectMessagePermission.objects.create(
+        DirectMessagePermission.objects.create(
             sender=self.user2.username,
             receiver=self.user.username,
             permission=Permission.REQUESTED,
@@ -121,7 +121,7 @@ class ConversationHomeViewTest(ViewsTestCase):
 
     def test_conversation_home_view_authenticated_user_POST_reject(self):
         self.client.force_login(self.user)
-        accpt_connection = DirectMessagePermission.objects.create(
+        DirectMessagePermission.objects.create(
             sender=self.user2.username,
             receiver=self.user.username,
             permission=Permission.REQUESTED,
@@ -145,7 +145,7 @@ class ConversationHomeViewTest(ViewsTestCase):
 
     def test_conversation_home_view_authenticated_user_POST_withdraw(self):
         self.client.force_login(self.user)
-        accpt_connection = DirectMessagePermission.objects.create(
+        DirectMessagePermission.objects.create(
             sender=self.user.username,
             receiver=self.user2.username,
             permission=Permission.REQUESTED,
@@ -169,7 +169,7 @@ class ConversationHomeViewTest(ViewsTestCase):
 
     def test_conversation_home_view_authenticated_user_POST_unblock(self):
         self.client.force_login(self.user)
-        accpt_connection = DirectMessagePermission.objects.create(
+        DirectMessagePermission.objects.create(
             sender=self.user2.username,
             receiver=self.user.username,
             permission=Permission.BLOCKED,
