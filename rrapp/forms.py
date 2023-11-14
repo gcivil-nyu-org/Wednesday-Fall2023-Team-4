@@ -3,10 +3,35 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 import datetime
 
-from .models import PropertyType, RoomType, Pets, FoodGroup, Listing
+from .models import Listing, Photo
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
+
+class LoginForm(forms.Form):
+    email = forms.EmailField(
+        max_length=100,
+        widget=forms.EmailInput(),
+    )
+    password = forms.CharField(
+        max_length=100,
+        widget=forms.PasswordInput(),
+    )
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if '@' not in email:
+            raise forms.ValidationError("Please enter a valid email")
+        elif not User.objects.filter(email=email).exists():
+            raise forms.ValidationError(
+                "The user corresponding to the email does not exist"
+            )
+        elif not email.endswith(".edu"):
+            raise forms.ValidationError(
+                "Please enter a valid school email. End with .edu"
+            )
+        return email
 
 
 class MyUserCreationForm(UserCreationForm):
@@ -26,25 +51,182 @@ class MyUserCreationForm(UserCreationForm):
             "password2",
         ]
 
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get("first_name")
+        if len(first_name) == 0:
+            raise forms.ValidationError("Please enter a first name")
+        elif len(first_name) > 30:
+            raise forms.ValidationError("First name is too long")
+        elif not first_name.isalpha():
+            raise forms.ValidationError("First name must only contain letters")
+        return first_name
+
+    def clean_last_name(self):
+        last_name = self.cleaned_data.get("last_name")
+        if len(last_name) == 0:
+            raise forms.ValidationError("Please enter a last name")
+        elif len(last_name) > 30:
+            raise forms.ValidationError("Last name is too long")
+        elif not last_name.isalpha():
+            raise forms.ValidationError("Last name must only contain letters")
+        return last_name
+
+    def clean_username(self):
+        username = self.cleaned_data.get("username")
+        if len(username) == 0:
+            raise forms.ValidationError("Please enter a username")
+        elif len(username) > 30:
+            raise forms.ValidationError("Username is too long")
+        elif not username.isalnum():
+            raise forms.ValidationError(
+                "Username must only contain letters and numbers"
+            )
+        elif User.objects.filter(username=username).exists():
+            raise forms.ValidationError("The username is already in use")
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if len(email) == 0:
+            raise forms.ValidationError("Please enter an email")
+        elif '@' not in email:
+            raise forms.ValidationError("Please enter a valid email")
+        elif len(email) > 100:
+            raise forms.ValidationError("Email is too long")
+        elif not email.endswith(".edu"):
+            raise forms.ValidationError(
+                "Please enter a valid school email. End with .edu"
+            )
+        elif User.objects.filter(email=email).exists():
+            raise forms.ValidationError("The email is already in use")
+        return email
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get("phone_number")
+        if len(phone_number) == 0:
+            raise forms.ValidationError("Please enter a phone number")
+        elif (len(phone_number) > 12) or (len(phone_number) < 10):
+            raise forms.ValidationError(
+                "Please enter a valid phone number with length 10-12"
+            )
+        elif not phone_number.isdigit():
+            raise forms.ValidationError("Phone number must only contain numbers")
+        return phone_number
+
+    def clean_password1(self):
+        password1 = self.cleaned_data.get("password1")
+        if len(password1) == 0:
+            raise forms.ValidationError("Please enter a password")
+        elif len(password1) < 8:
+            raise forms.ValidationError("Password must be at least 8 characters long")
+        elif not any(char.isdigit() for char in password1):
+            raise forms.ValidationError("Password must contain at least one number")
+        elif not any(char.isalpha() for char in password1):
+            raise forms.ValidationError("Password must contain at least one letter")
+        return password1
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if len(password2) == 0:
+            raise forms.ValidationError("Please enter password again")
+        elif password1 != password2:
+            raise forms.ValidationError("Passwords do not match")
+        return password2
+
 
 class UserForm(ModelForm):
+    birth_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+
     class Meta:
         model = User
         fields = [
+            "username",
             "first_name",
             "last_name",
-            "username",
-            "email",
-            "phone_number",
-            "profile_picture",
+            "birth_date",
+            "bio",
             "smokes",
             "pets",
             "food_group",
-            "bio",
+            "phone_number",
+            "profile_picture",
         ]
 
+    def clean_username(self):
+        username = self.cleaned_data.get("username")
+        if len(username) == 0:
+            raise forms.ValidationError("Please enter a username")
+        elif len(username) > 30:
+            raise forms.ValidationError("Username is too long")
+        elif not username.isalnum():
+            raise forms.ValidationError(
+                "Username must only contain letters and numbers"
+            )
+        return username
 
-class ListingForm(forms.ModelForm):
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get("first_name")
+        if len(first_name) == 0:
+            raise forms.ValidationError("Please enter a first name")
+        elif len(first_name) > 30:
+            raise forms.ValidationError("First name is too long")
+        elif not first_name.isalpha():
+            raise forms.ValidationError("First name must only contain letters")
+        return first_name
+
+    def clean_last_name(self):
+        last_name = self.cleaned_data.get("last_name")
+        if len(last_name) == 0:
+            raise forms.ValidationError("Please enter a last name")
+        elif len(last_name) > 30:
+            raise forms.ValidationError("Last name is too long")
+        elif not last_name.isalpha():
+            raise forms.ValidationError("Last name must only contain letters")
+        return last_name
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get("phone_number")
+        if len(phone_number) == 0:
+            raise forms.ValidationError("Please enter a phone number")
+        elif (len(phone_number) > 12) or (len(phone_number) < 10):
+            raise forms.ValidationError(
+                "Please enter a valid phone number with length 10-12"
+            )
+        elif not phone_number.isdigit():
+            raise forms.ValidationError("Phone number must only contain numbers")
+        return phone_number
+
+    def clean_bio(self):
+        bio = self.cleaned_data.get("bio")
+        if len(bio) > 500:
+            raise forms.ValidationError("Bio is too long")
+        return bio
+
+    def clean_birth_date(self):
+        birth_date = self.cleaned_data.get("birth_date")
+        if birth_date > datetime.date.today():
+            raise forms.ValidationError("Birth date cannot be in the future")
+        return birth_date
+
+
+class ListingForm(ModelForm):
+    date_available_from = forms.DateField(
+        initial=datetime.date.today(), widget=forms.DateInput(attrs={'type': 'date'})
+    )
+    date_available_to = forms.DateField(
+        initial=datetime.date.today() + datetime.timedelta(days=30),
+        widget=forms.DateInput(attrs={'type': 'date'}),
+    )
+    existing_photos = forms.ModelMultipleChoiceField(
+        queryset=Photo.objects.none(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    add_photos = forms.FileField(
+        required=False, widget=forms.FileInput(attrs={'multiple': True})
+    )
+
     class Meta:
         model = Listing
         fields = [
@@ -76,222 +258,58 @@ class ListingForm(forms.ModelForm):
             "smoking_allowed",
             "pets_allowed",
             "food_groups_allowed",
+            "existing_photos",
+            "add_photos",
         ]
 
-    status = forms.CharField(
-        required=False,
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Enter status"}
-        ),
-    )
-    title = forms.CharField(
-        max_length=100,
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Enter title"}
-        ),
-    )
-    description = forms.CharField(
-        required=False,
-        widget=forms.Textarea(
-            attrs={"class": "form-control", "placeholder": "Enter useful description"}
-        ),
-    )
-    monthly_rent = forms.IntegerField(
-        label="monthly_rent",
-        initial=1001,
-        widget=forms.NumberInput(
-            attrs={"class": "form-control", "placeholder": "Enter monthly rent"}
-        ),
-    )
-    date_available_from = forms.DateField(
-        label="date_available_from",
-        initial=datetime.date.today(),
-        widget=forms.DateInput(
-            attrs={"class": "form-control", "placeholder": "Enter date available from"}
-        ),
-    )
-    date_available_to = forms.DateField(
-        label="date_available_to",
-        initial=datetime.date.today() + datetime.timedelta(days=30),
-        widget=forms.DateInput(
-            attrs={"class": "form-control", "placeholder": "Enter date available to"}
-        ),
-    )
-    property_type = forms.ChoiceField(
-        label="property_type",
-        choices=PropertyType.choices,
-        initial=PropertyType.APARTMENT,
-    )
-    room_type = forms.ChoiceField(
-        label="room_type",
-        choices=RoomType.choices,
-        initial=RoomType.PRIVATE,
-    )
-    address1 = forms.CharField(
-        label="Address line 1",
-        max_length=1024,
-        initial="",
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Enter address line 1"}
-        ),
-    )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if isinstance(self.instance, Listing):
+            if self.instance.pk:
+                self.fields['existing_photos'].queryset = Photo.objects.filter(
+                    listing=self.instance.pk
+                )
+            else:
+                del self.fields['existing_photos']
 
-    address2 = forms.CharField(
-        label="Address line 2",
-        max_length=1024,
-        initial="",
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Enter address line 2"}
-        ),
-    )
+    def clean_monthly_rent(self):
+        monthly_rent = self.cleaned_data.get("monthly_rent")
+        if monthly_rent < 0:
+            raise forms.ValidationError("Monthly rent cannot be negative")
+        return monthly_rent
 
-    zip_code = forms.CharField(
-        label="ZIP / Postal code",
-        max_length=12,
-        initial="11201",
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Enter zipcode"}
-        ),
-    )
+    def clean_date_available_from(self):
+        date_available_from = self.cleaned_data.get("date_available_from")
+        if date_available_from < datetime.date.today():
+            raise forms.ValidationError("Date available from cannot be in the past")
+        return date_available_from
 
-    city = forms.CharField(
-        label="City",
-        max_length=1024,
-        initial="New York",
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Enter city"}
-        ),
-    )
+    def clean_date_available_to(self):
+        date_available_to = self.cleaned_data.get("date_available_to")
+        if date_available_to < datetime.date.today():
+            raise forms.ValidationError("Date available to cannot be in the past")
+        elif date_available_to < self.cleaned_data.get("date_available_from"):
+            raise forms.ValidationError(
+                "Date available to cannot be before date available from"
+            )
+        return date_available_to
 
-    state = forms.CharField(
-        label="State",
-        max_length=10,
-        initial="New York",
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Enter state"}
-        ),
-    )
+    def clean_number_of_bedrooms(self):
+        number_of_bedrooms = self.cleaned_data.get("number_of_bedrooms")
+        if number_of_bedrooms < 0:
+            raise forms.ValidationError("Number of bedrooms cannot be negative")
+        return number_of_bedrooms
 
-    country = forms.CharField(
-        label="Country",
-        max_length=3,
-        initial="USA",
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Enter country"}
-        ),
-    )
+    def clean_number_of_bathrooms(self):
+        number_of_bathrooms = self.cleaned_data.get("number_of_bathrooms")
+        if number_of_bathrooms < 0:
+            raise forms.ValidationError("Number of bathrooms cannot be negative")
+        return number_of_bathrooms
 
-    washer = forms.BooleanField(
-        label="washer",
-        initial=True,
-        required=False,
-        widget=forms.NullBooleanSelect(
-            attrs={"class": "form-control", "placeholder": "Select availability"}
-        ),
-    )
-    dryer = forms.BooleanField(
-        label="dryer",
-        initial=True,
-        required=False,
-        widget=forms.NullBooleanSelect(
-            attrs={"class": "form-control", "placeholder": "Select availability"}
-        ),
-    )
-    dishwasher = forms.BooleanField(
-        label="dishwasher",
-        initial=True,
-        required=False,
-        widget=forms.NullBooleanSelect(
-            attrs={"class": "form-control", "placeholder": "Select availability"}
-        ),
-    )
-    microwave = forms.BooleanField(
-        label="microwave",
-        initial=True,
-        required=False,
-        widget=forms.NullBooleanSelect(
-            attrs={"class": "form-control", "placeholder": "Select availability"}
-        ),
-    )
-    baking_oven = forms.BooleanField(
-        label="baking_oven",
-        initial=True,
-        required=False,
-        widget=forms.NullBooleanSelect(
-            attrs={"class": "form-control", "placeholder": "Select availability"}
-        ),
-    )
-    parking = forms.BooleanField(
-        label="parking",
-        initial=False,
-        required=False,
-        widget=forms.NullBooleanSelect(
-            attrs={"class": "form-control", "placeholder": "Select availability"}
-        ),
-    )
-
-    number_of_bedrooms = forms.IntegerField(
-        label="number_of_bedrooms",
-        initial=1,
-        required=False,
-        widget=forms.NumberInput(
-            attrs={"class": "form-control", "placeholder": "Enter monthly rent"}
-        ),
-    )
-    number_of_bathrooms = forms.IntegerField(
-        label="number_of_bathrooms",
-        initial=1,
-        required=False,
-        widget=forms.NumberInput(
-            attrs={"class": "form-control", "placeholder": "Enter monthly rent"}
-        ),
-    )
-    furnished = forms.BooleanField(
-        label="furnished",
-        initial=True,
-        required=False,
-        widget=forms.NullBooleanSelect(
-            attrs={"class": "form-control", "placeholder": "Select availability"}
-        ),
-    )
-    utilities_included = forms.BooleanField(
-        label="utilities_included",
-        initial=True,
-        required=False,
-        widget=forms.NullBooleanSelect(
-            attrs={"class": "form-control", "placeholder": "Select availability"}
-        ),
-    )
-
-    # age_range_0 = forms.IntegerField(label = "age_range_0",
-    #     initial=18,
-    #     required=False,
-    #     widget=forms.NumberInput(
-    #         attrs={"class": "form-control", "placeholder": "Enter minimum age"}
-    #     )
-    # )
-    # age_range_1 = forms.IntegerField(label = "age_range_1",
-    #     initial=99,
-    #     required=False,
-    #     widget=forms.NumberInput(
-    #         attrs={"class": "form-control", "placeholder": "Enter maximum age"}
-    #     )
-    # )
-    smoking_allowed = forms.BooleanField(
-        label="smoking_allowed",
-        initial=False,
-        required=False,
-        widget=forms.NullBooleanSelect(
-            attrs={"class": "form-control", "placeholder": "Select availability"}
-        ),
-    )
-    pets_allowed = forms.ChoiceField(
-        label="pets_allowed",
-        choices=Pets.choices,
-        initial=Pets.NONE,
-    )
-    food_groups_allowed = forms.ChoiceField(
-        label="food_groups_allowed",
-        choices=FoodGroup.choices,
-        initial=FoodGroup.ALL,
-    )
+    def clean_age_range(self):
+        age_range = self.cleaned_data.get("age_range")
+        if age_range.lower < 18:
+            raise forms.ValidationError("Minimum age cannot be less than 18")
+        elif age_range.upper > 100:
+            raise forms.ValidationError("Maximum age cannot be greater than 100")
+        return age_range

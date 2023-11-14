@@ -36,6 +36,9 @@
             <div class = "p-3">
                 <a href="{% url 'rrapp:my_listings' user.id %}" class="btn btn-warning">Switch Status</a>
             </div>
+            <div class = "p-3">
+                <a href="{% url 'rrapp:shortlist' user.id %}" class="btn btn-success">My ShortList</a>
+            </div>
         {% endif %}
 
         <div class = "p-3">
