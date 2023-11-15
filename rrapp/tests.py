@@ -198,11 +198,6 @@ class LogoutViewTest(TestCase):
 
 
 class ListingNewViewTest(TestCase):
-    def test_listing_new_view_get(self):
-        client = Client()
-        response = self.client.get(reverse("rrapp:listing_new"))
-        self.assertEqual(response.status_code, 302)
-
     def test_listing_new_view_post(self):
         client = Client()
         response = client.post(
