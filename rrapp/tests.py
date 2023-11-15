@@ -2,7 +2,8 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
-from .models import Listing, Rentee, SavedListing
+from .models import Listing, Rentee, Renter, SavedListing
+from chat.models import DirectMessagePermission, Permission
 
 User = get_user_model()
 
@@ -77,6 +78,41 @@ class RegisterViewTest(ViewsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/login_register.html")
 
+    def test_register_view_post_invalid_data(self):
+        response = self.client.post(
+            reverse("rrapp:register"),
+            {
+                "email": "test@example.com",
+                "password1": "testpassword",
+                "password2": "wrongpassword",
+                "first_name": "Test1",
+                "last_name": "User1",
+                "phone_number": "1234",
+            },
+        )
+        print(response)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/login_register.html")
+        self.assertFormError(response, "form", "username", "This field is required.")
+        self.assertFormError(
+            response,
+            "form",
+            "email",
+            "Please enter a valid school email. End with .edu",
+        )
+        self.assertFormError(
+            response, "form", "first_name", "First name must only contain letters"
+        )
+        self.assertFormError(
+            response, "form", "last_name", "Last name must only contain letters"
+        )
+        self.assertFormError(
+            response,
+            "form",
+            "phone_number",
+            "Please enter a valid phone number with length 10-12",
+        )
+
     def test_register_view_post_invalid_credentials(self):
         response = self.client.post(
             reverse("rrapp:register"),
@@ -92,41 +128,48 @@ class RegisterViewTest(ViewsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/login_register.html")
 
-    # def test_register_view_post_valid_credentials(self):
-    #     response = self.client.post(
-    #         reverse("rrapp:register"),
-    #         {
-    #             "email": "test2@example.edu",
-    #             "password1": "test2password",
-    #             "password2": "test2password",
-    #             "first_name": "Test",
-    #             "last_name": "User",
-    #             "phone_number": "1234567890",
-    #             "username": "testuser2",
-    #         },
-    #     )
-    #     self.assertEqual(response.status_code, 200)
-    #     # self.assertRedirects(
-    #     #     response, reverse("rrapp:rentee_listings", args=(self.user.id,))
-    #     # )
-    #     self.assertTrue(
-    #         User.objects.filter(
-    #             email="test2@example.edu",
-    #         ).exists()
-    #     )
-    #     user=User.objects.filter(
-    #             email="test2@example.edu",
-    #         )[0]
-    #     self.assertTrue(
-    #         Renter.objects.filter(
-    #             user = user,
-    #         ).exists()
-    #     )
-    #     self.assertTrue(
-    #         Rentee.objects.filter(
-    #             user = user,
-    #         ).exists()
-    #     )
+    def test_register_view_post_valid_credentials(self):
+        data = {
+            "email": "test2@example.edu",
+            "password1": "test2password",
+            "password2": "test2password",
+            "first_name": "Test",
+            "last_name": "User",
+            "phone_number": "1234567890",
+            "username": "testuser222",
+            "pets": "dogs",
+            "food_group": "all",
+        }
+
+        response = self.client.post(
+            reverse("rrapp:register"),
+            data,
+        )
+
+        self.assertTrue(
+            User.objects.filter(
+                email="test2@example.edu",
+            ).exists()
+        )
+        newUser = User.objects.get(
+            email="test2@example.edu",
+        )
+        self.assertRedirects(
+            response,
+            expected_url=reverse("rrapp:rentee_listings", args=(newUser.id,)),
+            status_code=302,
+        )
+
+        self.assertTrue(
+            Renter.objects.filter(
+                user=newUser,
+            ).exists()
+        )
+        self.assertTrue(
+            Rentee.objects.filter(
+                user=newUser,
+            ).exists()
+        )
 
     def test_register_view_authenticated_user(self):
         self.client.force_login(self.user)
@@ -208,12 +251,86 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
             ).exists()
         )
 
+    def test_listing_detail_rentee_view_connection_request_exists(self):
+        self.client.force_login(self.user)
+        rentee = Rentee.objects.create(user=self.user)
+        print(rentee)
+        user2 = User.objects.create_user(
+            username="testuser2", password="testpass2", email="testuser2@example.edu"
+        )
+        listing = Listing.objects.create(
+            user=user2,
+            title="Test Listing",
+            monthly_rent=1000,
+        )
+        DirectMessagePermission.objects.create(
+            sender=self.user.username,
+            receiver=user2.username,
+            permission=Permission.ALLOWED,
+        )
+        response = self.client.post(
+            reverse(
+                "rrapp:rentee_listing_detail",
+                args=(
+                    self.user.id,
+                    listing.id,
+                ),
+            ),
+            {"connection_request": "true"},
+        )
+        self.assertEqual(response.status_code, 302)
+
+    def test_listing_detail_rentee_view_connection_request_create(self):
+        self.client.force_login(self.user)
+        rentee = Rentee.objects.create(user=self.user)
+        print(rentee)
+        user2 = User.objects.create_user(
+            username="testuser2", password="testpass2", email="testuser@example.edu"
+        )
+        listing = Listing.objects.create(
+            user=user2,
+            title="Test Listing",
+            monthly_rent=1000,
+        )
+        response = self.client.post(
+            reverse(
+                "rrapp:rentee_listing_detail",
+                args=(
+                    self.user.id,
+                    listing.id,
+                ),
+            ),
+            {"connection_request": "true"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(
+            DirectMessagePermission.objects.filter(
+                sender=self.user.username,
+                receiver=user2.username,
+                permission=Permission.REQUESTED,
+            ).exists()
+        )
+
 
 class ListingResultsViewTest(ViewsTestCase):
     def test_listing_results_view_authenticated_user(self):
         self.client.force_login(self.user)
         response = self.client.get(
-            reverse("rrapp:rentee_listings", args=(self.user.id,))
+            reverse("rrapp:rentee_listings", args=(self.user.id,)),
+            {
+                "monthly_rent": 1000,
+                "number_of_bedrooms": 2,
+                "number_of_bathrooms": 2,
+                "room_type": "private",
+                "food_groups_allowed": "vegan",
+                "pets_allowed": "all",
+                "washer": "on",
+                "Dryer": "on",
+                "utilities_included": "on",
+                "furnished": "on",
+                "dishwasher": "on",
+                "parking": "on",
+            },
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/rentee_listings.html")
