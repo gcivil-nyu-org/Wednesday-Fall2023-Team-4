@@ -288,7 +288,7 @@ class ListingResultsViewTest(ViewsTestCase):
                 "furnished": False,
                 "dishwasher": True,
                 "parking": False,
-            }
+            },
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/rentee_listings.html")
