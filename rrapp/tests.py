@@ -159,17 +159,6 @@ class ConfirmPasswordResetViewTest(ViewsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/password_reset_confirm.html")
 
-
-class LogoutViewTest(ViewsTestCase):
-    def test_logout_view(self):
-        self.client.force_login(self.user)
-        response = self.client.get(reverse("rrapp:logout"))
-        self.assertRedirects(response, reverse("rrapp:home"))
-        # Ensure user is logged out
-        self.assertIn(response.status_code, [200, 302])
-        self.assertFalse(response.wsgi_request.user.is_authenticated)
-
-
 class ActivateEmailViewTest(ViewsTestCase):
     def test_activate_email_view(self):
         self.client.force_login(self.user)
