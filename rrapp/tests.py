@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
-from .models import Listing, Rentee, Renter, SavedListing
+from .models import Listing, Rentee, SavedListing
 
 User = get_user_model()
 
@@ -200,6 +200,34 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
                 ),
             ),
             {"shortlist": "true"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(
+            SavedListing.objects.filter(
+                rentee_id__user=self.user.id, saved_listings=listing.id
+            ).exists()
+        )
+
+    def test_listing_detail_rentee_view_save_listing(self):
+        self.client.force_login(self.user)
+        rentee = Rentee.objects.create(user=self.user)
+        print(rentee)
+        listing = Listing.objects.create(
+            user=User.objects.create_user(
+                username="testuser2", password="testpass2", email="testuser@example.edu"
+            ),
+            title="Test Listing",
+            monthly_rent=1000,
+        )
+        response = self.client.post(
+            reverse(
+                "rrapp:rentee_listing_detail",
+                args=(
+                    self.user.id,
+                    listing.id,
+                ),
+            ),
+            {"connection_request": "true"},
         )
         self.assertEqual(response.status_code, 302)
         self.assertTrue(
