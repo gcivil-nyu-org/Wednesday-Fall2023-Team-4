@@ -282,12 +282,12 @@ class ListingResultsViewTest(ViewsTestCase):
                 "room_type": "private",
                 "food_groups_allowed": "vegan",
                 "pets_allowed": "all",
-                "washer": True,
-                "Dryer": False,
-                "utilities_included": True,
-                "furnished": False,
-                "dishwasher": True,
-                "parking": False,
+                "washer": "on",
+                "Dryer": "on",
+                "utilities_included": "on",
+                "furnished": "on",
+                "dishwasher": "on",
+                "parking": "on",
             },
         )
         self.assertEqual(response.status_code, 200)
