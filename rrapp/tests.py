@@ -3,7 +3,6 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 from .models import Listing, Rentee, Renter, SavedListing
-from .forms import MyUserCreationForm
 from chat.models import DirectMessagePermission, Permission
 
 User = get_user_model()
