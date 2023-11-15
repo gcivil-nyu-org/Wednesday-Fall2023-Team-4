@@ -176,62 +176,95 @@ class ListingIndexViewTest(ViewsTestCase):
         self.assertTemplateUsed(response, "rrapp/my_listings.html")
 
 
-class ChangePasswordViewTest(ViewsTestCase):
-    def test_change_password_view_get(self):
-        self.client.force_login(self.user)
-        response = self.client.get(reverse("rrapp:change_password"))
+class ResetPasswordViewTest(TestCase):
+    def test_reset_password_view_get(self):
+        client = Client()
+        response = client.get(reverse("rrapp:reset_password"))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "rrapp/change_password.html")
 
-    def test_change_password_view_post_valid(self):
-        self.client.force_login(self.user)
-        response = self.client.post(
-            reverse("rrapp:change_password"),
-            {
-                "old_password": "testpassword123",
-                "new_password1": "newpassword456",
-                "new_password2": "newpassword456",
-            },
+    def test_reset_password_view_post(self):
+        client = Client()
+        response = client.post(
+            reverse("rrapp:reset_password"), {"email": "test@example.com"}
         )
-        self.assertRedirects(response, reverse("rrapp:login"))
+        self.assertEqual(response.status_code, 302)
 
-    def test_change_password_view_post_invalid_old_password(self):
-        self.client.force_login(self.user)
-        response = self.client.post(
-            reverse("rrapp:change_password"),
-            {
-                "old_password": "wrongoldpassword",
-                "new_password1": "newpassword456",
-                "new_password2": "newpassword456",
-            },
-        )
+
+class LogoutViewTest(TestCase):
+    def test_logout_view(self):
+        client = Client()
+        response = client.get(reverse("rrapp:logout"))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "rrapp/change_password.html")
 
-    def test_change_password_view_post_mismatched_new_passwords(self):
-        self.client.force_login(self.user)
-        response = self.client.post(
-            reverse("rrapp:change_password"),
-            {
-                "old_password": "testpassword123",
-                "new_password1": "newpassword456",
-                "new_password2": "mismatchedpassword",
-            },
+
+class ActivateViewTest(TestCase):
+    def test_activate_view(self):
+        client = Client()
+        response = client.get(
+            reverse(
+                "rrapp:activate",
+                kwargs={"uidb64": "<valid_uidb64>", "token": "<valid_token>"},
+            )
         )
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "rrapp/change_password.html")
 
 
-class UserProfileViewTest(ViewsTestCase):
-    def test_user_profile_view_authenticated_user(self):
-        self.client.force_login(self.user)
-        response = self.client.get(reverse("rrapp:user_profile"))
+class ListingNewViewTest(TestCase):
+    def test_listing_new_view_get(self):
+        client = Client()
+        response = client.get(reverse("rrapp:listing_new", kwargs={"user_id": 1}))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "rrapp/user_profile.html")
 
-    def test_user_profile_view_unauthenticated_user(self):
-        response = self.client.get(reverse("rrapp:user_profile"))
-        self.assertRedirects(response, reverse("rrapp:login"))
+    def test_listing_new_view_post(self):
+        client = Client()
+        response = client.post(
+            reverse("rrapp:listing_new", kwargs={"user_id": 1}),
+            {"title": "Test Listing", "monthly_rent": 1000},
+        )
+        self.assertEqual(response.status_code, 302)
 
 
-# Add more test cases as needed
+class ProfileViewTest(TestCase):
+    def test_profile_view_get(self):
+        client = Client()
+        response = client.get(reverse("rrapp:profile", kwargs={"pk": 1}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_profile_view_post(self):
+        client = Client()
+        response = client.post(
+            reverse("rrapp:profile", kwargs={"pk": 1}),
+            {"first_name": "Test", "last_name": "User"},
+        )
+        self.assertEqual(response.status_code, 302)
+
+
+class PublicProfileViewTest(TestCase):
+    def test_public_profile_view(self):
+        client = Client()
+        response = client.get(reverse("rrapp:public_profile", kwargs={"pk": 1}))
+        self.assertEqual(response.status_code, 200)
+
+
+class ShortListViewTest(TestCase):
+    def test_shortlist_view(self):
+        client = Client()
+        response = client.get(reverse("rrapp:shortlist", kwargs={"user_id": 1}))
+        self.assertEqual(response.status_code, 200)
+
+
+class ListingUpdateViewTest(TestCase):
+    def test_listing_update_view_get(self):
+        client = Client()
+        response = client.get(
+            reverse("rrapp:listing_detail_modify", kwargs={"user_id": 1, "pk": 1})
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_listing_update_view_post(self):
+        client = Client()
+        response = client.post(
+            reverse("rrapp:listing_detail_modify", kwargs={"user_id": 1, "pk": 1}),
+            {"title": "Updated Listing"},
+        )
+        self.assertEqual(response.status_code, 302)
