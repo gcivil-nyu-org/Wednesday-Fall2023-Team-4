@@ -11,7 +11,7 @@
         <script>
             function initMap() {
                 console.log("initMap function called");
-
+                var geocoder = new google.maps.Geocoder();
                 var map = new google.maps.Map(document.getElementById('map'), {
                     center: { lat: 40.7128, lng: -74.0060 },
                     zoom: 10
@@ -19,20 +19,25 @@
 
                 var addresses = [];
 
+                
                 {% if queried_listings_page %}
                     {% for listing in queried_listings_page %}
-                        addresses.push("{{ listing.address1|escapejs }}, {{ listing.city|escapejs }}, {{ listing.state|escapejs }}");
+                        addresses.push({
+                            name: "{{ listing.title|escapejs }}",
+                            address: "{{ listing.address1|escapejs }}, {{ listing.city|escapejs }}, {{ listing.state|escapejs }}"
+                        });
                     {% endfor %}
                 {% endif %}
 
                 console.log(addresses);
 
-                var geocoder = new google.maps.Geocoder();
+                // ... Your existing code ...
 
-                // Recursive function to process addresses sequentially
                 function processAddress(index) {
                     if (index < addresses.length) {
-                        var address = addresses[index];
+                        var listing = addresses[index];
+                        var address = listing.address;
+
                         geocoder.geocode({ address: address }, function (results, status) {
                             if (status === "OK") {
                                 var location = results[0].geometry.location;
@@ -40,7 +45,7 @@
                                 var marker = new google.maps.Marker({
                                     position: location,
                                     map: map,
-                                    title: address
+                                    title: listing.name  // Set the marker title to the listing name
                                 });
 
                                 // Process the next address
@@ -56,6 +61,7 @@
                         });
                     }
                 }
+
 
                 // Adjust address and try geocoding again
                 function adjustAndGeocode(address, nextIndex) {
