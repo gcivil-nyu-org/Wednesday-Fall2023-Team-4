@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 from .models import Listing, Rentee, SavedListing
+from chat.models import DirectMessagePermission, Permission
 
 User = get_user_model()
 
@@ -208,12 +209,86 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
             ).exists()
         )
 
+    def test_listing_detail_rentee_view_connection_request_exists(self):
+        self.client.force_login(self.user)
+        rentee = Rentee.objects.create(user=self.user)
+        print(rentee)
+        user2 = User.objects.create_user(
+            username="testuser2", password="testpass2", email="testuser2@example.edu"
+        )
+        listing = Listing.objects.create(
+            user=user2,
+            title="Test Listing",
+            monthly_rent=1000,
+        )
+        DirectMessagePermission.objects.create(
+            sender=self.user.username,
+            receiver=user2.username,
+            permission=Permission.ALLOWED,
+        )
+        response = self.client.post(
+            reverse(
+                "rrapp:rentee_listing_detail",
+                args=(
+                    self.user.id,
+                    listing.id,
+                ),
+            ),
+            {"connection_request": "true"},
+        )
+        self.assertEqual(response.status_code, 302)
+
+    def test_listing_detail_rentee_view_connection_request_create(self):
+        self.client.force_login(self.user)
+        rentee = Rentee.objects.create(user=self.user)
+        print(rentee)
+        user2 = User.objects.create_user(
+            username="testuser2", password="testpass2", email="testuser@example.edu"
+        )
+        listing = Listing.objects.create(
+            user=user2,
+            title="Test Listing",
+            monthly_rent=1000,
+        )
+        response = self.client.post(
+            reverse(
+                "rrapp:rentee_listing_detail",
+                args=(
+                    self.user.id,
+                    listing.id,
+                ),
+            ),
+            {"connection_request": "true"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(
+            DirectMessagePermission.objects.filter(
+                sender=self.user.username,
+                receiver=user2.username,
+                permission=Permission.REQUESTED,
+            ).exists()
+        )
+
 
 class ListingResultsViewTest(ViewsTestCase):
     def test_listing_results_view_authenticated_user(self):
         self.client.force_login(self.user)
         response = self.client.get(
-            reverse("rrapp:rentee_listings", args=(self.user.id,))
+            reverse("rrapp:rentee_listings", args=(self.user.id,)),
+            {
+                "monthly_rent": 1000,
+                "number_of_bedrooms": 2,
+                "number_of_bathrooms": 2,
+                "room_type": "private",
+                "food_groups_allowed": "vegan",
+                "pets_allowed": "all",
+                "washer": "on",
+                "Dryer": "on",
+                "utilities_included": "on",
+                "furnished": "on",
+                "dishwasher": "on",
+                "parking": "on",
+            },
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/rentee_listings.html")
