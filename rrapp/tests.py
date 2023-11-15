@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 from rrapp.forms import ListingForm, MyUserCreationForm, UserForm
-from .models import Listing, Rentee, SavedListing
+from .models import FoodGroup, Listing, Pets, Rentee, SavedListing
 
 User = get_user_model()
 
