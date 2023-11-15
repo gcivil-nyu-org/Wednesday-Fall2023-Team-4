@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
-from .models import Listing, Rentee, SavedListing
+from .models import Listing, Rentee, Renter, SavedListing
 
 User = get_user_model()
 
@@ -20,6 +20,22 @@ class ViewsTestCase(TestCase):
     def tearDownClass(cls):
         # Clean up any test-specific data
         super().tearDownClass()
+
+
+class HomeViewTest(ViewsTestCase):
+    def test_home_view_get(self):
+        response = self.client.get(reverse("rrapp:home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/home.html")
+
+    def test_home_view_authenticated_user(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("rrapp:home"),
+        )
+        self.assertRedirects(
+            response, reverse("rrapp:rentee_listings", args=(self.user.id,))
+        )
 
 
 class LoginViewTest(ViewsTestCase):
@@ -45,6 +61,15 @@ class LoginViewTest(ViewsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/login_register.html")
 
+    def test_login_view_authenticated_user(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("rrapp:login"),
+        )
+        self.assertRedirects(
+            response, reverse("rrapp:rentee_listings", args=(self.user.id,))
+        )
+
 
 class RegisterViewTest(ViewsTestCase):
     def test_register_view_get(self):
@@ -66,6 +91,51 @@ class RegisterViewTest(ViewsTestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/login_register.html")
+
+    # def test_register_view_post_valid_credentials(self):
+    #     response = self.client.post(
+    #         reverse("rrapp:register"),
+    #         {
+    #             "email": "test2@example.edu",
+    #             "password1": "test2password",
+    #             "password2": "test2password",
+    #             "first_name": "Test",
+    #             "last_name": "User",
+    #             "phone_number": "1234567890",
+    #             "username": "testuser2",
+    #         },
+    #     )
+    #     self.assertEqual(response.status_code, 200)
+    #     # self.assertRedirects(
+    #     #     response, reverse("rrapp:rentee_listings", args=(self.user.id,))
+    #     # )
+    #     self.assertTrue(
+    #         User.objects.filter(
+    #             email="test2@example.edu",
+    #         ).exists()
+    #     )
+    #     user=User.objects.filter(
+    #             email="test2@example.edu",
+    #         )[0]
+    #     self.assertTrue(
+    #         Renter.objects.filter(
+    #             user = user,
+    #         ).exists()
+    #     )
+    #     self.assertTrue(
+    #         Rentee.objects.filter(
+    #             user = user,
+    #         ).exists()
+    #     )
+
+    def test_register_view_authenticated_user(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("rrapp:register"),
+        )
+        self.assertRedirects(
+            response, reverse("rrapp:rentee_listings", args=(self.user.id,))
+        )
 
 
 class ListingDetailViewTest(ViewsTestCase):
@@ -167,6 +237,16 @@ class ActivateEmailViewTest(ViewsTestCase):
         response = self.client.get(reverse("rrapp:activate_email"))
         self.assertIn(response.status_code, [200, 302])
         self.assertTemplateUsed(response, "rrapp/template_activate_account.html")
+
+
+class ActivateViewTest(ViewsTestCase):
+    def test_activate_view(self):
+        # self.client.force_login(self.user)
+        uidb64 = "<valid_uidb64>"
+        token = "<valid_token>"
+        response = self.client.get(reverse("rrapp:activate", args=(uidb64, token)))
+        self.assertEqual(response.status_code, 302)
+        # self.assertTemplateUsed(response, "rrapp/template_activate_account.html")
 
 
 class ListingIndexViewTest(ViewsTestCase):
