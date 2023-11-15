@@ -540,7 +540,9 @@ class ListingNewView(generic.CreateView):
         context_data["user_id"] = self.kwargs["user_id"]
         context_data["user"] = User.objects.get(id=self.kwargs["user_id"])
         context_data["path"] = self.request.path_info.__contains__("renter")
-        context_data["inbox"] = get_inbox_count(User.objects.get(id=self.kwargs["user_id"]).username)
+        context_data["inbox"] = get_inbox_count(
+            User.objects.get(id=self.kwargs["user_id"]).username
+        )
 
         return context_data
 
@@ -622,7 +624,9 @@ class ProfileView(generic.UpdateView):
         context_data["user_id"] = self.kwargs["pk"]
         context_data["user"] = User.objects.get(id=self.kwargs["pk"])
         context_data["path"] = self.request.path_info.__contains__("renter")
-        context_data["inbox"] = get_inbox_count(User.objects.get(id=self.kwargs["pk"]).username)
+        context_data["inbox"] = get_inbox_count(
+            User.objects.get(id=self.kwargs["pk"]).username
+        )
         return context_data
 
     def get_success_url(self):
@@ -658,7 +662,9 @@ class PublicProfileView(generic.DetailView):
         context_data["user_id"] = self.kwargs["pk"]
         context_data["user"] = User.objects.get(id=self.kwargs["pk"])
         context_data["path"] = self.request.path_info.__contains__("renter")
-        context_data["inbox"] = get_inbox_count(User.objects.get(id=self.kwargs["pk"]).username)
+        context_data["inbox"] = get_inbox_count(
+            User.objects.get(id=self.kwargs["pk"]).username
+        )
         return context_data
 
     def get_success_url(self):
@@ -701,7 +707,7 @@ class UsersListView(LoginRequiredMixin, generic.ListView):
 
         data = [{"username": usr.get_username(), "pk": str(usr.pk)} for usr in users]
         return JsonResponse(data, safe=False, **response_kwargs)
-    
+
 
 def get_inbox_count(username):
     i = 0
