@@ -17,6 +17,21 @@
 
       <form class="form row w-90 text-center align-items-center p-3 w-50" action="" method="POST">
         {% csrf_token %}
+
+        {% if form.is_bound %}
+          {% if form.errors %}
+            {% for filed in form%}
+              {% if filed.errors %}
+                {% for error in filed.errors%}
+                  <div class="alert alert-warning" role="alert">
+                    {{ error }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}              
+          {% endif %}
+        {% endif %}
+
         <div class="col-5">
           <input id="email" name="email" type="email" class="form-control" placeholder="Email" aria-label="Email">
         </div>
@@ -51,9 +66,23 @@
       <div class = "d-flex flex-column align-items-center board rounded-3" style="background-color:#F8F8F8">
         <h1 class="font-monospace display-5 fw-medium text-body-emphasis">Find your roomie here</h1>
 
-        <form class="row w-75 text-center" action="" method="POST">
+        <form class="row w-75 text-center" enctype="multipart/form-data" action="" method="POST">
           {% csrf_token %}
           {% load widget_tweaks %}
+
+          {% if form.is_bound %}
+            {% if form.errors %}
+              {% for filed in form%}
+                {% if filed.errors %}
+                  {% for error in filed.errors%}
+                    <div class="alert alert-warning" role="alert">
+                      {{ error }}
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}              
+            {% endif %}
+          {% endif %}
 
           {% for field in form %}
             <div class="col-6 p-2">

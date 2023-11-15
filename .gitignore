@@ -1,8 +1,8 @@
 *.sqlite3
 *__pycache__
 
-media/profile_pictures/*
-profile_pictures/*
+media/*
+!media/DefaultProfile.jpg
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

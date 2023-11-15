@@ -115,7 +115,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=100)
     bio = models.TextField(default="")
     profile_picture = models.ImageField(
-        upload_to="profile_pictures",
+        upload_to="profile_pictures/",
         height_field=None,
         width_field=None,
         default="DefaultProfile.jpg",
@@ -236,3 +236,17 @@ class Listing(models.Model):
         choices=FoodGroup.choices,
         default=FoodGroup.ALL,
     )
+
+
+def get_uploaded_to(instance, filename):
+    return 'listing_photos/{}/{}'.format(instance.listing.id, filename)
+
+
+class Photo(models.Model):
+    listing = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name='photos'
+    )
+    image = models.ImageField(upload_to=get_uploaded_to, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.listing.title) + ": " + str(self.image)
