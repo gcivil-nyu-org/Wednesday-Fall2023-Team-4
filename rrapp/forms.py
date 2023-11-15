@@ -278,12 +278,6 @@ class ListingForm(ModelForm):
             raise forms.ValidationError("Monthly rent cannot be negative")
         return monthly_rent
 
-    def clean_date_available_from(self):
-        date_available_from = self.cleaned_data.get("date_available_from")
-        if date_available_from < datetime.date.today():
-            raise forms.ValidationError("Date available from cannot be in the past")
-        return date_available_from
-
     def clean_date_available_to(self):
         date_available_to = self.cleaned_data.get("date_available_to")
         if date_available_to < datetime.date.today():
