@@ -270,14 +270,6 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
         )
 
 
-# class ListingResultsViewTest(ViewsTestCase):
-#     def test_listing_results_view_authenticated_user(self):
-#         self.client.force_login(self.user)
-#         response = self.client.get(
-#             reverse("rrapp:rentee_listings", args=(self.user.id,))
-#         )
-#         self.assertEqual(response.status_code, 200)
-#         self.assertTemplateUsed(response, "rrapp/rentee_listings.html")
 class ListingResultsViewTest(ViewsTestCase):
     def test_listing_results_view_authenticated_user(self):
         self.client.force_login(self.user)
