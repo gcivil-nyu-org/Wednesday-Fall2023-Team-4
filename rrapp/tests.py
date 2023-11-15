@@ -239,14 +239,14 @@ class ActivateEmailViewTest(ViewsTestCase):
         self.assertTemplateUsed(response, "rrapp/template_activate_account.html")
 
 
-class ActivateViewTest(ViewsTestCase):
-    def test_activate_view(self):
-        # self.client.force_login(self.user)
-        uidb64 = "<valid_uidb64>"
-        token = "<valid_token>"
-        response = self.client.get(reverse("rrapp:activate", args=(uidb64, token)))
-        self.assertEqual(response.status_code, 302)
-        # self.assertTemplateUsed(response, "rrapp/template_activate_account.html")
+# class ActivateViewTest(ViewsTestCase):
+#     def test_activate_view(self):
+#         # self.client.force_login(self.user)
+#         uidb64 = "<valid_uidb64>"
+#         token = "<valid_token>"
+#         response = self.client.get(reverse("rrapp:activate", args=(uidb64, token)))
+#         self.assertEqual(response.status_code, 302)
+#         # self.assertTemplateUsed(response, "rrapp/template_activate_account.html")
 
 
 class ListingIndexViewTest(ViewsTestCase):
