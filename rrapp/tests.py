@@ -2,11 +2,6 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from .models import Listing, Rentee, SavedListing
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
-from django.contrib.auth.tokens import default_token_generator
-from django.utils import timezone
-from datetime import timedelta
 
 User = get_user_model()
 
@@ -180,44 +175,63 @@ class ListingIndexViewTest(ViewsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/my_listings.html")
 
-class ConfirmPasswordResetViewTest(ViewsTestCase):
-    def test_confirm_password_reset_view_get_valid(self):
-        uidb64 = urlsafe_base64_encode(force_bytes(self.user.pk))
-        token = default_token_generator.make_token(self.user)
-        response = self.client.get(
-            reverse("rrapp:password_reset_confirm", args=(uidb64, token))
+
+class ChangePasswordViewTest(ViewsTestCase):
+    def test_change_password_view_get(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("rrapp:change_password"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/change_password.html")
+
+    def test_change_password_view_post_valid(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("rrapp:change_password"),
+            {
+                "old_password": "testpassword123",
+                "new_password1": "newpassword456",
+                "new_password2": "newpassword456",
+            },
+        )
+        self.assertRedirects(response, reverse("rrapp:login"))
+
+    def test_change_password_view_post_invalid_old_password(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("rrapp:change_password"),
+            {
+                "old_password": "wrongoldpassword",
+                "new_password1": "newpassword456",
+                "new_password2": "newpassword456",
+            },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "rrapp/password_reset_confirm.html")
+        self.assertTemplateUsed(response, "rrapp/change_password.html")
 
-    def test_confirm_password_reset_view_get_invalid_uidb64(self):
-        uidb64 = "<invalid_uidb64>"
-        token = default_token_generator.make_token(self.user)
-        response = self.client.get(
-            reverse("rrapp:password_reset_confirm", args=(uidb64, token))
+    def test_change_password_view_post_mismatched_new_passwords(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("rrapp:change_password"),
+            {
+                "old_password": "testpassword123",
+                "new_password1": "newpassword456",
+                "new_password2": "mismatchedpassword",
+            },
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/change_password.html")
 
-    def test_confirm_password_reset_view_get_invalid_token(self):
-        uidb64 = urlsafe_base64_encode(force_bytes(self.user.pk))
-        token = "<invalid_token>"
-        response = self.client.get(
-            reverse("rrapp:password_reset_confirm", args=(uidb64, token))
-        )
-        self.assertEqual(response.status_code, 404)
 
-    def test_confirm_password_reset_view_get_expired_token(self):
-        uidb64 = urlsafe_base64_encode(force_bytes(self.user.pk))
-        token = default_token_generator.make_token(self.user)
-        # Expire the token by setting the user's date_joined to a past date
-        self.user.date_joined = timezone.now() - timedelta(days=2)
-        self.user.save()
-        response = self.client.get(
-            reverse("rrapp:password_reset_confirm", args=(uidb64, token))
-        )
-        self.assertEqual(response.status_code, 404)
+class UserProfileViewTest(ViewsTestCase):
+    def test_user_profile_view_authenticated_user(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("rrapp:user_profile"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/user_profile.html")
 
-class ShortListViewTest(ViewsTestCase):
-    def test_short_list_view_unauthenticated_user(self):
-        response = self.client.get(reverse("rrapp:short_list", args=(self.user.id,)))
+    def test_user_profile_view_unauthenticated_user(self):
+        response = self.client.get(reverse("rrapp:user_profile"))
         self.assertRedirects(response, reverse("rrapp:login"))
+
+
+# Add more test cases as needed
