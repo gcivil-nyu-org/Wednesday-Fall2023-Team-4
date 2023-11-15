@@ -12,7 +12,7 @@ class ViewsTestCase(TestCase):
         super().setUpClass()
         cls.client = Client()
         cls.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpassword"
+            username="testuser", email="test@example.edu", password="testpassword"
         )
 
     @classmethod
@@ -24,19 +24,35 @@ class ViewsTestCase(TestCase):
 class ConversationHomeViewTest(ViewsTestCase):
     def setUp(self):
         self.user2 = User.objects.create_user(
-            username="testuser2", email="test2@example.com", password="testpassword"
+            username="testuser2", email="test2@example.edu", password="testpassword"
+        )
+
+    def test_conversation_home_view_unauthenticated_user_GET(self):
+        response = self.client.get(
+            reverse("chat:conversation_home"),
+            {
+                "cur_username": self.user.username,
+                'pending_connections': [],
+                'active_connections': [],
+                'requested_connections': [],
+                'blocked_connections': [],
+            },
+            follow=True,
+        )
+        self.assertRedirects(
+            response, expected_url=reverse("rrapp:login"), status_code=302
         )
 
     def test_conversation_home_view_authenticated_user_GET(self):
         self.client.force_login(self.user)
         user3 = User.objects.create_user(
-            username="testuser3", email="test3@example.com", password="testpassword"
+            username="testuser3", email="test3@example.edu", password="testpassword"
         )
         user4 = User.objects.create_user(
-            username="testuser4", email="test4@example.com", password="testpassword"
+            username="testuser4", email="test4@example.edu", password="testpassword"
         )
         user5 = User.objects.create_user(
-            username="testuser5", email="test5@example.com", password="testpassword"
+            username="testuser5", email="test5@example.edu", password="testpassword"
         )
         DirectMessagePermission.objects.create(
             sender=self.user2.username,
@@ -195,7 +211,7 @@ class ConversationHomeViewTest(ViewsTestCase):
 class ConversationViewTest(ViewsTestCase):
     def setUp(self):
         self.receiverUser = User.objects.create_user(
-            username="testuser2", email="test2@example.com", password="testpassword"
+            username="testuser2", email="test2@example.edu", password="testpassword"
         )
         self.senderUsername = self.user.username
         self.receiverUsername = self.receiverUser.username
@@ -215,6 +231,26 @@ class ConversationViewTest(ViewsTestCase):
             "username": self.receiverUsername,
             "id": self.receiverUser.id,
         }
+
+    def test_conversation_view_unauthenticated_user_GET(self):
+        recipientPermission = DirectMessagePermission.objects.create(
+            sender=self.receiverUsername,
+            receiver=self.senderUsername,
+            permission=Permission.ALLOWED,
+        )
+        response = self.client.get(
+            reverse("chat:conversation", args=(self.receiverUsername,)),
+            {
+                'room_name': self.room_name,
+                'sender': self.senderUsername,
+                'receiver': self.receiverUsernameId,
+                'messages': self.messages,
+                'recipient_permission': recipientPermission,
+            },
+        )
+        self.assertRedirects(
+            response, expected_url=reverse("rrapp:login"), status_code=302
+        )
 
     def test_conversation_view_authenticated_user_GET(self):
         self.client.force_login(self.user)

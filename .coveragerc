@@ -5,3 +5,5 @@ omit =
     roomierendezvous/wsgi.py
     roomierendezvous/asgi.py
     roomierendezvous/urls.py
+    chat/consumers.py
+    chat/routing.py
