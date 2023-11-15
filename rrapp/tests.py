@@ -159,6 +159,7 @@ class ConfirmPasswordResetViewTest(ViewsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/password_reset_confirm.html")
 
+
 class ActivateEmailViewTest(ViewsTestCase):
     def test_activate_email_view(self):
         self.client.force_login(self.user)
