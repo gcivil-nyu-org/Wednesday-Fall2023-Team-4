@@ -14,45 +14,45 @@ def index(request):
     return render(request, 'chat/index.html')
 
 
-def conversation(request, receiverUsername):
-    senderUsername = request.user.username
-    room_name = '_'.join(sorted([senderUsername, receiverUsername]))
+# def conversation(request, receiverUsername):
+#     senderUsername = request.user.username
+#     room_name = '_'.join(sorted([senderUsername, receiverUsername]))
 
-    messages = DirectMessage.objects.filter(room=room_name)[0:25]
+#     messages = DirectMessage.objects.filter(room=room_name)[0:25]
 
-    try:
-        permissions = list(
-            DirectMessagePermission.objects.filter(
-                Q(sender__exact=senderUsername) | Q(receiver__exact=senderUsername)
-            )
-        )
-    except DirectMessagePermission.DoesNotExist:
-        permissions = [
-            DirectMessagePermission.objects.create(
-                sender=senderUsername,
-                receiver=receiverUsername,
-                permission=Permission.ALLOWED,
-            )
-        ]
+#     try:
+#         permissions = list(
+#             DirectMessagePermission.objects.filter(
+#                 Q(sender__exact=senderUsername) | Q(receiver__exact=senderUsername)
+#             )
+#         )
+#     except DirectMessagePermission.DoesNotExist:
+#         permissions = [
+#             DirectMessagePermission.objects.create(
+#                 sender=senderUsername,
+#                 receiver=receiverUsername,
+#                 permission=Permission.ALLOWED,
+#             )
+#         ]
 
-    allowed_usernames = []
-    for p in permissions:
-        if p.sender == senderUsername:
-            allowed_usernames.append(p.receiver)
-        else:
-            allowed_usernames.append(p.sender)
+#     allowed_usernames = []
+#     for p in permissions:
+#         if p.sender == senderUsername:
+#             allowed_usernames.append(p.receiver)
+#         else:
+#             allowed_usernames.append(p.sender)
 
-    return render(
-        request,
-        'chat/conversation.html',
-        {
-            'room_name': room_name,
-            'sender': senderUsername,
-            'receiver': receiverUsername,
-            'messages': messages,
-            'allowed_usernames': allowed_usernames,
-        },
-    )
+#     return render(
+#         request,
+#         'chat/conversation.html',
+#         {
+#             'room_name': room_name,
+#             'sender': senderUsername,
+#             'receiver': receiverUsername,
+#             'messages': messages,
+#             'allowed_usernames': allowed_usernames,
+#         },
+#     )
 
 
 class ConversationHomeView(generic.View):
