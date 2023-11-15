@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, render
 from typing import Any, List
 from django.db.models import Q
 
@@ -150,17 +150,21 @@ def activate(request, uidb64, token):
         user = None
     if user is not None and account_activation_token.check_token(user, token):
         user.is_verified = True
-        # user.save()
+        user.save()
         # login(request, user)
         # return redirect('home')
         messages.success(
             request,
             "Thank you for your email confirmation. Your email is now activated!",
+            extra_tags='alert alert-success',
         )
     else:
-        messages.error(request, "Activation link is invalid!")
+        messages.error(
+            request, "Activation link is invalid!", extra_tags='alert alert-danger'
+        )
 
-    return redirect('rrapp:home')
+    # return redirect('rrapp:home')
+    return HttpResponseRedirect(reverse("rrapp:profile", args=(uid,)))
 
 
 @login_required(login_url='login')
@@ -178,23 +182,31 @@ def activateEmail(request):
     )
     email = EmailMessage(mail_subject, message, to=[request.user.email])
     if email.send():
+        # return HttpResponse(f'Dear {request.user}, please go to your email \
+        #     {request.user.email} inbox and click on \
+        #         received activation link to confirm and \
+        #         complete the registration. Note: Check your spam folder.')
         messages.success(
             request,
             f'Dear {request.user}, please go to your email \
             {request.user.email} inbox and click on \
                 received activation link to confirm and \
                 complete the registration. Note: Check your spam folder.',
+            extra_tags='alert alert-primary',
         )
         # return render(request, 'rrapp/home.html')
-        return redirect('rrapp:home')
+        # return redirect('rrapp:home')
+        return HttpResponseRedirect(reverse("rrapp:profile", args=(request.user.id,)))
     else:
         messages.error(
             request,
             f'Problem sending email to {request.user.email}, \
             check if you typed it correctly.',
+            extra_tags='alert alert-danger',
         )
         # return render(request, 'rrapp/home.html')
-        return redirect('rrapp:home')
+        # return redirect('rrapp:home')
+        return HttpResponseRedirect(reverse("rrapp:profile", args=(request.user.id,)))
 
 
 @method_decorator(login_required, name="dispatch")
@@ -648,11 +660,14 @@ class PublicProfileView(generic.DetailView):
 def listing_delete(request, user_id, pk):
     # TODO:add the check  if request.user.is_authenticated():
     listing = get_object_or_404(Listing, pk=pk, user_id=user_id)
-    listing.delete()
-    # Always return an HttpResponseRedirect after successfully dealing
-    # with POST data. This prevents data from being posted twice if a
-    # user hits the Back button.
-    return HttpResponseRedirect(reverse('rrapp:my_listings', args=(user_id,)))
+
+    if request.method == 'POST':
+        listing.delete()
+        # Always return an HttpResponseRedirect after successfully dealing
+        # with POST data. This prevents data from being posted twice if a
+        # user hits the Back button.
+        return HttpResponseRedirect(reverse('rrapp:my_listings', args=(user_id,)))
+    return render(request, 'rrapp/confirm_delete.html', {"user_id": user_id, "pk": pk})
 
 
 @login_required(login_url='login')
@@ -674,5 +689,5 @@ class UsersListView(LoginRequiredMixin, generic.ListView):
     def render_to_response(self, context, **response_kwargs):
         users: List[AbstractBaseUser] = context['object_list']
 
-        data = [{"username": user.get_username(), "pk": str(user.pk)} for user in users]
+        data = [{"username": usr.get_username(), "pk": str(usr.pk)} for usr in users]
         return JsonResponse(data, safe=False, **response_kwargs)
