@@ -497,7 +497,9 @@ class ListingUpdateView(generic.UpdateView):
         context_data["list_title"] = Listing.objects.get(id=self.kwargs["pk"]).title
         context_data["user"] = User.objects.get(id=self.kwargs["user_id"])
         context_data["path"] = self.request.path_info.__contains__("renter")
-        context_data["inbox"] = get_inbox_count(User.objects.get(id=self.kwargs["pk"]).username)
+        context_data["inbox"] = get_inbox_count(
+            User.objects.get(id=self.kwargs["pk"]).username
+        )
         return context_data
 
     def post(self, request, *args, **kwargs):
