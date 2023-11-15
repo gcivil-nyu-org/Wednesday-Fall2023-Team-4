@@ -37,10 +37,12 @@ class ConversationHomeViewTest(ViewsTestCase):
                 'requested_connections': [],
                 'blocked_connections': [],
             },
-            follow=True
+            follow=True,
         )
-        self.assertRedirects(response, expected_url=reverse("rrapp:login"), status_code=302)
-    
+        self.assertRedirects(
+            response, expected_url=reverse("rrapp:login"), status_code=302
+        )
+
     def test_conversation_home_view_authenticated_user_GET(self):
         self.client.force_login(self.user)
         user3 = User.objects.create_user(
@@ -246,7 +248,9 @@ class ConversationViewTest(ViewsTestCase):
                 'recipient_permission': recipientPermission,
             },
         )
-        self.assertRedirects(response, expected_url=reverse("rrapp:login"), status_code=302)
+        self.assertRedirects(
+            response, expected_url=reverse("rrapp:login"), status_code=302
+        )
 
     def test_conversation_view_authenticated_user_GET(self):
         self.client.force_login(self.user)
