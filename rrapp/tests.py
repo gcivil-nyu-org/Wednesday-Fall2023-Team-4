@@ -252,3 +252,85 @@ class ListingUpdateViewTest(TestCase):
             {"title": "Updated Listing"},
         )
         self.assertIn(response.status_code, [200, 302])
+
+
+from django.test import TestCase
+from django.contrib.auth import get_user_model
+from .models import Listing, Photo
+from .forms import LoginForm, MyUserCreationForm, UserForm, ListingForm
+
+User = get_user_model()
+
+
+class FormTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser', email='testuser@example.edu', password='testpassword'
+        )
+        self.listing = Listing.objects.create(
+            status='published',
+            title='Test Listing',
+            description='Test Description',
+            monthly_rent=1000,
+            date_available_from='2023-01-01',
+            date_available_to='2023-02-01',
+            property_type='house',
+            room_type='private',
+            address1='123 Test St',
+            city='Test City',
+            state='TS',
+            country='US',
+            number_of_bedrooms=2,
+            number_of_bathrooms=1,
+        )
+
+    def test_login_form(self):
+        form_data = {'email': 'testuser@example.edu', 'password': 'testpassword'}
+        form = LoginForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+    def test_user_creation_form(self):
+        form_data = {
+            'first_name': 'Test',
+            'last_name': 'User',
+            'username': 'newuser',
+            'email': 'newuser@example.edu',
+            'phone_number': '1234567890',
+            'password1': 'newpassword123',
+            'password2': 'newpassword123',
+        }
+        form = MyUserCreationForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+    def test_user_form(self):
+        form_data = {
+            'username': 'testuser',
+            'first_name': 'Test',
+            'last_name': 'User',
+            'birth_date': '2000-01-01',
+            'bio': 'Test Bio',
+            'phone_number': '1234567890',
+        }
+        form = UserForm(data=form_data, instance=self.user)
+        self.assertTrue(form.is_valid())
+
+    def test_listing_form(self):
+        form_data = {
+            'status': 'published',
+            'title': 'New Listing',
+            'description': 'New Description',
+            'monthly_rent': 1200,
+            'date_available_from': '2023-03-01',
+            'date_available_to': '2023-04-01',
+            'property_type': 'apartment',
+            'room_type': 'shared',
+            'address1': '456 New St',
+            'city': 'New City',
+            'state': 'NC',
+            'country': 'US',
+            'number_of_bedrooms': 3,
+            'number_of_bathrooms': 2,
+            'existing_photos': [],
+        }
+        form = ListingForm(data=form_data, instance=self.listing)
+        self.assertTrue(form.is_valid())
