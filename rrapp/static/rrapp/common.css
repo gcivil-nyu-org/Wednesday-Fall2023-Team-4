@@ -69,3 +69,14 @@ html, body{
     background-color:#F9F9F9;
     border: var(--bs-border-width) var(--bs-border-style) #dee2e6!important;
 }
+
+.home-title{
+    animation: fadeInAnimation ease 3s; 
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeInAnimation {
+                0% {opacity: 0;}
+                100% {opacity: 1;}
+}

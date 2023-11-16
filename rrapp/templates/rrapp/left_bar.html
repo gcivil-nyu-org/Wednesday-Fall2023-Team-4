@@ -21,6 +21,9 @@
                 <a href="{% url 'rrapp:my_listings' user.id %}" class="btn btn-secondary">Home</a>
             </div>
             <div class = "p-3">
+                <a href="{% url 'chat:conversation_home' %}" class="btn btn-secondary">Inbox</a>
+            </div>
+            <div class = "p-3">
                 <a href="{% url 'rrapp:rentee_listings' user.id %}" class="btn btn-warning">Switch Status</a>
             </div>
         {% else %}
@@ -28,7 +31,13 @@
                 <a href="{% url 'rrapp:rentee_listings' user.id %}" class="btn btn-secondary">Home</a>
             </div>
             <div class = "p-3">
+                <a href="{% url 'chat:conversation_home' %}" class="btn btn-secondary">Inbox</a>
+            </div>
+            <div class = "p-3">
                 <a href="{% url 'rrapp:my_listings' user.id %}" class="btn btn-warning">Switch Status</a>
+            </div>
+            <div class = "p-3">
+                <a href="{% url 'rrapp:shortlist' user.id %}" class="btn btn-success">My ShortList</a>
             </div>
         {% endif %}
 
