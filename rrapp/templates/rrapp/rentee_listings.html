@@ -48,6 +48,11 @@
                                     title: listing.name  // Set the marker title to the listing name
                                 });
 
+                                marker.addListener('click', function() {
+                                    // Open google.com in a new tab
+                                    window.open('https://www.google.com', '_blank');
+                                });
+
                                 // Process the next address
                                 processAddress(index + 1);
                             } else if (status === "ZERO_RESULTS") {
