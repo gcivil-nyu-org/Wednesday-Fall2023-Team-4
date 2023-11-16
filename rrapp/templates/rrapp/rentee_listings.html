@@ -23,13 +23,17 @@
                 {% if queried_listings_page %}
                     {% for listing in queried_listings_page %}
                         addresses.push({
+                            id:"{{listing.id|escapejs}}",
                             name: "{{ listing.title|escapejs }}",
                             address: "{{ listing.address1|escapejs }}, {{ listing.city|escapejs }}, {{ listing.state|escapejs }}"
                         });
                     {% endfor %}
                 {% endif %}
+                var currentURL = window.location.href; // Get the current URL
+                var baseURL = currentURL.split('?')[0]; // Split the URL at '?' and take the first part
 
-                console.log(addresses);
+                console.log(baseURL);
+
 
                 // ... Your existing code ...
 
@@ -47,10 +51,11 @@
                                     map: map,
                                     title: listing.name  // Set the marker title to the listing name
                                 });
-
+                                console.log(listing.id)
                                 marker.addListener('click', function() {
                                     // Open google.com in a new tab
-                                    window.open('https://www.google.com', '_blank');
+                                    window.open(baseURL+listing.id, '_blank');
+                                    
                                 });
 
                                 // Process the next address
