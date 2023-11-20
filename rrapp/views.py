@@ -691,9 +691,11 @@ def listing_delete(request, user_id, pk):
 @login_required(login_url='login')
 def deleteAccount(request, user_id):
     user = get_object_or_404(User, pk=user_id)
-    user.delete()
-    logout(request)
-    return HttpResponseRedirect(reverse('rrapp:home'))
+    if request.method == 'POST':
+        user.delete()
+        logout(request)
+        return HttpResponseRedirect(reverse('rrapp:home'))
+    return render(request, 'rrapp/confirm_delete_user.html', {"user_id": user_id})
 
 
 class UsersListView(LoginRequiredMixin, generic.ListView):

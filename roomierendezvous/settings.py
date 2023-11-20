@@ -147,6 +147,17 @@ if "AWS_STORAGE_BUCKET_NAME" in os.environ:
     AWS_S3_ACCESS_KEY_ID = os.environ["AWS_ACCESS_KEY_ID"]
     AWS_S3_SECRET_ACCESS_KEY = os.environ["AWS_SECRET_ACCESS_KEY"]
 
+    AWS_DEFAULT_ACL = 'public-read'
+    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+
+    AWS_LOCATION = 'static'
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
+else:
+    STATIC_URL = "/static/"
+    STATIC_ROOT = os.path.join(BASE_DIR, "static")
+    
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -182,7 +193,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "static/"
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'rrapp', 'static', 'rrapp'),)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
