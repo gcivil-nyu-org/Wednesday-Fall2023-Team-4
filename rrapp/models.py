@@ -135,6 +135,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
+    # captcha_score = models.FloatField(default=0.0)
 
     objects = CustomUserManager()
 
@@ -202,9 +203,9 @@ class Listing(models.Model):
 
     city = models.CharField("City", max_length=100, default="New York")
 
-    state = models.CharField("State", max_length=10, default="New York")
+    state = models.CharField("State", max_length=15, default="New York")
 
-    country = models.CharField("Country", max_length=3, default="USA")
+    country = models.CharField("Country", max_length=3, default="US")
 
     # utilities
     washer = models.BooleanField(default=True)

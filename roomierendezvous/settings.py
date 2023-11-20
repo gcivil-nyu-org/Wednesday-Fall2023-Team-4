@@ -68,7 +68,7 @@ ROOT_URLCONF = "roomierendezvous.urls"
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -193,6 +193,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
+# STATIC_URL = '/static/'
+
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'rrapp', 'static', 'rrapp'),)
 
 # Default primary key field type
@@ -213,6 +215,14 @@ if 'EMAIL_HOST_PASSWORD' in os.environ:
     EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 
 EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+
+
+GOOGLE_API_KEY = ""
+if 'GOOGLE_API_KEY' in os.environ:
+    GOOGLE_API_KEY = os.environ['GOOGLE_API_KEY']
+
+
+BASE_COUNTRY = "US"
 
 # chat config
 

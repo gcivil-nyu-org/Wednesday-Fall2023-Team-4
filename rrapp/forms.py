@@ -226,6 +226,17 @@ class ListingForm(ModelForm):
     add_photos = forms.FileField(
         required=False, widget=forms.FileInput(attrs={'multiple': True})
     )
+    address1 = forms.CharField(max_length=1024, widget = forms.HiddenInput())
+
+    address2 = forms.CharField(max_length=1024, widget = forms.HiddenInput())
+
+    zip_code = forms.CharField(max_length=12, widget = forms.HiddenInput())
+
+    city = forms.CharField(max_length=100, widget = forms.HiddenInput())
+
+    state = forms.CharField(max_length=15, widget = forms.HiddenInput())
+
+    country = forms.CharField(max_length=3, widget = forms.HiddenInput())
 
     class Meta:
         model = Listing
