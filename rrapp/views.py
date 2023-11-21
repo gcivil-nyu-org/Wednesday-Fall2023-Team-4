@@ -35,9 +35,8 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from .tokens import account_activation_token
 
+from chat.views import get_pending_connections_count
 from django.conf import settings
-
-# from roomierendezvous.mixins import Directions
 
 User = get_user_model()
 
@@ -233,6 +232,7 @@ class ListingIndexView(generic.ListView):
         context_data["user_id"] = user_id
         context_data["user"] = User.objects.get(id=user_id)
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(User.objects.get(id=user_id).username)
         return context_data
 
 
@@ -259,6 +259,7 @@ class ShortListView(generic.ListView):
         context_data["user_id"] = user_id
         context_data["user"] = User.objects.get(id=user_id)
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(User.objects.get(id=user_id).username)
         return context_data
 
 
@@ -274,6 +275,7 @@ class ListingDetailView(generic.DetailView):
         context_data["user"] = User.objects.get(id=user_id)
         context_data["path"] = self.request.path_info.__contains__("renter")
         context_data["photos"] = Photo.objects.filter(listing=self.kwargs["pk"])
+        context_data["inbox"] = get_inbox_count(User.objects.get(id=user_id).username)
         return context_data
 
 
@@ -295,7 +297,7 @@ class ListingDetailRenteeView(generic.DetailView):
             self.kwargs["user_id"], self.kwargs["pk"]
         )
         context_data["photos"] = Photo.objects.filter(listing=self.kwargs["pk"])
-
+        context_data["inbox"] = get_inbox_count(User.objects.get(id=user_id).username)
         return context_data
 
     def check_state(self, user_id, listing_id):
@@ -466,6 +468,7 @@ class ListingResultsView(generic.ListView):
         context_data["user_id"] = user_id
         context_data["user"] = User.objects.get(id=user_id)
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(User.objects.get(id=user_id).username)
         return context_data
 
 
@@ -495,6 +498,9 @@ class ListingUpdateView(generic.UpdateView):
         context_data["list_title"] = Listing.objects.get(id=self.kwargs["pk"]).title
         context_data["user"] = User.objects.get(id=self.kwargs["user_id"])
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(
+            User.objects.get(id=self.kwargs["user_id"]).username
+        )
         context_data['google_api_key'] = settings.GOOGLE_API_KEY
         context_data['base_country'] = settings.BASE_COUNTRY
         return context_data
@@ -539,6 +545,9 @@ class ListingNewView(generic.CreateView):
         context_data["user_id"] = self.kwargs["user_id"]
         context_data["user"] = User.objects.get(id=self.kwargs["user_id"])
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(
+            User.objects.get(id=self.kwargs["user_id"]).username
+        )
         context_data['google_api_key'] = settings.GOOGLE_API_KEY
         context_data['base_country'] = settings.BASE_COUNTRY
 
@@ -623,6 +632,9 @@ class ProfileView(generic.UpdateView):
         context_data["user_id"] = self.kwargs["pk"]
         context_data["user"] = User.objects.get(id=self.kwargs["pk"])
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(
+            User.objects.get(id=self.kwargs["pk"]).username
+        )
         return context_data
 
     def get_success_url(self):
@@ -658,6 +670,9 @@ class PublicProfileView(generic.DetailView):
         context_data["user_id"] = self.kwargs["pk"]
         context_data["user"] = User.objects.get(id=self.kwargs["pk"])
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(
+            User.objects.get(id=self.kwargs["pk"]).username
+        )
         return context_data
 
     def get_success_url(self):
@@ -704,3 +719,9 @@ class UsersListView(LoginRequiredMixin, generic.ListView):
 
         data = [{"username": usr.get_username(), "pk": str(usr.pk)} for usr in users]
         return JsonResponse(data, safe=False, **response_kwargs)
+
+
+def get_inbox_count(username):
+    i = 0
+    i += get_pending_connections_count(username)
+    return i
