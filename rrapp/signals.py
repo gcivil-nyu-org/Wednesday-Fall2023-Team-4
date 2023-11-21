@@ -1,6 +1,6 @@
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
-from .models import User
+from .models import User, Photo
 from django.core.files.storage import default_storage
 from django.conf import settings
 import os
@@ -24,3 +24,9 @@ def delete_old_file_on_update(sender, instance, **kwargs):
             if old_avatar_relative_path != DEFAULT_AVATAR_PATH:
                 path = os.path.relpath(old_avatar_path, settings.MEDIA_ROOT)
                 default_storage.delete(path)
+
+@receiver(pre_delete, sender=Photo)
+def delete_file_pre_delete(sender, instance, **kwargs):
+    print(instance.image.path)
+    if instance.image:
+        default_storage.delete(instance.image.path)
