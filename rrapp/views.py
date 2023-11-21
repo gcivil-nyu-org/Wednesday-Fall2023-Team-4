@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.views import generic
+from django.core.exceptions import PermissionDenied
 
 from psycopg2.extras import NumericRange
 
@@ -220,6 +221,10 @@ class ListingIndexView(generic.ListView):
     def get_queryset(self):
         """Return the last five published questions."""
         user_id = self.kwargs["user_id"]
+        if self.request.user.id != user_id:
+            raise PermissionDenied(
+                'You are not allowed to access this page.'
+            )
         all_listings = Listing.objects.filter(user=user_id).order_by("-created_at")
         paginator = Paginator(all_listings, 10)
         page_number = self.request.GET.get("page")
@@ -244,6 +249,10 @@ class ShortListView(generic.ListView):
     def get_queryset(self):
         """Return the last five published questions."""
         user_id = self.kwargs["user_id"]
+        if self.request.user.id != self.kwargs["user_id"]:
+            raise PermissionDenied(
+                'You are not allowed to access this page.'
+            )
         # shortlistings = Listing.objects.filter(user=user_id).order_by("-created_at")
         shortlistings = SavedListing.objects.filter(rentee_id__user=user_id).order_by(
             "-saved_listings__created_at"
@@ -286,15 +295,15 @@ class ListingDetailRenteeView(generic.DetailView):
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        user_id = self.kwargs["user_id"]
+        user_id = self.request.user.id
         context_data["user_id"] = user_id
         context_data["user"] = User.objects.get(id=user_id)
         context_data["path"] = self.request.path_info.__contains__("renter")
         context_data["saved"] = self.check_state(
-            self.kwargs["user_id"], self.kwargs["pk"]
+            user_id, self.kwargs["pk"]
         )
         context_data["cur_permission"] = self.cur_permission(
-            self.kwargs["user_id"], self.kwargs["pk"]
+            user_id, self.kwargs["pk"]
         )
         context_data["photos"] = Photo.objects.filter(listing=self.kwargs["pk"])
         context_data["inbox"] = get_inbox_count(User.objects.get(id=user_id).username)
@@ -337,9 +346,8 @@ class ListingDetailRenteeView(generic.DetailView):
             return None
 
     def post(self, request, *args, **kwargs):
-        print('RRAPP :', request.POST, args, kwargs)
         listing_id = self.kwargs["pk"]
-        user_id = self.kwargs["user_id"]
+        user_id = request.user.id
         save_state = self.check_state(user_id, listing_id)
         if "shortlist" in request.POST:
             if save_state:
@@ -383,6 +391,10 @@ class ListingResultsView(generic.ListView):
     context_object_name = "queried_listings_page"
 
     def get_queryset(self):
+        if self.request.user.id != self.kwargs["user_id"]:
+            raise PermissionDenied(
+                'You are not allowed to access this page.'
+            )
         all_listings = Listing.objects.all().order_by("-created_at")
         sort_option = self.request.GET.get("sort", "created_at")
 
@@ -485,6 +497,10 @@ class ListingUpdateView(generic.UpdateView):
         return reverse("rrapp:listing_detail", args=(user_id, listing_id))
 
     def get(self, request, *args, **kwargs):
+        if request.user.id != self.kwargs["user_id"]:
+            raise PermissionDenied(
+                'You are not allowed to access this page.'
+            )
         self.object = self.get_object()
         return super().get(request, *args, **kwargs)
 
@@ -506,6 +522,10 @@ class ListingUpdateView(generic.UpdateView):
         return context_data
 
     def post(self, request, *args, **kwargs):
+        if request.user.id != self.kwargs["user_id"]:
+            raise PermissionDenied(
+                'You are not allowed to access this page.'
+            )
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
@@ -562,6 +582,10 @@ class ListingNewView(generic.CreateView):
         Returns:
             HttpResponse: redirect or login view with error hints
         """
+        if request.user.id != self.kwargs["user_id"]:
+            raise PermissionDenied(
+                'You are not allowed to access this page.'
+            )
         self.object = self.get_object()
         form = self.get_form()
         u = User.objects.get(pk=self.kwargs["user_id"])
@@ -620,6 +644,10 @@ class ProfileView(generic.UpdateView):
     success_url = 'rrapp:rentee_listings'
 
     def get(self, request, *args, **kwargs):
+        if request.user.id != self.kwargs["pk"]:
+            raise PermissionDenied(
+                'You are not allowed to access this page.'
+            )
         self.object = self.get_object()
         return super().get(request, *args, **kwargs)
 
@@ -642,6 +670,10 @@ class ProfileView(generic.UpdateView):
         return reverse('rrapp:rentee_listings', args=(user_id,))
 
     def post(self, request, *args, **kwargs):
+        if request.user.id != self.kwargs["pk"]:
+            raise PermissionDenied(
+                'You are not allowed to access this page.'
+            )
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
@@ -682,7 +714,11 @@ class PublicProfileView(generic.DetailView):
 
 @login_required
 def listing_delete(request, user_id, pk):
-    # TODO:add the check  if request.user.is_authenticated():
+    if request.user.id != user_id:
+        raise PermissionDenied(
+            'You are not allowed to access this page.'
+        )
+    
     listing = get_object_or_404(Listing, pk=pk, user_id=user_id)
 
     if request.method == 'POST':
@@ -698,6 +734,10 @@ def listing_delete(request, user_id, pk):
 
 @login_required
 def deleteAccount(request, user_id):
+    if request.user.id != user_id:
+        raise PermissionDenied(
+            'You are not allowed to access this page.'
+        )
     user = get_object_or_404(User, pk=user_id)
     if request.method == 'POST':
         user.delete()
@@ -725,3 +765,6 @@ def get_inbox_count(username):
     i = 0
     i += get_pending_connections_count(username)
     return i
+
+def rrapp_403(request, exception):
+    return render(request, "rrapp/403.html", {}, status=403)

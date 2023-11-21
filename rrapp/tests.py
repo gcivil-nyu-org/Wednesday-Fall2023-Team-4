@@ -215,7 +215,6 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
             reverse(
                 "rrapp:rentee_listing_detail",
                 args=(
-                    self.user.id,
                     listing.id,
                 ),
             )
@@ -238,7 +237,6 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
             reverse(
                 "rrapp:rentee_listing_detail",
                 args=(
-                    self.user.id,
                     listing.id,
                 ),
             ),
@@ -272,7 +270,6 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
             reverse(
                 "rrapp:rentee_listing_detail",
                 args=(
-                    self.user.id,
                     listing.id,
                 ),
             ),
@@ -296,7 +293,6 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
             reverse(
                 "rrapp:rentee_listing_detail",
                 args=(
-                    self.user.id,
                     listing.id,
                 ),
             ),

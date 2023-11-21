@@ -280,7 +280,7 @@
                         {% if queried_listings_page %}
                             <div class="list-group scrollarea">
                                 {% for listing in queried_listings_page %}
-                                    <button type="button" class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'rrapp:rentee_listing_detail' user_id listing.id %}'" style="height:3.5rem;">
+                                    <button type="button" class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'rrapp:rentee_listing_detail' listing.id %}'" style="height:3.5rem;">
                                         <span class="fs-5 fw-semi">
                                             {{ listing.title }}
                                         </span>

@@ -79,7 +79,7 @@ urlpatterns = [
     ),
     # ex: /rrapp/rentee/5/listings/1
     path(
-        "rentee/<int:user_id>/listings/<int:pk>",
+        "rentee/listings/<int:pk>",
         views.ListingDetailRenteeView.as_view(),
         name="rentee_listing_detail",
     ),
