@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
@@ -105,6 +106,10 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+def user_directory_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f'{instance.email}_{instance.id}.{ext}'
+    return os.path.join('profile_pictures', filename)
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
@@ -115,7 +120,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=100)
     bio = models.TextField(default="")
     profile_picture = models.ImageField(
-        upload_to="profile_pictures/",
+        upload_to=user_directory_path,
         height_field=None,
         width_field=None,
         default="DefaultProfile.jpg",
