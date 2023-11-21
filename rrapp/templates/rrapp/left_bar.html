@@ -21,7 +21,14 @@
                 <a href="{% url 'rrapp:my_listings' user.id %}" class="btn btn-secondary">Home</a>
             </div>
             <div class = "p-3">
-                <a href="{% url 'chat:conversation_home' %}" class="btn btn-secondary">Inbox</a>
+                <a href="{% url 'chat:conversation_home' %}" class="btn btn-primary position-relative">
+                    Inbox
+                    {% if inbox and inbox > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ inbox }}
+                        </span>
+                    {% endif %}
+                </a>
             </div>
             <div class = "p-3">
                 <a href="{% url 'rrapp:rentee_listings' user.id %}" class="btn btn-warning">Switch Status</a>
@@ -31,7 +38,14 @@
                 <a href="{% url 'rrapp:rentee_listings' user.id %}" class="btn btn-secondary">Home</a>
             </div>
             <div class = "p-3">
-                <a href="{% url 'chat:conversation_home' %}" class="btn btn-secondary">Inbox</a>
+                <a href="{% url 'chat:conversation_home' %}" class="btn btn-primary position-relative">
+                    Inbox
+                    {% if inbox and inbox > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ inbox }}
+                        </span>
+                    {% endif %}
+                </a>
             </div>
             <div class = "p-3">
                 <a href="{% url 'rrapp:my_listings' user.id %}" class="btn btn-warning">Switch Status</a>

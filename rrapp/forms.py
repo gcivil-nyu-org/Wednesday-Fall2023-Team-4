@@ -214,6 +214,41 @@ class ListingForm(ModelForm):
     add_photos = forms.FileField(
         required=False, widget=forms.FileInput(attrs={'multiple': True})
     )
+    address1 = forms.CharField(
+        max_length=1024,
+        widget=forms.HiddenInput(),
+        error_messages={'required': 'Address1 is Required'},
+    )
+
+    address2 = forms.CharField(
+        max_length=1024,
+        widget=forms.HiddenInput(),
+        error_messages={'required': 'Address2 is Required'},
+    )
+
+    zip_code = forms.CharField(
+        max_length=12,
+        widget=forms.HiddenInput(),
+        error_messages={'required': 'Zip code is Required'},
+    )
+
+    city = forms.CharField(
+        max_length=100,
+        widget=forms.HiddenInput(),
+        error_messages={'required': 'City is Required'},
+    )
+
+    state = forms.CharField(
+        max_length=15,
+        widget=forms.HiddenInput(),
+        error_messages={'required': 'State is Required'},
+    )
+
+    country = forms.CharField(
+        max_length=3,
+        widget=forms.HiddenInput(),
+        error_messages={'required': 'Country is Required'},
+    )
 
     class Meta:
         model = Listing
@@ -290,8 +325,18 @@ class ListingForm(ModelForm):
 
     def clean_age_range(self):
         age_range = self.cleaned_data.get("age_range")
-        if age_range.lower < 18:
-            raise forms.ValidationError("Minimum age cannot be less than 18")
-        elif age_range.upper > 100:
-            raise forms.ValidationError("Maximum age cannot be greater than 100")
+        if not age_range:
+            raise forms.ValidationError("Please enter an age range")
+        else:
+            if not age_range.lower:
+                raise forms.ValidationError("Please enter a minimum age")
+            elif not age_range.upper:
+                raise forms.ValidationError("Please enter a maximum age")
+            else:
+                if age_range.lower < 18:
+                    raise forms.ValidationError("Minimum age cannot be less than 18")
+                elif age_range.upper > 100:
+                    raise forms.ValidationError(
+                        "Maximum age cannot be greater than 100"
+                    )
         return age_range

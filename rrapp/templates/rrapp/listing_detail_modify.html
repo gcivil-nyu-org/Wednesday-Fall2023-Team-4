@@ -9,7 +9,7 @@
     </head>
     <body class = "align-items-stretch">
         <div class="back-contianer">
-            {% include 'rrapp/left_bar.html' with user=user path=path %}
+            {% include 'rrapp/left_bar.html' with user=user path=path inbox=inbox %}
 
             <div class="text-center right-page">
 
@@ -85,6 +85,22 @@
                                     {% endif %}
                                 {% endfor %}
 
+                                <div class="col-6 p-2">
+                                    Search address :
+                                </div>
+                                <div class="col-6 p-2">
+                                <input type="text" placeholder="Begin typing the property address" id="id-google-address" name="google_address" class="form-control">
+                                </div>
+
+                                {% for field in form.hidden_fields %}
+                                    <div class="col-6 p-2">
+                                        {{ field.label_tag }}
+                                    </div> 
+                                    <div class="col-6 p-2">
+                                        {% render_field field class="form-control" type="text" %}
+                                    </div>
+                                {% endfor %}
+
                                 <div class="col align-self-center m-2">
                                     <button type="submit" class="btn btn-primary m-2" value="Update">Save</button>
                                 </div>
@@ -93,5 +109,18 @@
                 </div>
             </div>
         </div>
+
+        <!--visit https://code.jquery.com/ for jquery script-->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+        <script type="text/javascript">
+
+          var google_api_key = "{{google_api_key|safe}}";
+          var base_country = "{{base_country|safe}}";
+
+        </script>
+
+        <script src="{% static 'google_places.js' %}"></script>
+
     </body>
 </html>
