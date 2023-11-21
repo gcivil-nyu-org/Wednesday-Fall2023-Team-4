@@ -35,11 +35,8 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from .tokens import account_activation_token
 
-from django.conf import settings
-
-# from roomierendezvous.mixins import Directions
-
 from chat.views import get_pending_connections_count
+from django.conf import settings
 
 User = get_user_model()
 
