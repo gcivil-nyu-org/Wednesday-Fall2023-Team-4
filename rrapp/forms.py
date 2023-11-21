@@ -152,7 +152,6 @@ class UserForm(ModelForm):
             "profile_picture",
         ]
 
-
     def clean_first_name(self):
         first_name = self.cleaned_data.get("first_name")
         if len(first_name) == 0:

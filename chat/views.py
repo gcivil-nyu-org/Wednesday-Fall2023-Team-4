@@ -178,7 +178,7 @@ class ConversationHomeView(generic.View):
 
     def post(self, request, *args, **kwargs):
         if "connection_accept" in request.POST:
-            otherUser = User.objects.get(username = request.POST["connection_accept"])
+            otherUser = User.objects.get(username=request.POST["connection_accept"])
             p = DirectMessagePermission.objects.get(
                 sender=otherUser, receiver=request.user
             )
@@ -191,20 +191,20 @@ class ConversationHomeView(generic.View):
                 sender=request.user,
             )
         elif "connection_reject" in request.POST:
-            otherUser = User.objects.get(username = request.POST["connection_reject"])
+            otherUser = User.objects.get(username=request.POST["connection_reject"])
             p = DirectMessagePermission.objects.get(
                 sender=otherUser, receiver=request.user
             )
             p.delete()
         elif "connection_withdraw" in request.POST:
-            otherUser = User.objects.get(username = request.POST["connection_withdraw"])
+            otherUser = User.objects.get(username=request.POST["connection_withdraw"])
             p = DirectMessagePermission.objects.get(
                 receiver=otherUser,
                 sender=request.user,
             )
             p.delete()
         elif "connection_unblock" in request.POST:
-            otherUser = User.objects.get(username = request.POST["connection_unblock"])
+            otherUser = User.objects.get(username=request.POST["connection_unblock"])
             DirectMessagePermission.objects.filter(
                 sender=otherUser,
                 receiver=request.user.username,

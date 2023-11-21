@@ -36,7 +36,11 @@ urlpatterns = [
     ),
     path("logout/", views.LogoutView.as_view(), name="logout"),
     path('register/', views.RegisterView.as_view(), name="register"),
-    path('verification_check/<uidb64>/<token>', views.verificationCheck, name='verification_check'),
+    path(
+        'verification_check/<uidb64>/<token>',
+        views.verificationCheck,
+        name='verification_check',
+    ),
     path('verify_email', views.verifyEmail, name='verify_email'),
     # ex: /rrapp/5/listings/1
     path(
