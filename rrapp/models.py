@@ -106,10 +106,12 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+
 def user_directory_path(instance, filename):
     ext = filename.split('.')[-1]
     filename = f'{instance.email}_{instance.id}.{ext}'
     return os.path.join('profile_pictures', filename)
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
