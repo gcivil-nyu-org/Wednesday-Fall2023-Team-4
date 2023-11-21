@@ -302,8 +302,18 @@ class ListingForm(ModelForm):
 
     def clean_age_range(self):
         age_range = self.cleaned_data.get("age_range")
-        if age_range.lower < 18:
-            raise forms.ValidationError("Minimum age cannot be less than 18")
-        elif age_range.upper > 100:
-            raise forms.ValidationError("Maximum age cannot be greater than 100")
+        if not age_range:
+            raise forms.ValidationError("Please enter an age range")
+        else:
+            if not age_range.lower:
+                raise forms.ValidationError("Please enter a minimum age")
+            elif not age_range.upper:
+                raise forms.ValidationError("Please enter a maximum age")
+            else:
+                if age_range.lower < 18:
+                    raise forms.ValidationError("Minimum age cannot be less than 18")
+                elif age_range.upper > 100:
+                    raise forms.ValidationError(
+                        "Maximum age cannot be greater than 100"
+                    )
         return age_range
