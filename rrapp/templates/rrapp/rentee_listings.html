@@ -6,6 +6,111 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
         {% load static %}
         <link rel="stylesheet" href="{% static 'rrapp/common.css' %}">
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4J7XIaU4AfV9ig7w8_VTaREoojNxhZx0&callback=initMap" async defer></script>
+        <!-- Script for Google Maps -->
+        <script>
+            function initMap() {
+                console.log("initMap function called");
+                var geocoder = new google.maps.Geocoder();
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    center: { lat: 40.7128, lng: -74.0060 },
+                    zoom: 10
+                });
+
+                var addresses = [];
+
+                
+                {% if queried_listings_page %}
+                    {% for listing in queried_listings_page %}
+                        addresses.push({
+                            id:"{{listing.id|escapejs}}",
+                            name: "{{ listing.title|escapejs }}",
+                            address: "{{ listing.address1|escapejs }}, {{ listing.city|escapejs }}, {{ listing.state|escapejs }}"
+                        });
+                    {% endfor %}
+                {% endif %}
+                var currentURL = window.location.href; // Get the current URL
+                var baseURL = currentURL.split('?')[0]; // Split the URL at '?' and take the first part
+
+                console.log(baseURL);
+
+
+                // ... Your existing code ...
+
+                function processAddress(index) {
+                    if (index < addresses.length) {
+                        var listing = addresses[index];
+                        var address = listing.address;
+
+                        geocoder.geocode({ address: address }, function (results, status) {
+                            if (status === "OK") {
+                                var location = results[0].geometry.location;
+
+                                var marker = new google.maps.Marker({
+                                    position: location,
+                                    map: map,
+                                    title: listing.name  // Set the marker title to the listing name
+                                });
+                                console.log(listing.id)
+                                marker.addListener('click', function() {
+                                    // Open google.com in a new tab
+                                    window.open(baseURL+listing.id, '_blank');
+                                    
+                                });
+
+                                // Process the next address
+                                processAddress(index + 1);
+                            } else if (status === "ZERO_RESULTS") {
+                                console.warn("Geocode was not successful for the following reason: " + status);
+
+                                // If no results, try geocoding with an adjusted address
+                                adjustAndGeocode(address, index + 1);
+                            } else {
+                                console.error("Geocode was not successful for the following reason: " + status);
+                            }
+                        });
+                    }
+                }
+
+
+                // Adjust address and try geocoding again
+                function adjustAndGeocode(address, nextIndex) {
+                    // You can implement your logic to adjust the address here
+                    // For example, removing common typos or appending city/state if missing
+
+                    // Adjusted address example: address = "1600 Amphitheatre Parkway, Mountain View, CA";
+
+                    // Retry geocoding with adjusted address
+                    geocoder.geocode({ address: address }, function (results, status) {
+                        if (status === "OK") {
+                            var location = results[0].geometry.location;
+
+                            var marker = new google.maps.Marker({
+                                position: location,
+                                map: map,
+                                title: address
+                            });
+                            
+                            // Process the next address
+                            processAddress(nextIndex);
+                        } else {
+                            console.error("Geocode was not successful for the adjusted address: " + status);
+
+                            // If still not successful, move to the next address
+                            processAddress(nextIndex);
+                        }
+                    });
+                }
+
+                // Start processing addresses from index 0
+                processAddress(0);
+            }
+
+
+        </script>
+        
+        
+        
     </head>
     <body class = "align-items-stretch">
         <div class="back-contianer">
@@ -247,6 +352,7 @@
             }
         </script>
         </div>
+        <div id="map" style="height: 400px;"></div>
     </div>
     </body>
     <style>
