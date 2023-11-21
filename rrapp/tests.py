@@ -264,8 +264,8 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
             monthly_rent=1000,
         )
         DirectMessagePermission.objects.create(
-            sender=self.user.username,
-            receiver=user2.username,
+            sender=self.user,
+            receiver=user2,
             permission=Permission.ALLOWED,
         )
         response = self.client.post(
@@ -305,8 +305,8 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(
             DirectMessagePermission.objects.filter(
-                sender=self.user.username,
-                receiver=user2.username,
+                sender=self.user,
+                receiver=user2,
                 permission=Permission.REQUESTED,
             ).exists()
         )

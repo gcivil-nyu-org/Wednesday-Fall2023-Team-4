@@ -178,31 +178,35 @@ class ConversationHomeView(generic.View):
 
     def post(self, request, *args, **kwargs):
         if "connection_accept" in request.POST:
+            otherUser = User.objects.get(username = request.POST["connection_accept"])
             p = DirectMessagePermission.objects.get(
-                sender=request.POST["connection_accept"], receiver=request.user.username
+                sender=otherUser, receiver=request.user
             )
             p.permission = Permission.ALLOWED
             p.save()
 
             DirectMessagePermission.objects.update_or_create(
                 defaults={"permission": Permission.ALLOWED},
-                receiver=request.POST["connection_accept"],
-                sender=request.user.username,
+                receiver=otherUser,
+                sender=request.user,
             )
         elif "connection_reject" in request.POST:
+            otherUser = User.objects.get(username = request.POST["connection_reject"])
             p = DirectMessagePermission.objects.get(
-                sender=request.POST["connection_reject"], receiver=request.user.username
+                sender=otherUser, receiver=request.user
             )
             p.delete()
         elif "connection_withdraw" in request.POST:
+            otherUser = User.objects.get(username = request.POST["connection_withdraw"])
             p = DirectMessagePermission.objects.get(
-                receiver=request.POST["connection_withdraw"],
-                sender=request.user.username,
+                receiver=otherUser,
+                sender=request.user,
             )
             p.delete()
         elif "connection_unblock" in request.POST:
+            otherUser = User.objects.get(username = request.POST["connection_unblock"])
             DirectMessagePermission.objects.filter(
-                sender=request.POST["connection_unblock"],
+                sender=otherUser,
                 receiver=request.user.username,
             ).update(permission=Permission.ALLOWED)
         else:
@@ -263,7 +267,7 @@ class ConversationView(generic.View):
 
         try:
             recipientPermission = DirectMessagePermission.objects.get(
-                sender=receiverUsername, receiver=senderUsername
+                sender=receiverUser, receiver=request.user
             )
         except DirectMessagePermission.DoesNotExist:
             recipientPermission = None

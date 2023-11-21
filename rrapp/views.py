@@ -316,13 +316,13 @@ class ListingDetailRenteeView(generic.DetailView):
         try:
             p = list(
                 DirectMessagePermission.objects.filter(
-                    sender=cur_user.username, receiver=listing.user.username
+                    sender=cur_user, receiver=listing.user
                 )
             )
 
             p_equivalent = list(
                 DirectMessagePermission.objects.filter(
-                    receiver=cur_user.username, sender=listing.user.username
+                    receiver=cur_user, sender=listing.user
                 )
             )
         except DirectMessagePermission.DoesNotExist:
@@ -357,7 +357,7 @@ class ListingDetailRenteeView(generic.DetailView):
             try:
                 p = list(
                     DirectMessagePermission.objects.filter(
-                        sender=cur_user.username, receiver=listing.user.username
+                        sender=cur_user, receiver=listing.user
                     )
                 )
             except DirectMessagePermission.DoesNotExist:
@@ -369,8 +369,8 @@ class ListingDetailRenteeView(generic.DetailView):
                 # create DirectMessagePermission object in db
                 print("creating permission")
                 DirectMessagePermission.objects.create(
-                    sender=cur_user.username,
-                    receiver=listing.user.username,
+                    sender=cur_user,
+                    receiver=listing.user,
                     permission=Permission.REQUESTED,
                 )
 
