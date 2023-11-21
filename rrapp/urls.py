@@ -5,11 +5,8 @@ from . import views
 
 app_name = "rrapp"
 urlpatterns = [
-    # # ex: /rrapp/
-    # path('', views.IndexView.as_view(), name='index'),
     # ex: /rrapp/
     path("", views.HomeView.as_view(), name="home"),
-    # ex: /rrapp/login
     path('login/', views.LoginView.as_view(), name="login"),
     path(
         'reset_password/',
@@ -24,7 +21,7 @@ urlpatterns = [
         name='password_reset_done',
     ),
     path(
-        'reset/<uidb64>/<token>/',
+        'reset_password/<uidb64>/<token>/',
         views.ConfirmPasswordResetView.as_view(
             template_name='rrapp/password_reset_confirm.html'
         ),
@@ -37,12 +34,10 @@ urlpatterns = [
         ),
         name='password_reset_complete',
     ),
-    # ex: /rrapp/logout
     path("logout/", views.LogoutView.as_view(), name="logout"),
-    # ex: /rrapp/register
     path('register/', views.RegisterView.as_view(), name="register"),
-    path('activate/<uidb64>/<token>', views.activate, name='activate'),
-    path('activate_email', views.activateEmail, name='activate_email'),
+    path('verification_check/<uidb64>/<token>', views.verificationCheck, name='verification_check'),
+    path('verify_email', views.verifyEmail, name='verify_email'),
     # ex: /rrapp/5/listings/1
     path(
         "renter/<int:user_id>/listings/<int:pk>/",
@@ -63,7 +58,7 @@ urlpatterns = [
     ),
     # ex: /rrapp/5/delete/1
     path(
-        "renter/<int:user_id>/delete/<int:pk>",
+        "renter/<int:user_id>/listings/<int:pk>/delete",
         views.listing_delete,
         name="listing_delete",
     ),

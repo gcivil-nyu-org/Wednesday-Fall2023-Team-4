@@ -142,7 +142,7 @@ class RegisterView(generic.View):
         return render(request, "rrapp/login_register.html", {"form": form})
 
 
-def activate(request, uidb64, token):
+def verificationCheck(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
@@ -155,12 +155,12 @@ def activate(request, uidb64, token):
         # return redirect('home')
         messages.success(
             request,
-            "Thank you for your email confirmation. Your email is now activated!",
+            "Thank you for confirming. Your email is now verified!",
             extra_tags='alert alert-success',
         )
     else:
         messages.error(
-            request, "Activation link is invalid!", extra_tags='alert alert-danger'
+            request, "Verification link is invalid!", extra_tags='alert alert-danger'
         )
 
     # return redirect('rrapp:home')
@@ -168,10 +168,10 @@ def activate(request, uidb64, token):
 
 
 @login_required
-def activateEmail(request):
+def verifyEmail(request):
     mail_subject = "Activate your user account."
     message = render_to_string(
-        "rrapp/template_activate_account.html",
+        "rrapp/template_verify_account.html",
         {
             'user': request.user.username,
             'domain': get_current_site(request).domain,
@@ -188,10 +188,10 @@ def activateEmail(request):
         #         complete the registration. Note: Check your spam folder.')
         messages.success(
             request,
-            f'Dear {request.user}, please go to your email \
-            {request.user.email} inbox and click on \
+            f'Hi {request.user}, please check your email \
+            {request.user.email}\'s inbox and click on \
                 received activation link to confirm and \
-                complete the registration. Note: Check your spam folder.',
+                complete the verification. Don\'t forget to check your spam folder.',
             extra_tags='alert alert-primary',
         )
         # return render(request, 'rrapp/home.html')
@@ -201,7 +201,7 @@ def activateEmail(request):
         messages.error(
             request,
             f'Problem sending email to {request.user.email}, \
-            check if you typed it correctly.',
+            please check if you typed it correctly.',
             extra_tags='alert alert-danger',
         )
         # return render(request, 'rrapp/home.html')
@@ -667,7 +667,7 @@ def listing_delete(request, user_id, pk):
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         return HttpResponseRedirect(reverse('rrapp:my_listings', args=(user_id,)))
-    return render(request, 'rrapp/confirm_delete.html', {"user_id": user_id, "pk": pk})
+    return render(request, 'rrapp/confirm_delete_listing.html', {"user_id": user_id, "pk": pk})
 
 
 @login_required

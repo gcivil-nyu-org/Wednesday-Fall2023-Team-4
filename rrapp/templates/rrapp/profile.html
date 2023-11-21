@@ -82,7 +82,7 @@
                             </form>
                             {% if not user.is_verified %}
                                 <div class = "p-2">
-                                    <a href="{% url 'rrapp:activate_email' %}" class="btn btn-danger">Activate Your Account</a>
+                                    <a href="{% url 'rrapp:verify_email' %}" class="btn btn-danger">Verify Your Account</a>
                                 </div>
                             {% endif %}
                             <div class = "p-3">
