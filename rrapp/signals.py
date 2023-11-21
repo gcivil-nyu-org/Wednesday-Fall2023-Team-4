@@ -25,6 +25,7 @@ def delete_old_file_on_update(sender, instance, **kwargs):
                 path = os.path.relpath(old_avatar_path, settings.MEDIA_ROOT)
                 default_storage.delete(path)
 
+
 @receiver(pre_delete, sender=Photo)
 def delete_file_pre_delete(sender, instance, **kwargs):
     print(instance.image.path)
