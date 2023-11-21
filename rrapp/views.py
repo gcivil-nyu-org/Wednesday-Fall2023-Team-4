@@ -557,8 +557,6 @@ class ListingNewView(generic.CreateView):
         form = self.get_form()
         u = User.objects.get(pk=self.kwargs["user_id"])
 
-        # form = MyUserCreationForm(request.POST)
-        # print(request.is_ajax())
         if form.is_valid():
             form_data = form.cleaned_data
 
@@ -596,7 +594,6 @@ class ListingNewView(generic.CreateView):
                 ),
             )
             listing.save()
-            print(listing)
             for file in request.FILES.getlist('add_photos'):
                 Photo.objects.create(image=file, listing=listing)
             return HttpResponseRedirect(
@@ -707,11 +704,3 @@ class UsersListView(LoginRequiredMixin, generic.ListView):
 
         data = [{"username": usr.get_username(), "pk": str(usr.pk)} for usr in users]
         return JsonResponse(data, safe=False, **response_kwargs)
-
-
-def route(request):
-    context = {
-        "google_api_key": settings.GOOGLE_API_KEY,
-        "base_country": settings.BASE_COUNTRY,
-    }
-    return render(request, 'main/route.html', context)
