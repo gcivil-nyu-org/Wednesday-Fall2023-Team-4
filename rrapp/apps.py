@@ -6,4 +6,5 @@ class RrappConfig(AppConfig):
     name = "rrapp"
 
     def ready(self):
-        import rrapp.signals
+        # noqa: F401
+        import rrapp.signals # noqa: F401
