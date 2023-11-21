@@ -36,6 +36,7 @@
                     <div class = "d-flex flex-column align-items-center board rounded-3" style="background-color:#F8F8F8">
                         <h1 class="font-monospace display-5 fw-medium text-body-emphasis my-3">{{ list_title }}</h1>
 
+                            
                             <form method="post" enctype="multipart/form-data" class="row w-75 text-center">
                                 {% csrf_token %}
                                 {% load widget_tweaks %}
@@ -69,10 +70,25 @@
                                         </div>
                                     {% endif %}
                                 {% endfor %}
-                        
+
+                                <div class="col-6 p-2">
+                                    Please type your address here:
+                                </div>
+                                <div class="col-6 p-2">
+                                <input type="text" placeholder="*Begin typing address" id="id-google-address" name="google_address" class="form-control">
+                                </div>
+
+                                {% for field in form.hidden_fields %}
+                                    <div class="col-6 p-2">
+                                        {{ field.label_tag }}
+                                    </div> 
+                                    <div class="col-6 p-2">
+                                        {% render_field field class="form-control" %}
+                                    </div>
+                                {% endfor %}
                                 
                                 <div class="col align-self-center m-2">
-                                    <button type="submit" class="btn btn-primary m-2" value="Update">Save</button>
+                                    <button type="submit" class="btn btn-primary m-2" value="Update" id="listing-btn">Save</button>
                                 </div>
                             </form>
                     </div>
@@ -80,5 +96,18 @@
 
             </div>
         </div>
+
+        <!--visit https://code.jquery.com/ for jquery script-->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+        <script type="text/javascript">
+
+          var google_api_key = "{{google_api_key|safe}}";
+          var base_country = "{{base_country|safe}}";
+
+        </script>
+
+        <script src="{% static 'google_places.js' %}"></script>
+
     </body>
 </html>

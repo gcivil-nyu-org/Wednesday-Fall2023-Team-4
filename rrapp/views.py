@@ -35,6 +35,10 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from .tokens import account_activation_token
 
+from django.conf import settings
+
+# from roomierendezvous.mixins import Directions
+
 User = get_user_model()
 
 
@@ -491,6 +495,8 @@ class ListingUpdateView(generic.UpdateView):
         context_data["list_title"] = Listing.objects.get(id=self.kwargs["pk"]).title
         context_data["user"] = User.objects.get(id=self.kwargs["user_id"])
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data['google_api_key'] = settings.GOOGLE_API_KEY
+        context_data['base_country'] = settings.BASE_COUNTRY
         return context_data
 
     def post(self, request, *args, **kwargs):
@@ -533,6 +539,8 @@ class ListingNewView(generic.CreateView):
         context_data["user_id"] = self.kwargs["user_id"]
         context_data["user"] = User.objects.get(id=self.kwargs["user_id"])
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data['google_api_key'] = settings.GOOGLE_API_KEY
+        context_data['base_country'] = settings.BASE_COUNTRY
 
         return context_data
 
@@ -548,6 +556,7 @@ class ListingNewView(generic.CreateView):
         self.object = self.get_object()
         form = self.get_form()
         u = User.objects.get(pk=self.kwargs["user_id"])
+
         if form.is_valid():
             form_data = form.cleaned_data
 
@@ -667,7 +676,9 @@ def listing_delete(request, user_id, pk):
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         return HttpResponseRedirect(reverse('rrapp:my_listings', args=(user_id,)))
-    return render(request, 'rrapp/confirm_delete.html', {"user_id": user_id, "pk": pk})
+    return render(
+        request, 'rrapp/confirm_delete_listing.html', {"user_id": user_id, "pk": pk}
+    )
 
 
 @login_required(login_url='login')

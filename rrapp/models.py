@@ -202,9 +202,9 @@ class Listing(models.Model):
 
     city = models.CharField("City", max_length=100, default="New York")
 
-    state = models.CharField("State", max_length=10, default="New York")
+    state = models.CharField("State", max_length=15, default="New York")
 
-    country = models.CharField("Country", max_length=3, default="USA")
+    country = models.CharField("Country", max_length=3, default="US")
 
     # utilities
     washer = models.BooleanField(default=True)
