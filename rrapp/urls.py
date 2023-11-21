@@ -79,24 +79,25 @@ urlpatterns = [
         views.ListingDetailRenteeView.as_view(),
         name="rentee_listing_detail",
     ),
-    # ex: /rrapp/user/1/myprofile
+    # ex: /rrapp/user/profile/1
     path(
-        '<int:pk>/profile',
+        'user/profile/<int:pk>',
         views.ProfileView.as_view(),
         name='profile',
     ),
-    # ex: /rrapp/user/2/profile
+    # ex: /rrapp/user/profile/1/delete
     path(
-        'user/<int:pk>/profile',
-        views.PublicProfileView.as_view(),
-        name='public_profile',
-    ),
-    # ex: /rrapp/user/1/profile/delete
-    path(
-        'user/<int:user_id>/profile/delete',
+        'user/profile/<int:user_id>/delete',
         views.deleteAccount,
         name='deleteAccount',
     ),
+    # ex: /rrapp/user/public_profile/2
+    path(
+        'user/public_profile/<int:pk>',
+        views.PublicProfileView.as_view(),
+        name='public_profile',
+    ),
+    # ex: /rrapp/rentee/2/shortlist
     path(
         'rentee/<int:user_id>/shortlist/',
         views.ShortListView.as_view(),
