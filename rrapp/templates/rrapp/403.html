@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    {% extends 'rrapp/main.html' %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'rrapp/common.css' %}">
+    <link rel="stylesheet" href="{% static 'rrapp/gandalf.css' %}">
+  </head>
+  <body class = "align-items-center">
+    {% block content %}
+    <div class = "w-100 align-items-center px-5" >
+      <div class = "d-flex flex-column align-items-center rounded-3 m-4 p-3 grey-block">
+        <h1 class="font-monospace display-5 fw-medium text-body-emphasis">You shall not pass!</h1>
+      </div>
+
+      <!-- <div class="gandalf">
+        <div class="fireball"></div>
+        <div class="skirt"></div>
+        <div class="sleeves"></div>
+        <div class="shoulders">
+          <div class="hand left"></div>
+          <div class="hand right"></div>
+        </div>
+        <div class="head">
+          <div class="hair"></div>
+          <div class="beard"></div>
+        </div>
+      </div>
+      <div class="message">
+      <h1>403 - You Shall Not Pass</h1>
+      <p>Uh oh, Gandalf is blocking the way!<br/>Maybe you have a typo in the url? Or you meant to go to a different location? Like...Hobbiton?</p>
+      </div> -->
+    </div>
+    {% endblock content %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  <body>
+</html>
+
+
+

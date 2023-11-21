@@ -141,7 +141,6 @@ class UserForm(ModelForm):
     class Meta:
         model = User
         fields = [
-            "username",
             "first_name",
             "last_name",
             "birth_date",
@@ -152,18 +151,6 @@ class UserForm(ModelForm):
             "phone_number",
             "profile_picture",
         ]
-
-    def clean_username(self):
-        username = self.cleaned_data.get("username")
-        if len(username) == 0:
-            raise forms.ValidationError("Please enter a username")
-        elif len(username) > 30:
-            raise forms.ValidationError("Username is too long")
-        elif not username.isalnum():
-            raise forms.ValidationError(
-                "Username must only contain letters and numbers"
-            )
-        return username
 
     def clean_first_name(self):
         first_name = self.cleaned_data.get("first_name")
@@ -225,6 +212,41 @@ class ListingForm(ModelForm):
     )
     add_photos = forms.FileField(
         required=False, widget=forms.FileInput(attrs={'multiple': True})
+    )
+    address1 = forms.CharField(
+        max_length=1024,
+        widget=forms.HiddenInput(),
+        error_messages={'required': 'Address1 is Required'},
+    )
+
+    address2 = forms.CharField(
+        max_length=1024,
+        widget=forms.HiddenInput(),
+        error_messages={'required': 'Address2 is Required'},
+    )
+
+    zip_code = forms.CharField(
+        max_length=12,
+        widget=forms.HiddenInput(),
+        error_messages={'required': 'Zip code is Required'},
+    )
+
+    city = forms.CharField(
+        max_length=100,
+        widget=forms.HiddenInput(),
+        error_messages={'required': 'City is Required'},
+    )
+
+    state = forms.CharField(
+        max_length=15,
+        widget=forms.HiddenInput(),
+        error_messages={'required': 'State is Required'},
+    )
+
+    country = forms.CharField(
+        max_length=3,
+        widget=forms.HiddenInput(),
+        error_messages={'required': 'Country is Required'},
     )
 
     class Meta:
@@ -302,8 +324,18 @@ class ListingForm(ModelForm):
 
     def clean_age_range(self):
         age_range = self.cleaned_data.get("age_range")
-        if age_range.lower < 18:
-            raise forms.ValidationError("Minimum age cannot be less than 18")
-        elif age_range.upper > 100:
-            raise forms.ValidationError("Maximum age cannot be greater than 100")
+        if not age_range:
+            raise forms.ValidationError("Please enter an age range")
+        else:
+            if not age_range.lower:
+                raise forms.ValidationError("Please enter a minimum age")
+            elif not age_range.upper:
+                raise forms.ValidationError("Please enter a maximum age")
+            else:
+                if age_range.lower < 18:
+                    raise forms.ValidationError("Minimum age cannot be less than 18")
+                elif age_range.upper > 100:
+                    raise forms.ValidationError(
+                        "Maximum age cannot be greater than 100"
+                    )
         return age_range

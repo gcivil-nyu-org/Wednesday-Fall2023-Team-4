@@ -18,7 +18,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 'data' is my media folder
 MEDIA_URL = '/media/'
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -153,10 +152,13 @@ if "AWS_STORAGE_BUCKET_NAME" in os.environ:
 
     AWS_LOCATION = 'static'
     STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
+    
+    AWS_MEDIA_LOCATION = 'media'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_MEDIA_LOCATION}/'
 else:
     STATIC_URL = "/static/"
     STATIC_ROOT = os.path.join(BASE_DIR, "static")
-    
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -214,6 +216,14 @@ if 'EMAIL_HOST_PASSWORD' in os.environ:
 
 EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
 
+
+GOOGLE_API_KEY = ""
+if 'GOOGLE_API_KEY' in os.environ:
+    GOOGLE_API_KEY = os.environ['GOOGLE_API_KEY']
+
+
+BASE_COUNTRY = "US"
+
 # chat config
 
 CHANNEL_LAYERS = {
@@ -224,3 +234,5 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+LOGIN_URL = 'rrapp:login'

@@ -14,6 +14,17 @@ def index(request):
     return render(request, 'chat/index.html')
 
 
+def get_pending_connections_count(username):
+    try:
+        pending_connections_count = DirectMessagePermission.objects.filter(
+            Q(receiver__exact=username) & Q(permission__exact=Permission.REQUESTED)
+        ).count()
+    except DirectMessagePermission.DoesNotExist:
+        pending_connections_count = 0
+
+    return pending_connections_count
+
+
 # def conversation(request, receiverUsername):
 #     senderUsername = request.user.username
 #     room_name = '_'.join(sorted([senderUsername, receiverUsername]))
@@ -85,8 +96,8 @@ class ConversationHomeView(generic.View):
         for p in pending_connections:
             all_pending_connection_usernamesids.append(
                 {
-                    'id': User.objects.get(username=p.sender).id,
-                    'username': p.sender,
+                    'id': p.sender.id,
+                    'username': p.sender.username,
                 }
             )
 
@@ -102,16 +113,17 @@ class ConversationHomeView(generic.View):
 
         all_active_connection_usernamesids = []
         for p in active_connections:
-            if p.sender == cur_username:
+            if p.sender.username == cur_username:
                 all_active_connection_usernamesids.append(
                     {
-                        'id': User.objects.get(username=p.receiver).id,
-                        'username': p.receiver,
+                        'id': p.receiver.id,
+                        'username': p.receiver.username,
                     }
                 )
             else:
+                print(p.sender, p.receiver, p.permission, cur_username)
                 all_active_connection_usernamesids.append(
-                    {'id': User.objects.get(username=p.sender).id, 'username': p.sender}
+                    {'id': p.sender.id, 'username': p.sender.username}
                 )
 
         try:
@@ -128,8 +140,8 @@ class ConversationHomeView(generic.View):
         for p in requested_connections:
             all_requested_connection_usernamesids.append(
                 {
-                    'id': User.objects.get(username=p.receiver).id,
-                    'username': p.receiver,
+                    'id': p.receiver.id,
+                    'username': p.receiver.username,
                 }
             )
 
@@ -147,8 +159,8 @@ class ConversationHomeView(generic.View):
         for p in blocked_connections:
             all_blocked_connection_usernamesids.append(
                 {
-                    'id': User.objects.get(username=p.sender).id,
-                    'username': p.sender,
+                    'id': p.sender.id,
+                    'username': p.sender.username,
                 }
             )
 
@@ -166,31 +178,35 @@ class ConversationHomeView(generic.View):
 
     def post(self, request, *args, **kwargs):
         if "connection_accept" in request.POST:
+            otherUser = User.objects.get(username=request.POST["connection_accept"])
             p = DirectMessagePermission.objects.get(
-                sender=request.POST["connection_accept"], receiver=request.user.username
+                sender=otherUser, receiver=request.user
             )
             p.permission = Permission.ALLOWED
             p.save()
 
             DirectMessagePermission.objects.update_or_create(
                 defaults={"permission": Permission.ALLOWED},
-                receiver=request.POST["connection_accept"],
-                sender=request.user.username,
+                receiver=otherUser,
+                sender=request.user,
             )
         elif "connection_reject" in request.POST:
+            otherUser = User.objects.get(username=request.POST["connection_reject"])
             p = DirectMessagePermission.objects.get(
-                sender=request.POST["connection_reject"], receiver=request.user.username
+                sender=otherUser, receiver=request.user
             )
             p.delete()
         elif "connection_withdraw" in request.POST:
+            otherUser = User.objects.get(username=request.POST["connection_withdraw"])
             p = DirectMessagePermission.objects.get(
-                receiver=request.POST["connection_withdraw"],
-                sender=request.user.username,
+                receiver=otherUser,
+                sender=request.user,
             )
             p.delete()
         elif "connection_unblock" in request.POST:
+            otherUser = User.objects.get(username=request.POST["connection_unblock"])
             DirectMessagePermission.objects.filter(
-                sender=request.POST["connection_unblock"],
+                sender=otherUser,
                 receiver=request.user.username,
             ).update(permission=Permission.ALLOWED)
         else:
@@ -251,7 +267,7 @@ class ConversationView(generic.View):
 
         try:
             recipientPermission = DirectMessagePermission.objects.get(
-                sender=receiverUsername, receiver=senderUsername
+                sender=receiverUser, receiver=request.user
             )
         except DirectMessagePermission.DoesNotExist:
             recipientPermission = None
@@ -271,6 +287,8 @@ class ConversationView(generic.View):
     def post(self, request, *args, **kwargs):
         senderUsername = request.user.username
         receiverUsername = kwargs["receiverUsername"]
+        senderUser = User.objects.get(username=senderUsername)
+        receiverUser = User.objects.get(username=receiverUsername)
 
         if not self.canDmReceiver(senderUsername, receiverUsername):
             raise PermissionDenied(
@@ -284,8 +302,8 @@ class ConversationView(generic.View):
             room_name = '_'.join(sorted([senderUsername, receiverUsername]))
             print('saving ', request.POST)
             DirectMessage.objects.create(
-                sender=senderUsername,
-                receiver=receiverUsername,
+                sender=senderUser,
+                receiver=receiverUser,
                 room=room_name,
                 content=request.POST['chat-message-input'],
             )
@@ -294,7 +312,7 @@ class ConversationView(generic.View):
             # receiver should not be able to contact cur_user
             # print('blocking', receiverUsername, '-->', senderUsername)
             DirectMessagePermission.objects.filter(
-                sender=receiverUsername, receiver=senderUsername
+                sender=receiverUser, receiver=senderUser
             ).update(permission=Permission.BLOCKED)
             return HttpResponseRedirect(reverse("chat:conversation_home"))
 
@@ -302,7 +320,7 @@ class ConversationView(generic.View):
             # receiver should be able to contact cur_user
             # print('unblocking', receiverUsername, '-->', senderUsername)
             DirectMessagePermission.objects.filter(
-                sender=receiverUsername, receiver=senderUsername
+                sender=receiverUser, receiver=senderUser
             ).update(permission=Permission.ALLOWED)
 
         return HttpResponseRedirect(

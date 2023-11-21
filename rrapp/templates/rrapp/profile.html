@@ -11,7 +11,7 @@
     <body class = "align-items-stretch">
         <div class="back-contianer">
 
-            {% include 'rrapp/left_bar.html' with user=user path=path %}
+            {% include 'rrapp/left_bar.html' with user=user path=path inbox=inbox %}
 
             <div class="text-center right-page">
                 {% if messages %}
@@ -40,7 +40,6 @@
                 <div class = "w-100 align-items-center px-5 mb-3" >
                     <div class = "d-flex flex-column align-items-center board rounded-3" style="background-color:#F8F8F8">
                         <h1 class="font-monospace display-5 fw-medium text-body-emphasis my-3">{{ user.email }}</h1>
-
                             
                             <form method="post" enctype="multipart/form-data" class="row w-75 text-center">
                                 {% csrf_token %}
@@ -59,6 +58,13 @@
                                         {% endfor %}              
                                     {% endif %}
                                 {% endif %}
+
+                                <div class="col-6 p-2">
+                                    <p>Username : </p>
+                                </div>
+                                <div class="col-6 p-2">
+                                    <p>{{ user.username }}</p>
+                                </div>
 
                                 {% for field in form.visible_fields %}
                                     <div class="col-6 p-2">
@@ -82,11 +88,11 @@
                             </form>
                             {% if not user.is_verified %}
                                 <div class = "p-2">
-                                    <a href="{% url 'rrapp:activate_email' %}" class="btn btn-danger">Activate Your Account</a>
+                                    <a href="{% url 'rrapp:verify_email' %}" class="btn btn-danger">Verify Your Account</a>
                                 </div>
                             {% endif %}
                             <div class = "p-3">
-                                <a href="{% url 'rrapp:deleteAccount' user_id %}" class="btn btn-dark">Delete Account</a>
+                                <a href="{% url 'rrapp:deleteAccount' %}" class="btn btn-dark">Delete Account</a>
                             </div>
                         </div>
                     </div>

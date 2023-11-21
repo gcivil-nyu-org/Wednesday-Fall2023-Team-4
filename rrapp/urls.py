@@ -5,11 +5,8 @@ from . import views
 
 app_name = "rrapp"
 urlpatterns = [
-    # # ex: /rrapp/
-    # path('', views.IndexView.as_view(), name='index'),
     # ex: /rrapp/
     path("", views.HomeView.as_view(), name="home"),
-    # ex: /rrapp/login
     path('login/', views.LoginView.as_view(), name="login"),
     path(
         'reset_password/',
@@ -24,7 +21,7 @@ urlpatterns = [
         name='password_reset_done',
     ),
     path(
-        'reset/<uidb64>/<token>/',
+        'reset_password/<uidb64>/<token>/',
         views.ConfirmPasswordResetView.as_view(
             template_name='rrapp/password_reset_confirm.html'
         ),
@@ -37,74 +34,77 @@ urlpatterns = [
         ),
         name='password_reset_complete',
     ),
-    # ex: /rrapp/logout
     path("logout/", views.LogoutView.as_view(), name="logout"),
-    # ex: /rrapp/register
     path('register/', views.RegisterView.as_view(), name="register"),
-    path('activate/<uidb64>/<token>', views.activate, name='activate'),
-    path('activate_email', views.activateEmail, name='activate_email'),
+    path(
+        'verification_check/<uidb64>/<token>',
+        views.verificationCheck,
+        name='verification_check',
+    ),
+    path('verify_email', views.verifyEmail, name='verify_email'),
     # ex: /rrapp/5/listings/1
     path(
-        "renter/<int:user_id>/listings/<int:pk>/",
+        "renter/listings/<int:pk>/",
         views.ListingDetailView.as_view(),
         name="listing_detail",
     ),
     # ex: /rrapp/5/listings/
     path(
-        "renter/<int:user_id>/listings/",
+        "renter/listings/",
         views.ListingIndexView.as_view(),
         name="my_listings",
     ),
     # ex: /rrapp/5/listings/new
     path(
-        "renter/<int:user_id>/listings/new",
+        "renter/listings/new",
         views.ListingNewView.as_view(),
         name="listing_new",
     ),
     # ex: /rrapp/5/delete/1
     path(
-        "renter/<int:user_id>/delete/<int:pk>",
+        "renter/listings/<int:pk>/delete",
         views.listing_delete,
         name="listing_delete",
     ),
     path(
-        "renter/<int:user_id>/listings/<int:pk>/modify",
+        "renter/listings/<int:pk>/modify",
         views.ListingUpdateView.as_view(),
         name="listing_detail_modify",
     ),
     # ex: /rrapp/rentee/5/listings/
     path(
-        "rentee/<int:user_id>/listings/",
+        "rentee/listings/",
         views.ListingResultsView.as_view(),
         name="rentee_listings",
     ),
     # ex: /rrapp/rentee/5/listings/1
     path(
-        "rentee/<int:user_id>/listings/<int:pk>",
+        "rentee/listings/<int:pk>",
         views.ListingDetailRenteeView.as_view(),
         name="rentee_listing_detail",
     ),
-    # ex: /rrapp/user/1/myprofile
+    # ex: /rrapp/user/profile/1
     path(
-        '<int:pk>/profile',
+        'user/profile',
         views.ProfileView.as_view(),
         name='profile',
     ),
-    # ex: /rrapp/user/2/profile
+    # ex: /rrapp/user/profile/1/delete
     path(
-        'user/<int:pk>/profile',
-        views.PublicProfileView.as_view(),
-        name='public_profile',
-    ),
-    # ex: /rrapp/user/1/profile/delete
-    path(
-        'user/<int:user_id>/profile/delete',
+        'user/profile/delete',
         views.deleteAccount,
         name='deleteAccount',
     ),
+    # ex: /rrapp/rentee/2/shortlist
     path(
-        'rentee/<int:user_id>/shortlist/',
+        'rentee/shortlist/',
         views.ShortListView.as_view(),
         name='shortlist',
+    ),
+    # ex: /rrapp/user/public_profile/2
+    path(
+        'user/public_profile/<int:pk>',
+        views.PublicProfileView.as_view(),
+        name='public_profile',
     ),
 ]

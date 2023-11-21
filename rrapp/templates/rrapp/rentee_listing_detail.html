@@ -10,7 +10,7 @@
     <body class = "align-items-stretch">
         <div class="back-contianer">
         
-        {% include 'rrapp/left_bar.html' with user=user path=path %}
+        {% include 'rrapp/left_bar.html' with user=user path=path inbox=inbox %}
 
         <div class="text-center right-page">
             <div class="container-xxl text-center">
@@ -23,7 +23,7 @@
                                 </a>
                             </li>
                             <li class="breadcrumb-item">
-                                <a class="link-body-emphasis fw-semibold text-decoration-none" href="{% url 'rrapp:rentee_listings' user_id %}">
+                                <a class="link-body-emphasis fw-semibold text-decoration-none" href="{% url 'rrapp:rentee_listings' %}">
                                     Listings
                                 </a>
                             </li>
@@ -395,7 +395,7 @@
                             {% endif %}
                         </form>
 
-                        <a type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right" href="{% url 'rrapp:rentee_listings' user.id %}">Back</a>
+                        <a type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right" href="{% url 'rrapp:rentee_listings' %}">Back</a>
                     </div>
 
                     <div class="mb-3">
