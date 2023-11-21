@@ -21,7 +21,7 @@
                                 </a>
                             </li>
                             <li class="breadcrumb-item">
-                                <a class="link-body-emphasis fw-semibold text-decoration-none" href="{% url 'rrapp:my_listings' user_id %}">
+                                <a class="link-body-emphasis fw-semibold text-decoration-none" href="{% url 'rrapp:my_listings' %}">
                                     My Listings
                                 </a>
                             </li>
@@ -72,10 +72,10 @@
                                 {% endfor %}
 
                                 <div class="col-6 p-2">
-                                    Please type your address here:
+                                    Search address :
                                 </div>
                                 <div class="col-6 p-2">
-                                <input type="text" placeholder="*Begin typing address" id="id-google-address" name="google_address" class="form-control">
+                                <input type="text" placeholder="Begin typing the property address" id="id-google-address" name="google_address" class="form-control">
                                 </div>
 
                                 {% for field in form.hidden_fields %}

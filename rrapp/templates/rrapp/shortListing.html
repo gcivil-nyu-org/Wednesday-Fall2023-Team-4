@@ -37,7 +37,7 @@
                         {% if latest_listings %}
                             <div class="list-group scrollarea">
                                 {% for listing in latest_listings %}
-                                    <button type="button" class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'rrapp:rentee_listing_detail' user_id listing.saved_listings.id %}'" style="height:3.5rem;">
+                                    <button type="button" class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'rrapp:rentee_listing_detail' listing.saved_listings.id %}'" style="height:3.5rem;">
                                         <span class="fs-5 fw-semi">
                                             {{ listing.saved_listings.title }}
                                         </span>
