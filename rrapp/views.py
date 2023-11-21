@@ -167,7 +167,7 @@ def activate(request, uidb64, token):
     return HttpResponseRedirect(reverse("rrapp:profile", args=(uid,)))
 
 
-@login_required(login_url='login')
+@login_required
 def activateEmail(request):
     mail_subject = "Activate your user account."
     message = render_to_string(
@@ -656,7 +656,7 @@ class PublicProfileView(generic.DetailView):
         return reverse('rrapp:rentee_listings', args=(user_id,))
 
 
-@login_required(login_url='login')
+@login_required
 def listing_delete(request, user_id, pk):
     # TODO:add the check  if request.user.is_authenticated():
     listing = get_object_or_404(Listing, pk=pk, user_id=user_id)
@@ -670,7 +670,7 @@ def listing_delete(request, user_id, pk):
     return render(request, 'rrapp/confirm_delete.html', {"user_id": user_id, "pk": pk})
 
 
-@login_required(login_url='login')
+@login_required
 def deleteAccount(request, user_id):
     user = get_object_or_404(User, pk=user_id)
     if request.method == 'POST':

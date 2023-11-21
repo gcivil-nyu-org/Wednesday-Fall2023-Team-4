@@ -224,3 +224,5 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+LOGIN_URL = 'rrapp:login'
