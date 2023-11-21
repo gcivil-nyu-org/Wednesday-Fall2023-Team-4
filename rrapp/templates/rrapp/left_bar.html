@@ -12,13 +12,13 @@
                         Status :  <span class="badge text-bg-success">Rentee</span >
                     {% endif %}
                 </div>
-                <a href="{% url 'rrapp:profile' user.id %}" class="btn btn-primary m-1">Edit</a>
+                <a href="{% url 'rrapp:profile' %}" class="btn btn-primary m-1">Edit</a>
             </div>
         </div>
 
         {% if path %}
             <div class = "p-3">
-                <a href="{% url 'rrapp:my_listings' user.id %}" class="btn btn-secondary">Home</a>
+                <a href="{% url 'rrapp:my_listings' %}" class="btn btn-secondary">Home</a>
             </div>
             <div class = "p-3">
                 <a href="{% url 'chat:conversation_home' %}" class="btn btn-primary position-relative">
@@ -31,11 +31,11 @@
                 </a>
             </div>
             <div class = "p-3">
-                <a href="{% url 'rrapp:rentee_listings' user.id %}" class="btn btn-warning">Switch Status</a>
+                <a href="{% url 'rrapp:rentee_listings' %}" class="btn btn-warning">Switch Status</a>
             </div>
         {% else %}
             <div class = "p-3">
-                <a href="{% url 'rrapp:rentee_listings' user.id %}" class="btn btn-secondary">Home</a>
+                <a href="{% url 'rrapp:rentee_listings' %}" class="btn btn-secondary">Home</a>
             </div>
             <div class = "p-3">
                 <a href="{% url 'chat:conversation_home' %}" class="btn btn-primary position-relative">
@@ -48,10 +48,10 @@
                 </a>
             </div>
             <div class = "p-3">
-                <a href="{% url 'rrapp:my_listings' user.id %}" class="btn btn-warning">Switch Status</a>
+                <a href="{% url 'rrapp:my_listings' %}" class="btn btn-warning">Switch Status</a>
             </div>
             <div class = "p-3">
-                <a href="{% url 'rrapp:shortlist' user.id %}" class="btn btn-success">My ShortList</a>
+                <a href="{% url 'rrapp:shortlist' %}" class="btn btn-success">My ShortList</a>
             </div>
         {% endif %}
 

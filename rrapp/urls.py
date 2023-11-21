@@ -44,36 +44,36 @@ urlpatterns = [
     path('verify_email', views.verifyEmail, name='verify_email'),
     # ex: /rrapp/5/listings/1
     path(
-        "renter/<int:user_id>/listings/<int:pk>/",
+        "renter/listings/<int:pk>/",
         views.ListingDetailView.as_view(),
         name="listing_detail",
     ),
     # ex: /rrapp/5/listings/
     path(
-        "renter/<int:user_id>/listings/",
+        "renter/listings/",
         views.ListingIndexView.as_view(),
         name="my_listings",
     ),
     # ex: /rrapp/5/listings/new
     path(
-        "renter/<int:user_id>/listings/new",
+        "renter/listings/new",
         views.ListingNewView.as_view(),
         name="listing_new",
     ),
     # ex: /rrapp/5/delete/1
     path(
-        "renter/<int:user_id>/listings/<int:pk>/delete",
+        "renter/listings/<int:pk>/delete",
         views.listing_delete,
         name="listing_delete",
     ),
     path(
-        "renter/<int:user_id>/listings/<int:pk>/modify",
+        "renter/listings/<int:pk>/modify",
         views.ListingUpdateView.as_view(),
         name="listing_detail_modify",
     ),
     # ex: /rrapp/rentee/5/listings/
     path(
-        "rentee/<int:user_id>/listings/",
+        "rentee/listings/",
         views.ListingResultsView.as_view(),
         name="rentee_listings",
     ),
@@ -85,26 +85,26 @@ urlpatterns = [
     ),
     # ex: /rrapp/user/profile/1
     path(
-        'user/profile/<int:pk>',
+        'user/profile',
         views.ProfileView.as_view(),
         name='profile',
     ),
     # ex: /rrapp/user/profile/1/delete
     path(
-        'user/profile/<int:user_id>/delete',
+        'user/profile/delete',
         views.deleteAccount,
         name='deleteAccount',
+    ),
+    # ex: /rrapp/rentee/2/shortlist
+    path(
+        'rentee/shortlist/',
+        views.ShortListView.as_view(),
+        name='shortlist',
     ),
     # ex: /rrapp/user/public_profile/2
     path(
         'user/public_profile/<int:pk>',
         views.PublicProfileView.as_view(),
         name='public_profile',
-    ),
-    # ex: /rrapp/rentee/2/shortlist
-    path(
-        'rentee/<int:user_id>/shortlist/',
-        views.ShortListView.as_view(),
-        name='shortlist',
     ),
 ]

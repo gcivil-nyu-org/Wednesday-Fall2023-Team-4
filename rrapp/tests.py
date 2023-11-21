@@ -35,7 +35,7 @@ class HomeViewTest(ViewsTestCase):
             reverse("rrapp:home"),
         )
         self.assertRedirects(
-            response, reverse("rrapp:rentee_listings", args=(self.user.id,))
+            response, reverse("rrapp:rentee_listings")
         )
 
 
@@ -51,7 +51,7 @@ class LoginViewTest(ViewsTestCase):
             {"email": "test@example.edu", "password": "testpassword123"},
         )
         self.assertRedirects(
-            response, reverse("rrapp:rentee_listings", args=(self.user.id,))
+            response, reverse("rrapp:rentee_listings")
         )
 
     def test_login_view_post_invalid_credentials(self):
@@ -68,7 +68,7 @@ class LoginViewTest(ViewsTestCase):
             reverse("rrapp:login"),
         )
         self.assertRedirects(
-            response, reverse("rrapp:rentee_listings", args=(self.user.id,))
+            response, reverse("rrapp:rentee_listings")
         )
 
 
@@ -156,7 +156,7 @@ class RegisterViewTest(ViewsTestCase):
         )
         self.assertRedirects(
             response,
-            expected_url=reverse("rrapp:rentee_listings", args=(newUser.id,)),
+            expected_url=reverse("rrapp:rentee_listings"),
             status_code=302,
         )
 
@@ -177,7 +177,7 @@ class RegisterViewTest(ViewsTestCase):
             reverse("rrapp:register"),
         )
         self.assertRedirects(
-            response, reverse("rrapp:rentee_listings", args=(self.user.id,))
+            response, reverse("rrapp:rentee_listings")
         )
 
 
@@ -191,7 +191,6 @@ class ListingDetailViewTest(ViewsTestCase):
             reverse(
                 "rrapp:listing_detail",
                 args=(
-                    self.user.id,
                     listing.id,
                 ),
             )
@@ -312,7 +311,7 @@ class ListingResultsViewTest(ViewsTestCase):
     def test_listing_results_view_authenticated_user(self):
         self.client.force_login(self.user)
         response = self.client.get(
-            reverse("rrapp:rentee_listings", args=(self.user.id,)),
+            reverse("rrapp:rentee_listings"),
             {
                 "monthly_rent": 1000,
                 "number_of_bedrooms": 2,
@@ -355,7 +354,7 @@ class VerifyEmailViewTest(ViewsTestCase):
 class ListingIndexViewTest(ViewsTestCase):
     def test_listing_index_view_authenticated_user(self):
         self.client.force_login(self.user)
-        response = self.client.get(reverse("rrapp:my_listings", args=(self.user.id,)))
+        response = self.client.get(reverse("rrapp:my_listings"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/my_listings.html")
 
@@ -385,7 +384,7 @@ class ListingNewViewTest(TestCase):
     def test_listing_new_view_post(self):
         client = Client()
         response = client.post(
-            reverse("rrapp:listing_new", kwargs={"user_id": 1}),
+            reverse("rrapp:listing_new"),
             {"title": "Test Listing", "monthly_rent": 1000},
         )
         self.assertEqual(response.status_code, 302)
@@ -394,13 +393,13 @@ class ListingNewViewTest(TestCase):
 class ProfileViewTest(TestCase):
     def test_profile_view_get(self):
         client = Client()
-        response = client.get(reverse("rrapp:profile", kwargs={"pk": 1}))
+        response = client.get(reverse("rrapp:profile"))
         self.assertIn(response.status_code, [200, 302])
 
     def test_profile_view_post(self):
         client = Client()
         response = client.post(
-            reverse("rrapp:profile", kwargs={"pk": 1}),
+            reverse("rrapp:profile"),
             {"first_name": "Test", "last_name": "User"},
         )
         self.assertEqual(response.status_code, 302)
@@ -416,7 +415,7 @@ class PublicProfileViewTest(TestCase):
 class ShortListViewTest(TestCase):
     def test_shortlist_view(self):
         client = Client()
-        response = client.get(reverse("rrapp:shortlist", kwargs={"user_id": 1}))
+        response = client.get(reverse("rrapp:shortlist"))
         self.assertIn(response.status_code, [200, 302])
 
 
@@ -424,14 +423,14 @@ class ListingUpdateViewTest(TestCase):
     def test_listing_update_view_get(self):
         client = Client()
         response = client.get(
-            reverse("rrapp:listing_detail_modify", kwargs={"user_id": 1, "pk": 1})
+            reverse("rrapp:listing_detail_modify", kwargs={"pk": 1})
         )
         self.assertIn(response.status_code, [200, 302])
 
     def test_listing_update_view_post(self):
         client = Client()
         response = client.post(
-            reverse("rrapp:listing_detail_modify", kwargs={"user_id": 1, "pk": 1}),
+            reverse("rrapp:listing_detail_modify", kwargs={"pk": 1}),
             {"title": "Updated Listing"},
         )
         self.assertIn(response.status_code, [200, 302])
