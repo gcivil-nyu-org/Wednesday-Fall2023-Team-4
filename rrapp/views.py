@@ -7,7 +7,6 @@ from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.views import generic
-from django.core.exceptions import PermissionDenied
 
 from psycopg2.extras import NumericRange
 
@@ -124,7 +123,6 @@ class RegisterView(generic.View):
         if form.is_valid():
             user = form.save(commit=False)
             user.save()
-            user_id = user.id
 
             type_renter = Renter.objects.create(user=user)
             type_rentee = Rentee.objects.create(user=user)
