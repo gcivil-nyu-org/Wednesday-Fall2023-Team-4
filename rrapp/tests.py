@@ -34,9 +34,7 @@ class HomeViewTest(ViewsTestCase):
         response = self.client.post(
             reverse("rrapp:home"),
         )
-        self.assertRedirects(
-            response, reverse("rrapp:rentee_listings")
-        )
+        self.assertRedirects(response, reverse("rrapp:rentee_listings"))
 
 
 class LoginViewTest(ViewsTestCase):
@@ -50,9 +48,7 @@ class LoginViewTest(ViewsTestCase):
             reverse("rrapp:login"),
             {"email": "test@example.edu", "password": "testpassword123"},
         )
-        self.assertRedirects(
-            response, reverse("rrapp:rentee_listings")
-        )
+        self.assertRedirects(response, reverse("rrapp:rentee_listings"))
 
     def test_login_view_post_invalid_credentials(self):
         response = self.client.post(
@@ -67,9 +63,7 @@ class LoginViewTest(ViewsTestCase):
         response = self.client.post(
             reverse("rrapp:login"),
         )
-        self.assertRedirects(
-            response, reverse("rrapp:rentee_listings")
-        )
+        self.assertRedirects(response, reverse("rrapp:rentee_listings"))
 
 
 class RegisterViewTest(ViewsTestCase):
@@ -176,9 +170,7 @@ class RegisterViewTest(ViewsTestCase):
         response = self.client.post(
             reverse("rrapp:register"),
         )
-        self.assertRedirects(
-            response, reverse("rrapp:rentee_listings")
-        )
+        self.assertRedirects(response, reverse("rrapp:rentee_listings"))
 
 
 class ListingDetailViewTest(ViewsTestCase):
@@ -190,9 +182,7 @@ class ListingDetailViewTest(ViewsTestCase):
         response = self.client.get(
             reverse(
                 "rrapp:listing_detail",
-                args=(
-                    listing.id,
-                ),
+                args=(listing.id,),
             )
         )
         self.assertEqual(response.status_code, 200)
@@ -213,9 +203,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
         response = self.client.get(
             reverse(
                 "rrapp:rentee_listing_detail",
-                args=(
-                    listing.id,
-                ),
+                args=(listing.id,),
             )
         )
         self.assertEqual(response.status_code, 200)
@@ -235,9 +223,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
         response = self.client.post(
             reverse(
                 "rrapp:rentee_listing_detail",
-                args=(
-                    listing.id,
-                ),
+                args=(listing.id,),
             ),
             {"shortlist": "true"},
         )
@@ -268,9 +254,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
         response = self.client.post(
             reverse(
                 "rrapp:rentee_listing_detail",
-                args=(
-                    listing.id,
-                ),
+                args=(listing.id,),
             ),
             {"connection_request": "true"},
         )
@@ -291,9 +275,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
         response = self.client.post(
             reverse(
                 "rrapp:rentee_listing_detail",
-                args=(
-                    listing.id,
-                ),
+                args=(listing.id,),
             ),
             {"connection_request": "true"},
         )
@@ -422,9 +404,7 @@ class ShortListViewTest(TestCase):
 class ListingUpdateViewTest(TestCase):
     def test_listing_update_view_get(self):
         client = Client()
-        response = client.get(
-            reverse("rrapp:listing_detail_modify", kwargs={"pk": 1})
-        )
+        response = client.get(reverse("rrapp:listing_detail_modify", kwargs={"pk": 1}))
         self.assertIn(response.status_code, [200, 302])
 
     def test_listing_update_view_post(self):

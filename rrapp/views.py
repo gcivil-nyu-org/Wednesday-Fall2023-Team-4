@@ -47,9 +47,7 @@ class HomeView(generic.View):
         # will redirect to the home page if a user tries to
         # access the register page while logged in
         if request.user.is_authenticated:
-            return HttpResponseRedirect(
-                reverse("rrapp:rentee_listings")
-            )
+            return HttpResponseRedirect(reverse("rrapp:rentee_listings"))
         # else process dispatch as it otherwise normally would
         return super(HomeView, self).dispatch(request, *args, **kwargs)
 
@@ -64,9 +62,7 @@ class LoginView(generic.View):
         # will redirect to the home page if a user tries to
         # access the register page while logged in
         if request.user.is_authenticated:
-            return HttpResponseRedirect(
-                reverse("rrapp:rentee_listings")
-            )
+            return HttpResponseRedirect(reverse("rrapp:rentee_listings"))
         # else process dispatch as it otherwise normally would
         return super(LoginView, self).dispatch(request, *args, **kwargs)
 
@@ -83,9 +79,7 @@ class LoginView(generic.View):
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect(
-                    reverse("rrapp:rentee_listings")
-                )
+                return HttpResponseRedirect(reverse("rrapp:rentee_listings"))
             else:
                 messages.error(request, "Username OR password does not exist")
         else:
@@ -117,9 +111,7 @@ class RegisterView(generic.View):
         # will redirect to the home page if a user tries to
         # access the register page while logged in
         if request.user.is_authenticated:
-            return HttpResponseRedirect(
-                reverse("rrapp:rentee_listings")
-            )
+            return HttpResponseRedirect(reverse("rrapp:rentee_listings"))
         # else process dispatch as it otherwise normally would
         return super(RegisterView, self).dispatch(request, *args, **kwargs)
 
@@ -139,9 +131,7 @@ class RegisterView(generic.View):
             type_renter.save()
             type_rentee.save()
             login(request, user)
-            return HttpResponseRedirect(
-                reverse("rrapp:rentee_listings")
-            )
+            return HttpResponseRedirect(reverse("rrapp:rentee_listings"))
 
         return render(request, "rrapp/login_register.html", {"form": form})
 
@@ -291,12 +281,8 @@ class ListingDetailRenteeView(generic.DetailView):
         context_data["user_id"] = user_id
         context_data["user"] = User.objects.get(id=user_id)
         context_data["path"] = self.request.path_info.__contains__("renter")
-        context_data["saved"] = self.check_state(
-            user_id, self.kwargs["pk"]
-        )
-        context_data["cur_permission"] = self.cur_permission(
-            user_id, self.kwargs["pk"]
-        )
+        context_data["saved"] = self.check_state(user_id, self.kwargs["pk"])
+        context_data["cur_permission"] = self.cur_permission(user_id, self.kwargs["pk"])
         context_data["photos"] = Photo.objects.filter(listing=self.kwargs["pk"])
         context_data["inbox"] = get_inbox_count(User.objects.get(id=user_id).username)
         return context_data
@@ -481,7 +467,7 @@ class ListingUpdateView(generic.UpdateView):
 
     def get_success_url(self):
         listing_id = self.kwargs["pk"]
-        return reverse("rrapp:listing_detail", args=(listing_id))
+        return reverse("rrapp:listing_detail", args=(listing_id,))
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -497,9 +483,7 @@ class ListingUpdateView(generic.UpdateView):
         context_data["list_title"] = Listing.objects.get(id=self.kwargs["pk"]).title
         context_data["user"] = self.request.user
         context_data["path"] = self.request.path_info.__contains__("renter")
-        context_data["inbox"] = get_inbox_count(
-            self.request.user.username
-        )
+        context_data["inbox"] = get_inbox_count(self.request.user.username)
         context_data['google_api_key'] = settings.GOOGLE_API_KEY
         context_data['base_country'] = settings.BASE_COUNTRY
         return context_data
@@ -543,9 +527,7 @@ class ListingNewView(generic.CreateView):
         context_data["user_id"] = self.request.user.id
         context_data["user"] = self.request.user
         context_data["path"] = self.request.path_info.__contains__("renter")
-        context_data["inbox"] = get_inbox_count(
-            self.request.user.username
-        )
+        context_data["inbox"] = get_inbox_count(self.request.user.username)
         context_data['google_api_key'] = settings.GOOGLE_API_KEY
         context_data['base_country'] = settings.BASE_COUNTRY
 
@@ -602,9 +584,7 @@ class ListingNewView(generic.CreateView):
             listing.save()
             for file in request.FILES.getlist('add_photos'):
                 Photo.objects.create(image=file, listing=listing)
-            return HttpResponseRedirect(
-                reverse("rrapp:my_listings")
-            )
+            return HttpResponseRedirect(reverse("rrapp:my_listings"))
         else:
             return self.form_invalid(form)
 
@@ -614,7 +594,7 @@ class ProfileView(generic.UpdateView):
     model = User
     template_name = "rrapp/profile.html"
     form_class = UserForm
-    success_url = 'rrapp:rentee_listings'
+    success_url = 'rrapp:profile'
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -628,19 +608,13 @@ class ProfileView(generic.UpdateView):
         context_data["user_id"] = self.request.user.id
         context_data["user"] = self.request.user
         context_data["path"] = self.request.path_info.__contains__("renter")
-        context_data["inbox"] = get_inbox_count(
-            self.request.user.username
-        )
+        context_data["inbox"] = get_inbox_count(self.request.user.username)
         return context_data
 
     def get_success_url(self):
-        return reverse('rrapp:rentee_listings')
+        return reverse('rrapp:profile')
 
     def post(self, request, *args, **kwargs):
-        if request.user.id != self.kwargs["pk"]:
-            raise PermissionDenied(
-                'You are not allowed to access this page.'
-            )
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
@@ -679,7 +653,6 @@ class PublicProfileView(generic.DetailView):
 
 @login_required
 def listing_delete(request, pk):
-    
     listing = get_object_or_404(Listing, pk=pk, user_id=request.user.id)
 
     if request.method == 'POST':
@@ -689,7 +662,9 @@ def listing_delete(request, pk):
         # user hits the Back button.
         return HttpResponseRedirect(reverse('rrapp:my_listings'))
     return render(
-        request, 'rrapp/confirm_delete_listing.html', {"user_id": request.user.id, "pk": pk}
+        request,
+        'rrapp/confirm_delete_listing.html',
+        {"user_id": request.user.id, "pk": pk},
     )
 
 
@@ -700,7 +675,9 @@ def deleteAccount(request):
         user.delete()
         logout(request)
         return HttpResponseRedirect(reverse('rrapp:home'))
-    return render(request, 'rrapp/confirm_delete_user.html', {"user_id": request.user.id})
+    return render(
+        request, 'rrapp/confirm_delete_user.html', {"user_id": request.user.id}
+    )
 
 
 class UsersListView(LoginRequiredMixin, generic.ListView):
@@ -722,6 +699,7 @@ def get_inbox_count(username):
     i = 0
     i += get_pending_connections_count(username)
     return i
+
 
 def rrapp_403(request, exception):
     return render(request, "rrapp/403.html", {}, status=403)
