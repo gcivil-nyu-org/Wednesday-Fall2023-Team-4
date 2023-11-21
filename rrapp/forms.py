@@ -141,7 +141,6 @@ class UserForm(ModelForm):
     class Meta:
         model = User
         fields = [
-            "username",
             "first_name",
             "last_name",
             "birth_date",
@@ -153,17 +152,6 @@ class UserForm(ModelForm):
             "profile_picture",
         ]
 
-    def clean_username(self):
-        username = self.cleaned_data.get("username")
-        if len(username) == 0:
-            raise forms.ValidationError("Please enter a username")
-        elif len(username) > 30:
-            raise forms.ValidationError("Username is too long")
-        elif not username.isalnum():
-            raise forms.ValidationError(
-                "Username must only contain letters and numbers"
-            )
-        return username
 
     def clean_first_name(self):
         first_name = self.cleaned_data.get("first_name")

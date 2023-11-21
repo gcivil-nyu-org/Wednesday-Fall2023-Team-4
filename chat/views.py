@@ -85,8 +85,8 @@ class ConversationHomeView(generic.View):
         for p in pending_connections:
             all_pending_connection_usernamesids.append(
                 {
-                    'id': User.objects.get(username=p.sender).id,
-                    'username': p.sender,
+                    'id': p.sender.id,
+                    'username': p.sender.username,
                 }
             )
 
@@ -102,16 +102,17 @@ class ConversationHomeView(generic.View):
 
         all_active_connection_usernamesids = []
         for p in active_connections:
-            if p.sender == cur_username:
+            if p.sender.username == cur_username:
                 all_active_connection_usernamesids.append(
                     {
-                        'id': User.objects.get(username=p.receiver).id,
-                        'username': p.receiver,
+                        'id': p.receiver.id,
+                        'username': p.receiver.username,
                     }
                 )
             else:
+                print(p.sender, p.receiver, p.permission, cur_username)
                 all_active_connection_usernamesids.append(
-                    {'id': User.objects.get(username=p.sender).id, 'username': p.sender}
+                    {'id': p.sender.id, 'username': p.sender.username}
                 )
 
         try:
@@ -128,8 +129,8 @@ class ConversationHomeView(generic.View):
         for p in requested_connections:
             all_requested_connection_usernamesids.append(
                 {
-                    'id': User.objects.get(username=p.receiver).id,
-                    'username': p.receiver,
+                    'id': p.receiver.id,
+                    'username': p.receiver.username,
                 }
             )
 
@@ -147,8 +148,8 @@ class ConversationHomeView(generic.View):
         for p in blocked_connections:
             all_blocked_connection_usernamesids.append(
                 {
-                    'id': User.objects.get(username=p.sender).id,
-                    'username': p.sender,
+                    'id': p.sender.id,
+                    'username': p.sender.username,
                 }
             )
 
@@ -271,6 +272,8 @@ class ConversationView(generic.View):
     def post(self, request, *args, **kwargs):
         senderUsername = request.user.username
         receiverUsername = kwargs["receiverUsername"]
+        senderUser = User.objects.get(username=senderUsername)
+        receiverUser = User.objects.get(username=receiverUsername)
 
         if not self.canDmReceiver(senderUsername, receiverUsername):
             raise PermissionDenied(
@@ -284,8 +287,8 @@ class ConversationView(generic.View):
             room_name = '_'.join(sorted([senderUsername, receiverUsername]))
             print('saving ', request.POST)
             DirectMessage.objects.create(
-                sender=senderUsername,
-                receiver=receiverUsername,
+                sender=senderUser,
+                receiver=receiverUser,
                 room=room_name,
                 content=request.POST['chat-message-input'],
             )
@@ -294,7 +297,7 @@ class ConversationView(generic.View):
             # receiver should not be able to contact cur_user
             # print('blocking', receiverUsername, '-->', senderUsername)
             DirectMessagePermission.objects.filter(
-                sender=receiverUsername, receiver=senderUsername
+                sender=receiverUser, receiver=senderUser
             ).update(permission=Permission.BLOCKED)
             return HttpResponseRedirect(reverse("chat:conversation_home"))
 
@@ -302,7 +305,7 @@ class ConversationView(generic.View):
             # receiver should be able to contact cur_user
             # print('unblocking', receiverUsername, '-->', senderUsername)
             DirectMessagePermission.objects.filter(
-                sender=receiverUsername, receiver=senderUsername
+                sender=receiverUser, receiver=senderUser
             ).update(permission=Permission.ALLOWED)
 
         return HttpResponseRedirect(
