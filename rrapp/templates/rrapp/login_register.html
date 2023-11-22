@@ -17,6 +17,21 @@
 
       <form class="form row w-90 text-center align-items-center p-3 w-50" action="" method="POST">
         {% csrf_token %}
+
+        {% if form.is_bound %}
+          {% if form.errors %}
+            {% for filed in form%}
+              {% if filed.errors %}
+                {% for error in filed.errors%}
+                  <div class="alert alert-warning" role="alert">
+                    {{ error }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}              
+          {% endif %}
+        {% endif %}
+
         <div class="col-5">
           <input id="email" name="email" type="email" class="form-control" placeholder="Email" aria-label="Email">
         </div>
@@ -27,38 +42,71 @@
           <button type="submit" class="btn btn-primary">Sign in</button>
         </div>
       </form>
-        <div class="col m-2">
+      <div class="row w-50 text-center mb-2">
+        <div class="col-6">
+          <p>Forgot Password?</p>
+          <a href="{% url 'rrapp:reset_password' %}">
+          <button class="btn btn-secondary">Reset Password</button>
+          </a>
+        </div>
+        <div class="col-6">
+          <p>Haven't signed up yet?</p>
           <a href="{% url 'rrapp:register' %}">
           <button class="btn btn-secondary">Register</button>
           </a>
         </div>
+      </div>
     </div>
     </div>
 
 
     {% else %}
 
-    <div class = "w-100 align-items-center px-5" >
-      <div class = "d-flex flex-column align-items-center rounded-3 m-4 grey-block">
+    <div class = "w-100 align-items-center px-5 my-3" >
+      <div class = "d-flex flex-column align-items-center board rounded-3" style="background-color:#F8F8F8">
         <h1 class="font-monospace display-5 fw-medium text-body-emphasis">Find your roomie here</h1>
 
-        <form class="form row w-90 p-3" action="" method="POST">
+        <form class="row w-75 text-center" enctype="multipart/form-data" action="" method="POST">
           {% csrf_token %}
+          {% load widget_tweaks %}
+
+          {% if form.is_bound %}
+            {% if form.errors %}
+              {% for filed in form%}
+                {% if filed.errors %}
+                  {% for error in filed.errors%}
+                    <div class="alert alert-warning" role="alert">
+                      {{ error }}
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}              
+            {% endif %}
+          {% endif %}
 
           {% for field in form %}
-            <div class="col-md-6">
-              <label for="roomie_name">{{field.label}}</label>
-              {{field}}
+            <div class="col-6 p-2">
+              {{ field.label_tag }}
             </div>
-          {% endfor %}
-          <div class="col align-items-center p-2 m-2">
 
-            <button type="submit" class="btn btn-primary">Register</button>
-        </div>
+            {% if "checkbox" in field.field.widget.input_type %}
+              <div class="col-6 p-2">    
+                {% render_field field class="form-check" %}
+              </div>
+            {% else %}
+              <div class="col-6 p-2">
+                {% render_field field class="form-control" %}
+              </div>
+            {% endif %}
+          {% endfor %}
+          <div class="col align-self-center m-2">
+            <button type="submit" class="btn btn-primary m-2">Register</button>
+          </div>
         </form>
-          <div class="col pb-2">
-            <a href="{% url 'rrapp:login' %}">
-            <button class="btn btn-secondary">Login</button>
+          <div class="p-3">
+            Already registered?
+            <a href="{% url 'rrapp:login' %}" class="btn btn-secondary mx-3">
+              Login
             </a>
           </div>
       </div>

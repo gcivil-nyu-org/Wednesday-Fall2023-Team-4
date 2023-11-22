@@ -1,3 +1,7 @@
+Develop :
 [![Build Status](https://app.travis-ci.com/gcivil-nyu-org/Wednesday-Fall2023-Team-4.svg?branch=develop)](https://app.travis-ci.com/gcivil-nyu-org/Wednesday-Fall2023-Team-4)
 [![Coverage Status](https://coveralls.io/repos/github/gcivil-nyu-org/Wednesday-Fall2023-Team-4/badge.svg?branch=develop)](https://coveralls.io/github/gcivil-nyu-org/Wednesday-Fall2023-Team-4?branch=develop)
-# Team Project repo
+
+Master :
+[![Build Status](https://app.travis-ci.com/gcivil-nyu-org/Wednesday-Fall2023-Team-4.svg?branch=master)](https://app.travis-ci.com/gcivil-nyu-org/Wednesday-Fall2023-Team-4)
+[![Coverage Status](https://coveralls.io/repos/github/gcivil-nyu-org/Wednesday-Fall2023-Team-4/badge.svg?branch=master)](https://coveralls.io/github/gcivil-nyu-org/Wednesday-Fall2023-Team-4?branch=master)

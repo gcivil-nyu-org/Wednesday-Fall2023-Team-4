@@ -31,7 +31,7 @@ html, body{
 
 .cus-btn-mid {
     --bs-btn-color: #FFFFFF;
-    --bs-btn-bg: #FFA000;
+    --bs-btn-bg: #FF9800;
     --bs-btn-active-bg: #FFC107;
     --bs-btn-hover-bg: #FFC107;
     --bs-btn-hover-color: #fff;
@@ -68,4 +68,15 @@ html, body{
 .grey-block{
     background-color:#F9F9F9;
     border: var(--bs-border-width) var(--bs-border-style) #dee2e6!important;
+}
+
+.home-title{
+    animation: fadeInAnimation ease 3s; 
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeInAnimation {
+                0% {opacity: 0;}
+                100% {opacity: 1;}
 }

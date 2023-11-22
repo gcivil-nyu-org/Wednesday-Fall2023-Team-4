@@ -15,9 +15,8 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # 'data' is my media folder
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 'data' is my media folder
 MEDIA_URL = '/media/'
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -89,13 +88,13 @@ ASGI_APPLICATION = "roomierendezvous.asgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "django-images",
-        "USER": "django-images",
-        "PASSWORD": "complexpassword123",
-        "HOST": "localhost",
-        "PORT": "5432",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'django-images',
+        'USER': 'django-images',
+        'PASSWORD': 'complexpassword123',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -147,6 +146,20 @@ if "AWS_STORAGE_BUCKET_NAME" in os.environ:
     AWS_S3_ACCESS_KEY_ID = os.environ["AWS_ACCESS_KEY_ID"]
     AWS_S3_SECRET_ACCESS_KEY = os.environ["AWS_SECRET_ACCESS_KEY"]
 
+    AWS_DEFAULT_ACL = 'public-read'
+    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+
+    AWS_LOCATION = 'static'
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
+    
+    AWS_MEDIA_LOCATION = 'media'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_MEDIA_LOCATION}/'
+else:
+    STATIC_URL = "/static/"
+    STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -182,13 +195,34 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'rrapp', 'static', 'rrapp'),)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# email configs
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = ""
+if 'EMAIL_HOST_USER' in os.environ:
+    EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+if 'EMAIL_HOST_PASSWORD' in os.environ:
+    EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+
+EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+
+
+GOOGLE_API_KEY = ""
+if 'GOOGLE_API_KEY' in os.environ:
+    GOOGLE_API_KEY = os.environ['GOOGLE_API_KEY']
+
+
+BASE_COUNTRY = "US"
 
 # chat config
 
@@ -210,3 +244,4 @@ if "AWS_STORAGE_BUCKET_NAME" in os.environ:
         },
     },
 }
+LOGIN_URL = 'rrapp:login'

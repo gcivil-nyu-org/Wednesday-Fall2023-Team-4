@@ -10,7 +10,7 @@
     <body class = "align-items-stretch">
         <div class=" back-contianer">
 
-        {% include 'rrapp/left_bar.html' with user=user path=path %}
+        {% include 'rrapp/left_bar.html' with user=user path=path inbox=inbox %}
 
         <div class="text-center right-page">
                 <div class="container p-3">
@@ -22,7 +22,7 @@
                                 </a>
                             </li>
                             <li class="breadcrumb-item">
-                                <a class="link-body-emphasis fw-semibold text-decoration-none" href="{% url 'rrapp:my_listings' object.user.id %}">
+                                <a class="link-body-emphasis fw-semibold text-decoration-none" href="{% url 'rrapp:my_listings' %}">
                                     My Listings
                                 </a>
                             </li>
@@ -37,7 +37,30 @@
                 <div class = "d-flex flex-column align-items-center board rounded-3" style="background-color:#F8F8F8">
                     <h1 class="font-monospace display-5 fw-medium text-body-emphasis p-2">{{ object.title }}</h1>
                     <div class="row w-75 text-center">
+                        {% if photos %}
+                        <div class="col-12 p-2">
 
+                            <div id="carouselExample" class="carousel slide">
+                                <div class="carousel-inner">
+                                    {% for photo in photos%}
+                                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                            <img src="{{ photo.image.url }}" alt="Photo" class="d-block w-100" width="500" height="600">
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                  <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                  <span class="visually-hidden">Next</span>
+                                </button>
+                              </div>
+                        </div>
+                        {% endif %}
+                        
                         <div class="col-6 p-2">
                             <div class="board w-100 h-100 rounded-3 back-left ">
                                 <div class="p-2 text-left">Created By :</div>
@@ -361,15 +384,15 @@
                     </div>
                     
                     <div class="d-inline-flex gap-4 mb-5 p-4">
-                        <a href="{% url 'rrapp:listing_detail_modify' object.user.id object.id %}" >
+                        <a href="{% url 'rrapp:listing_detail_modify' object.id %}" >
                             <button type="button" class="cus-btn-left btn align-item-center rounded-pill btn-lg">Edit</button>
                         </a> 
 
-                        <a href="{% url 'rrapp:listing_delete' object.user.id object.id %}" >
+                        <a href="{% url 'rrapp:listing_delete' object.id %}" >
                             <button type="button" class="cus-btn-mid btn align-item-center rounded-pill btn-lg">Delete</button>
                         </a>
 
-                        <a href="{% url 'rrapp:my_listings' object.user.id %}" >
+                        <a href="{% url 'rrapp:my_listings' %}" >
                             <button type="button" class="cus-btn-right btn align-item-center rounded-pill btn-lg">Back</button>
                         </a>
                     </div>
@@ -380,4 +403,5 @@
     
     </div>
     </body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </html>

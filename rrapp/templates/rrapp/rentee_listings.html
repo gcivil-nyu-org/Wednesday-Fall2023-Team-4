@@ -6,13 +6,125 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
         {% load static %}
         <link rel="stylesheet" href="{% static 'rrapp/common.css' %}">
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4J7XIaU4AfV9ig7w8_VTaREoojNxhZx0&callback=initMap" async defer></script>
+        <!-- Script for Google Maps -->
+        <script>
+            function initMap() {
+                console.log("initMap function called");
+                var geocoder = new google.maps.Geocoder();
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    center: { lat: 40.7128, lng: -74.0060 },
+                    zoom: 10
+                });
+
+                var addresses = [];
+
+                
+                {% if queried_listings_page %}
+                    {% for listing in queried_listings_page %}
+                        addresses.push({
+                            id:"{{listing.id|escapejs}}",
+                            name: "{{ listing.title|escapejs }}",
+                            address: "{{ listing.address1|escapejs }}, {{ listing.city|escapejs }}, {{ listing.state|escapejs }}"
+                        });
+                    {% endfor %}
+                {% endif %}
+                var currentURL = window.location.href; // Get the current URL
+                var baseURL = currentURL.split('?')[0]; // Split the URL at '?' and take the first part
+
+                console.log(baseURL);
+
+
+                // ... Your existing code ...
+
+                function processAddress(index) {
+                    if (index < addresses.length) {
+                        var listing = addresses[index];
+                        var address = listing.address;
+
+                        geocoder.geocode({ address: address }, function (results, status) {
+                            if (status === "OK") {
+                                var location = results[0].geometry.location;
+
+                                var marker = new google.maps.Marker({
+                                    position: location,
+                                    map: map,
+                                    title: listing.name  // Set the marker title to the listing name
+                                });
+                                console.log(listing.id)
+                                marker.addListener('click', function() {
+                                    // Open google.com in a new tab
+                                    window.open(baseURL+listing.id, '_blank');
+                                    
+                                });
+
+                                // Process the next address
+                                processAddress(index + 1);
+                            } else if (status === "ZERO_RESULTS") {
+                                console.warn("Geocode was not successful for the following reason: " + status);
+
+                                // If no results, try geocoding with an adjusted address
+                                adjustAndGeocode(address, index + 1);
+                            } else {
+                                console.error("Geocode was not successful for the following reason: " + status);
+                            }
+                        });
+                    }
+                }
+
+
+                // Adjust address and try geocoding again
+                function adjustAndGeocode(address, nextIndex) {
+                    // You can implement your logic to adjust the address here
+                    // For example, removing common typos or appending city/state if missing
+
+                    // Adjusted address example: address = "1600 Amphitheatre Parkway, Mountain View, CA";
+
+                    // Retry geocoding with adjusted address
+                    geocoder.geocode({ address: address }, function (results, status) {
+                        if (status === "OK") {
+                            var location = results[0].geometry.location;
+
+                            var marker = new google.maps.Marker({
+                                position: location,
+                                map: map,
+                                title: address
+                            });
+                            
+                            // Process the next address
+                            processAddress(nextIndex);
+                        } else {
+                            console.error("Geocode was not successful for the adjusted address: " + status);
+
+                            // If still not successful, move to the next address
+                            processAddress(nextIndex);
+                        }
+                    });
+                }
+
+                // Start processing addresses from index 0
+                processAddress(0);
+            }
+
+
+        </script>
+        
+        
+        
     </head>
     <body class = "align-items-stretch">
         <div class="back-contianer">
             
-        {% include 'rrapp/left_bar.html' with user=user path=path %}
+        {% include 'rrapp/left_bar.html' with user=user path=path inbox=inbox %}
 
         <div class="text-center right-page">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
             <div class="container p-3">
                 <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
                     <ol class="breadcrumb p-3 bg-body-tertiary board rounded-3">
@@ -23,21 +135,20 @@
                         </li>
     
                         <li class="breadcrumb-item avtive">
-                            My Listings
+                            Listings
                         </li>
                     </ol>
                 </nav>
             </div>
             <div class = "d-flex flex-column align-items-center">
                     <div class="align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
-                        <span class="fs-4 fw-semibold">My Listings</span>
+                        <span class="fs-4 fw-semibold">Listings</span>
                     </div>
                     <div class="mb-3">
-                        <form method="get" action="{% url 'rrapp:rentee_listings' user_id %}">
-                            <label class="form-label">Filter by:</label>
+                        <form method="get" action="{% url 'rrapp:rentee_listings' %}">
                             <div class="mb-3 row">
                                 <!-- Monthly Rent Filter -->
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="input-group">
                                         <span class="input-group-text">Monthly Rent</span>
                                         <input type="number" class="form-control" id="filter-monthly_rent" name="monthly_rent" value="{{ request.GET.monthly_rent }}" min="0">
@@ -45,7 +156,7 @@
                                 </div>
                             
                                 <!-- Number of Bedrooms Filter -->
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="input-group">
                                         <span class="input-group-text">Number of Bedrooms</span>
                                         <input type="number" class="form-control" id="filter-number_of_bedrooms" name="number_of_bedrooms" value="{{ request.GET.number_of_bedrooms }}" min="0">
@@ -53,7 +164,7 @@
                                 </div>
                             
                                 <!-- Number of Bathrooms Filter -->
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="input-group">
                                         <span class="input-group-text">Number of Bathrooms</span>
                                         <input type="number" class="form-control" id="filter-number_of_bathrooms" name="number_of_bathrooms" value="{{ request.GET.number_of_bathrooms }}" min="0">
@@ -62,69 +173,21 @@
                             </div>
                             
                             <div class="mb-3 row">
-                                <!-- Washer Filter -->
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="filter-washer" name="washer" {% if request.GET.washer == 'on' %}checked{% endif %}>
-                                        <label class="form-check-label" for="filter-washer">Washer</label>
-                                    </div>
-                                </div>
-                            
-                                <!-- Dryer Filter -->
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="filter-dryer" name="dryer" {% if request.GET.dryer == 'on' %}checked{% endif %}>
-                                        <label class="form-check-label" for="filter-dryer">Dryer</label>
-                                    </div>
-                                </div>
-                            
-                                <!-- Utilities Included Filter -->
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="filter-utilities_included" name="utilities_included" {% if request.GET.utilities_included == 'on' %}checked{% endif %}>
-                                        <label class="form-check-label" for="filter-utilities_included">Utilities Included</label>
-                                    </div>
-                                </div>
-
-                                <!-- Furnished Filter -->
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="filter-furnished" name="furnished" {% if request.GET.furnished == 'on' %}checked{% endif %}>
-                                        <label class="form-check-label" for="filter-furnished">Furnished</label>
-                                    </div>
-                                </div>
-
-                                <!-- Dishwasher Filter -->
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="filter-dishwasher" name="dishwasher" {% if request.GET.dishwasher == 'on' %}checked{% endif %}>
-                                        <label class="form-check-label" for="filter-dishwasher">Dishwasher</label>
-                                    </div>
-                                </div>
-
-                                <!-- Parking Filter -->
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="filter-parking" name="parking" {% if request.GET.parking == 'on' %}checked{% endif %}>
-                                        <label class="form-check-label" for="filter-parking">Parking</label>
-                                    </div>
-                                </div>
-
                                 <!-- Room Type Filter -->
-                                <div class="col-md-4">
-                                    <label for="filter-room-type" class="form-label">Room Type</label>
+                                <div class="col-md-2">
+                                    <!-- <label for="filter-room-type" class="form-label">Room Type</label> -->
                                     <select class="form-select" id="filter-room-type" name="room_type">
-                                        <option value="">Select Room Type</option>
+                                        <option value="">All Room Type</option>
                                         <option value="private" {% if request.GET.room_type == 'private' %}selected{% endif %}>Private</option>
                                         <option value="shared" {% if request.GET.room_type == 'shared' %}selected{% endif %}>Shared</option>
                                     </select>
                                 </div>
 
                                 <!-- Food Groups Allowed Filter -->
-                                <div class="col-md-4">
-                                    <label for="filter-food-groups-allowed" class="form-label">Food Groups Allowed</label>
+                                <div class="col-md-2">
+                                    <!-- <label for="filter-food-groups-allowed" class="form-label">Food Groups Allowed</label> -->
                                     <select class="form-select" id="filter-food-groups-allowed" name="food_groups_allowed">
-                                        <option value="">Select Food Groups</option>
+                                        <option value="">All Food Groups</option>
                                         <option value="all" {% if request.GET.food_groups_allowed == 'all' %}selected{% endif %}>All</option>
                                         <option value="vegan" {% if request.GET.food_groups_allowed == 'vegan' %}selected{% endif %}>Vegan</option>
                                         <option value="vegetarian" {% if request.GET.food_groups_allowed == 'vegetarian' %}selected{% endif %}>Vegetarian</option>
@@ -133,25 +196,75 @@
                                 </div>
 
                                 <!-- Pets Filter -->
-                                <div class="col-md-4">
-                                    <label for="filter-pets_allowed" class="form-label">Pets Allowed</label>
+                                <div class="col-md-2">
+                                    <!-- <label for="filter-pets_allowed" class="form-label">Pets Allowed</label> -->
                                     <select class="form-select" id="filter-pets_allowed" name="pets_allowed">
-                                        <option value="">Select Pets Type</option>
+                                        <option value="">All Pets Type</option>
                                         <option value="none" {% if request.GET.pets_allowed == 'none' %}selected{% endif %}>None</option>
                                         <option value="all" {% if request.GET.pets_allowed == 'all' %}selected{% endif %}>All</option>
                                         <option value="cats" {% if request.GET.pets_allowed == 'cats' %}selected{% endif %}>Cats</option>
                                         <option value="dogs" {% if request.GET.pets_allowed == 'dogs' %}selected{% endif %}>Dogs</option>
                                     </select>
                                 </div>
-                            </div>                            
+                            </div>
+                            
+                            <div class="mb-3 row">
+                                <!-- Washer Filter -->
+                                <div class="col-md-1">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-washer" name="washer" {% if request.GET.washer == 'on' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-washer">Washer</label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Dryer Filter -->
+                                <div class="col-md-1">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-dryer" name="dryer" {% if request.GET.dryer == 'on' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-dryer">Dryer</label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Utilities Included Filter -->
+                                <div class="col-md-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-utilities_included" name="utilities_included" {% if request.GET.utilities_included == 'on' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-utilities_included">Utilities Included</label>
+                                    </div>
+                                </div>
+
+                                <!-- Furnished Filter -->
+                                <div class="col-md-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-furnished" name="furnished" {% if request.GET.furnished == 'on' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-furnished">Furnished</label>
+                                    </div>
+                                </div>
+
+                                <!-- Dishwasher Filter -->
+                                <div class="col-md-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-dishwasher" name="dishwasher" {% if request.GET.dishwasher == 'on' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-dishwasher">Dishwasher</label>
+                                    </div>
+                                </div>
+
+                                <!-- Parking Filter -->
+                                <div class="col-md-1">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filter-parking" name="parking" {% if request.GET.parking == 'on' %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter-parking">Parking</label>
+                                    </div>
+                                </div>
+                            </div>                
                         
-                            <button type="submit" class="btn btn-primary mt-2">Filter</button>
-                            <button type="button" class="btn btn-secondary mt-2" onclick="resetFilters()">Reset</button>
+                            <button type="submit" class="btn btn-primary my-2">Filter</button>
+                            <button type="button" class="btn btn-secondary my-2" onclick="resetFilters()">Reset</button>
                             <div class="col-md-6 mx-auto">
                                 <label for="sort-select" class="form-label">Sort by:</label>
                                 <div class="d-flex justify-content-center">
                                     <select class="form-select" id="sort-select" name="sort" onchange="changeSort()" style="width: 250px;">
-                                        <option value="">-- Select Sorting Option --</option>
+                                        <option value="">Post Time - Old to New</option>
                                         <option value="monthly_rent" {% if request.GET.sort == 'monthly_rent' %}selected{% endif %}>Monthly Rent - Low to High</option>
                                         <option value="-monthly_rent" {% if request.GET.sort == '-monthly_rent' %}selected{% endif %}>Monthly Rent - High to Low</option>
                                         <option value="number_of_bedrooms" {% if request.GET.sort == 'number_of_bedrooms' %}selected{% endif %}>Number of Bedrooms - Low to High</option>
@@ -167,7 +280,7 @@
                         {% if queried_listings_page %}
                             <div class="list-group scrollarea">
                                 {% for listing in queried_listings_page %}
-                                    <button type="button" class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'rrapp:rentee_listing_detail' user_id listing.id %}'" style="height:3.5rem;">
+                                    <button type="button" class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'rrapp:rentee_listing_detail' listing.id %}'" style="height:3.5rem;">
                                         <span class="fs-5 fw-semi">
                                             {{ listing.title }}
                                         </span>
@@ -197,6 +310,7 @@
                         </span>
                     </div>
             </div>
+            <div id="map" style="height: 400px;"></div>
         </div>
 
 

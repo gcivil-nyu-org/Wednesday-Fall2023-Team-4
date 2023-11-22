@@ -1,70 +1,110 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views
 
 from . import views
 
 app_name = "rrapp"
 urlpatterns = [
-    # # ex: /rrapp/
-    # path('', views.IndexView.as_view(), name='index'),
     # ex: /rrapp/
     path("", views.HomeView.as_view(), name="home"),
-    # ex: /rrapp/login
-    path("login/", views.LoginView.as_view(), name="login"),
-    # ex: /rrapp/logout
+    path('login/', views.LoginView.as_view(), name="login"),
+    path(
+        'reset_password/',
+        views.ResetPasswordView.as_view(template_name="rrapp/password_reset.html"),
+        name='reset_password',
+    ),
+    path(
+        'reset_password_sent/',
+        auth_views.PasswordResetDoneView.as_view(
+            template_name="rrapp/password_reset_sent.html"
+        ),
+        name='password_reset_done',
+    ),
+    path(
+        'reset_password/<uidb64>/<token>/',
+        views.ConfirmPasswordResetView.as_view(
+            template_name='rrapp/password_reset_confirm.html'
+        ),
+        name='password_reset_confirm',
+    ),
+    path(
+        'reset_password_complete/',
+        auth_views.PasswordResetCompleteView.as_view(
+            template_name='rrapp/password_reset_complete.html'
+        ),
+        name='password_reset_complete',
+    ),
     path("logout/", views.LogoutView.as_view(), name="logout"),
-    # ex: /rrapp/register
-    path("register/", views.RegisterView.as_view(), name="register"),
+    path('register/', views.RegisterView.as_view(), name="register"),
+    path(
+        'verification_check/<uidb64>/<token>',
+        views.verificationCheck,
+        name='verification_check',
+    ),
+    path('verify_email', views.verifyEmail, name='verify_email'),
     # ex: /rrapp/5/listings/1
     path(
-        "renter/<int:user_id>/listings/<int:pk>/",
+        "renter/listings/<int:pk>/",
         views.ListingDetailView.as_view(),
         name="listing_detail",
     ),
     # ex: /rrapp/5/listings/
     path(
-        "renter/<int:user_id>/listings/",
+        "renter/listings/",
         views.ListingIndexView.as_view(),
         name="my_listings",
     ),
     # ex: /rrapp/5/listings/new
     path(
-        "renter/<int:user_id>/listings/new",
+        "renter/listings/new",
         views.ListingNewView.as_view(),
         name="listing_new",
     ),
     # ex: /rrapp/5/delete/1
     path(
-        "renter/<int:user_id>/delete/<int:pk>",
+        "renter/listings/<int:pk>/delete",
         views.listing_delete,
         name="listing_delete",
     ),
     path(
-        "renter/<int:user_id>/listings/<int:pk>/modify",
+        "renter/listings/<int:pk>/modify",
         views.ListingUpdateView.as_view(),
         name="listing_detail_modify",
     ),
     # ex: /rrapp/rentee/5/listings/
     path(
-        "rentee/<int:user_id>/listings/",
+        "rentee/listings/",
         views.ListingResultsView.as_view(),
         name="rentee_listings",
     ),
     # ex: /rrapp/rentee/5/listings/1
     path(
-        "rentee/<int:user_id>/listings/<int:pk>",
+        "rentee/listings/<int:pk>",
         views.ListingDetailRenteeView.as_view(),
         name="rentee_listing_detail",
     ),
-    # ex: /rrapp/rentee/5/listings/1/rent
+    # ex: /rrapp/user/profile/1
     path(
-        '<int:pk>/profile',
+        'user/profile',
         views.ProfileView.as_view(),
         name='profile',
     ),
-    # # messaging paths
-    # path(
-    #     'chat/',
-    #     include('django_private_chat2.urls', namespace='django_private_chat2')
-    # ),
-    # path('users/', views.UsersListView.as_view(), name='users_list'),
+    # ex: /rrapp/user/profile/1/delete
+    path(
+        'user/profile/delete',
+        views.deleteAccount,
+        name='deleteAccount',
+    ),
+    # ex: /rrapp/rentee/2/shortlist
+    path(
+        'rentee/shortlist/',
+        views.ShortListView.as_view(),
+        name='shortlist',
+    ),
+    # ex: /rrapp/user/public_profile/2
+    path(
+        'user/public_profile/<int:pk>',
+        views.PublicProfileView.as_view(),
+        name='public_profile',
+    ),
 ]

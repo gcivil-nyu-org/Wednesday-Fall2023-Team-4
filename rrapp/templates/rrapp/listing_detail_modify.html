@@ -1,7 +1,126 @@
-{% block content_main %}
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_div }}
-    <input type="submit" value="Update">
-</form>
-{% endblock %}
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'rrapp/common.css' %}">
+    </head>
+    <body class = "align-items-stretch">
+        <div class="back-contianer">
+            {% include 'rrapp/left_bar.html' with user=user path=path inbox=inbox %}
+
+            <div class="text-center right-page">
+
+                <div class="container p-3">
+                    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+                        <ol class="breadcrumb p-3 bg-body-tertiary board rounded-3">
+                            <li class="breadcrumb-item">
+                                <a class="link-body-emphasis fw-semibold text-decoration-none">
+                                    Home
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a class="link-body-emphasis fw-semibold text-decoration-none" href="{% url 'rrapp:my_listings' %}">
+                                    My Listings
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a class="link-body-emphasis fw-semibold text-decoration-none" href="{% url 'rrapp:listing_detail' listing_id%}">
+                                    {{list_title}}
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item avtive">
+                                Modify
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <div class = "w-100 align-items-center px-5 mb-3" >
+                    <div class = "d-flex flex-column align-items-center board rounded-3" style="background-color:#F8F8F8">
+                        <h1 class="font-monospace display-5 fw-medium text-body-emphasis my-3">{{ list_title }}</h1>
+
+                            <form method="post" enctype="multipart/form-data" class="row w-75 text-center">
+                                {% csrf_token %}
+                                {% load widget_tweaks %}
+                        
+                                {% if form.is_bound %}
+                                    {% if form.errors %}
+                                        {% for filed in form%}
+                                            {% if filed.errors %}
+                                                {% for error in filed.errors%}
+                                                    <div class="alert alert-warning" role="alert">
+                                                        {{ error }}
+                                                    </div>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}              
+                                    {% endif %}
+                                {% endif %}
+
+                                {% for field in form.visible_fields %}
+                                    <div class="col-6 p-2">
+                                        {{ field.label_tag }}
+                                    </div>
+
+                                    {% if field.label == "Existing photos" %}
+                                        <div class="col-6 p-2">
+                                            {% for photo in field.field.queryset%}
+                                                <img src="{{ photo.image.url }}" alt="Photo" width="100" height="100">
+                                                <input type="checkbox" name="existing_photos" value="{{ photo.pk }}" checked>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {% if "checkbox" in field.field.widget.input_type %}
+                                            <div class="col-6 p-2">    
+                                                {% render_field field class="form-check" %}
+                                        </div>
+                                        {% else %}
+                                            <div class="col-6 p-2">
+                                                {% render_field field class="form-control" %}
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+
+                                <div class="col-6 p-2">
+                                    Search address :
+                                </div>
+                                <div class="col-6 p-2">
+                                <input type="text" placeholder="Begin typing the property address" id="id-google-address" name="google_address" class="form-control">
+                                </div>
+
+                                {% for field in form.hidden_fields %}
+                                    <div class="col-6 p-2">
+                                        {{ field.label_tag }}
+                                    </div> 
+                                    <div class="col-6 p-2">
+                                        {% render_field field class="form-control" type="text" %}
+                                    </div>
+                                {% endfor %}
+
+                                <div class="col align-self-center m-2">
+                                    <button type="submit" class="btn btn-primary m-2" value="Update">Save</button>
+                                </div>
+                            </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--visit https://code.jquery.com/ for jquery script-->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+        <script type="text/javascript">
+
+          var google_api_key = "{{google_api_key|safe}}";
+          var base_country = "{{base_country|safe}}";
+
+        </script>
+
+        <script src="{% static 'google_places.js' %}"></script>
+
+    </body>
+</html>

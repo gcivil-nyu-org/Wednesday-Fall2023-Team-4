@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
@@ -106,6 +107,12 @@ class CustomUserManager(BaseUserManager):
         return user
 
 
+def user_directory_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f'{instance.email}_{instance.id}.{ext}'
+    return os.path.join('profile_pictures', filename)
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=30, unique=True)
@@ -115,7 +122,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=100)
     bio = models.TextField(default="")
     profile_picture = models.ImageField(
-        upload_to="profile_pictures",
+        upload_to=user_directory_path,
         height_field=None,
         width_field=None,
         default="DefaultProfile.jpg",
@@ -134,6 +141,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 
@@ -201,9 +209,9 @@ class Listing(models.Model):
 
     city = models.CharField("City", max_length=100, default="New York")
 
-    state = models.CharField("State", max_length=10, default="New York")
+    state = models.CharField("State", max_length=15, default="New York")
 
-    country = models.CharField("Country", max_length=3, default="USA")
+    country = models.CharField("Country", max_length=3, default="US")
 
     # utilities
     washer = models.BooleanField(default=True)
@@ -235,3 +243,17 @@ class Listing(models.Model):
         choices=FoodGroup.choices,
         default=FoodGroup.ALL,
     )
+
+
+def get_uploaded_to(instance, filename):
+    return 'listing_photos/{}/{}'.format(instance.listing.id, filename)
+
+
+class Photo(models.Model):
+    listing = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name='photos'
+    )
+    image = models.ImageField(upload_to=get_uploaded_to, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.listing.title) + ": " + str(self.image)
