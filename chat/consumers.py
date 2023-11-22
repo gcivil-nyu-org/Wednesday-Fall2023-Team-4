@@ -4,6 +4,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 
 from .models import DirectMessage
+from rrapp.models import User
 
 
 class ChatDmConsumer(AsyncWebsocketConsumer):
@@ -61,5 +62,5 @@ class ChatDmConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def save_message(self, senderUsername, receiverUsername, room, message):
         DirectMessage.objects.create(
-            sender=senderUsername, receiver=receiverUsername, room=room, content=message
+            sender=User.objects.get(username=senderUsername), receiver=User.objects.get(username=receiverUsername), room=room, content=message
         )

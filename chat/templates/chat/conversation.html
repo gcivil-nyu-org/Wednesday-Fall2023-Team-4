@@ -17,7 +17,7 @@
 
                 <div class = "align-items-center">
                     <div class="align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
-                        <span class="fs-4 fw-semibold">Conversation with {{receiver}}</span>
+                        <span class="fs-4 fw-semibold">Conversation with {{receiver.username}}</span>
                     </div>
                 </div>
 
@@ -30,7 +30,7 @@
                                 <div class="list-group scrollarea" id="chat-messages" style="max-height: 500px; overflow-y: scroll; align-items: left;">
                                     {%for m in messages %}
                                         <p>
-                                            <b>{{ m.sender }}</b>: {{ m.content }}<br>
+                                            <b>{{ m.sender.username }}</b>: {{ m.content }}<br>
                                         </p>
                                     {% endfor %}
                                 </div>
@@ -48,7 +48,7 @@
                                     <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right" id="chat-message-submit">Send</button>
                                 </div>
         
-                                <small class="has-text-grey-light">Your username: {{ sender }}</small>
+                                <small class="has-text-grey-light">Your username: {{ sender.username }}</small>
                             </div>
                         </div>
                     </div>
@@ -83,8 +83,8 @@
             scrollToBottom();
 
             const roomName = JSON.parse(document.getElementById('json-roomname').textContent);
-            const senderUserName = JSON.parse(document.getElementById('json-sender').textContent);
-            const receiverUserName = JSON.parse(document.getElementById('json-receiver').textContent);
+            const senderUserName = JSON.parse(document.getElementById('json-sender').textContent).username;
+            const receiverUserName = JSON.parse(document.getElementById('json-receiver').textContent).username;
 
             const chatSocket = new WebSocket(
                 'ws://'

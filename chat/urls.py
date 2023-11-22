@@ -5,11 +5,11 @@ from . import views
 app_name = "chat"
 urlpatterns = [
     path('', views.index, name='index'),
-    # path(
-    #     'conversation/<str:receiverUsername>/',
-    #     views.conversation,
-    #     name='conversation'
-    # ),
+    path(
+        'conversationws/<str:receiverUsername>/',
+        views.conversation,
+        name='conversation'
+    ),
     path(
         'conversation/<str:receiverUsername>/',
         views.ConversationView.as_view(),
