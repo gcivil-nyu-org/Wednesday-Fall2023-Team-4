@@ -401,7 +401,6 @@ class ListingResultsView(generic.ListView):
         if number_of_bathrooms:
             filters &= Q(number_of_bathrooms__lte=number_of_bathrooms)
 
-
         washer = self.request.GET.get("washer")
         if washer == "on":
             filters &= Q(washer=True)
