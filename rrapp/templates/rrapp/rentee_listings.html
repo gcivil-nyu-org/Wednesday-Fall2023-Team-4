@@ -149,27 +149,22 @@
                             <div class="mb-3 row">
                                 <!-- Monthly Rent Filter -->
                                 <div class="col-md-3">
-                                    <div class="input-group">
-                                        <span class="input-group-text">Monthly Rent</span>
-                                        <input type="number" class="form-control" id="filter-monthly_rent" name="monthly_rent" value="{{ request.GET.monthly_rent }}" min="0">
-                                    </div>
+                                    <label for="filter-monthly_rent">Monthly Rent: <span id="monthly_rent_value"></span></label>
+                                    <input type="range" class="form-range" min="0" max="10000" id="filter-monthly_rent" name="monthly_rent" value="{{ request.GET.monthly_rent }}" oninput="document.getElementById('monthly_rent_value').textContent = this.value">
                                 </div>
                             
-                                <!-- Number of Bedrooms Filter -->
+                                <!-- Number of Bedrooms Slider -->
                                 <div class="col-md-3">
-                                    <div class="input-group">
-                                        <span class="input-group-text">Number of Bedrooms</span>
-                                        <input type="number" class="form-control" id="filter-number_of_bedrooms" name="number_of_bedrooms" value="{{ request.GET.number_of_bedrooms }}" min="0">
-                                    </div>
+                                    <label for="filter-number_of_bedrooms">Number of Bedrooms: <span id="number_of_bedrooms_value"></span></label>
+                                    <input type="range" class="form-range" min="0" max="10" id="filter-number_of_bedrooms" name="number_of_bedrooms" value="{{ request.GET.number_of_bedrooms }}" oninput="document.getElementById('number_of_bedrooms_value').textContent = this.value">
                                 </div>
-                            
-                                <!-- Number of Bathrooms Filter -->
+
+                                <!-- Number of Bathrooms Slider -->
                                 <div class="col-md-3">
-                                    <div class="input-group">
-                                        <span class="input-group-text">Number of Bathrooms</span>
-                                        <input type="number" class="form-control" id="filter-number_of_bathrooms" name="number_of_bathrooms" value="{{ request.GET.number_of_bathrooms }}" min="0">
-                                    </div>
+                                    <label for="filter-number_of_bathrooms">Number of Bathrooms: <span id="number_of_bathrooms_value"></span></label>
+                                    <input type="range" class="form-range" min="0" max="10" id="filter-number_of_bathrooms" name="number_of_bathrooms" value="{{ request.GET.number_of_bathrooms }}" oninput="document.getElementById('number_of_bathrooms_value').textContent = this.value">
                                 </div>
+
                             </div>
                             
                             <div class="mb-3 row">
@@ -352,6 +347,14 @@
                 window.location.href = window.location.pathname + "?" + queryParams.toString();
             }
         </script>
+        <script>
+            window.onload = function() {
+                document.getElementById('monthly_rent_value').textContent = document.getElementById('filter-monthly_rent').value;
+                document.getElementById('number_of_bedrooms_value').textContent = document.getElementById('filter-number_of_bedrooms').value;
+                document.getElementById('number_of_bathrooms_value').textContent = document.getElementById('filter-number_of_bathrooms').value;
+            };
+        </script>
+            
         </div>
     </div>
     </body>

@@ -388,6 +388,7 @@ class ListingResultsView(generic.ListView):
         # Apply filters
         filters = Q()
 
+        # Existing filter logic
         monthly_rent = self.request.GET.get("monthly_rent")
         if monthly_rent:
             filters &= Q(monthly_rent__lte=monthly_rent)
@@ -399,6 +400,7 @@ class ListingResultsView(generic.ListView):
         number_of_bathrooms = self.request.GET.get("number_of_bathrooms")
         if number_of_bathrooms:
             filters &= Q(number_of_bathrooms__lte=number_of_bathrooms)
+
 
         washer = self.request.GET.get("washer")
         if washer == "on":
