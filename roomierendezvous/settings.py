@@ -240,7 +240,7 @@ if "AWS_STORAGE_BUCKET_NAME" in os.environ:
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('cluster.pe13yk.ng.0001.use2.cache.amazonaws.com', 6379)],
+            "hosts": [('roomierendezvous-redis.ivffkn.ng.0001.use1.cache.amazonaws.com', 6379)],
         },
     },
 }
