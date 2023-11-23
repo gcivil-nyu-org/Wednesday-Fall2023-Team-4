@@ -41,6 +41,10 @@ from django.conf import settings
 User = get_user_model()
 
 
+def healthcheck(request):
+    return HttpResponse(status=200)
+
+
 class HomeView(generic.View):
     def dispatch(self, request, *args, **kwargs):
         # will redirect to the home page if a user tries to
