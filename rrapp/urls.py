@@ -5,7 +5,7 @@ from . import views
 
 app_name = "rrapp"
 urlpatterns = [
-    path("healthcheck", views.healthcheck(), name="healthcheck"),
+    path("healthcheck", views.healthcheck, name="healthcheck"),
     # ex: /rrapp/
     path("", views.HomeView.as_view(), name="home"),
     path('login/', views.LoginView.as_view(), name="login"),
