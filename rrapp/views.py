@@ -21,7 +21,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from chat.models import DirectMessagePermission, Permission
 
-from .models import Listing, Renter, Rentee, SavedListing, Photo
+from .models import Listing, Renter, Rentee, SavedListing, Photo, Rating
 from .forms import MyUserCreationForm, ListingForm, UserForm, LoginForm
 
 from django.urls import reverse_lazy
@@ -633,6 +633,7 @@ class PublicProfileView(generic.DetailView):
         'smokes',
         'pets',
         'food_group',
+        'rating',
     ]
 
     def get_context_data(self, **kwargs: Any):
@@ -643,10 +644,88 @@ class PublicProfileView(generic.DetailView):
         context_data["inbox"] = get_inbox_count(
             User.objects.get(id=self.kwargs["pk"]).username
         )
+        if self.check_state(self.request.user, context_data["user"]):
+            context_data["rated"] = True
+            context_data["rating"] = Rating.objects.get(
+                rater=self.request.user,
+                ratee=context_data["user"],
+            ).rating
+        else:
+            context_data["rated"] = False
         return context_data
+
+    def check_state(self, rater, ratee):
+        if Rating.objects.filter(
+            rater=rater,
+            ratee=ratee,
+        ).exists():
+            return True
+        else:
+            return False
 
     def get_success_url(self):
         return reverse('rrapp:rentee_listings')
+
+    def post(self, *args, **kwargs):
+        # self.object = self.get_object()
+        # form = self.get_form()
+        if "rate" in self.request.POST:
+            return HttpResponseRedirect(
+                reverse("rrapp:rate_user", args=(self.kwargs["pk"],))
+            )
+        return HttpResponseRedirect(request.path_info)  # redirect to the same page
+
+
+def rate_user(request, ratee_id):
+    if not (
+        DirectMessagePermission.objects.filter(
+            sender=User.objects.get(id=ratee_id),
+            receiver=request.user,
+            permission=Permission.ALLOWED,
+        ).exists()
+        or DirectMessagePermission.objects.filter(
+            sender=request.user,
+            receiver=User.objects.get(id=ratee_id),
+            permission=Permission.ALLOWED,
+        ).exists()
+    ):
+        return render(request, "rrapp/403.html", {}, status=403)
+
+    if request.method == 'POST':
+        # el_id = request.POST.get('el_id')
+        val = request.POST.get('val')
+        ratee = User.objects.get(id=ratee_id)
+        if Rating.objects.filter(
+            rater=request.user,
+            ratee=ratee,
+        ).exists():
+            rating = Rating.objects.get(
+                rater=request.user,
+                ratee=ratee,
+            )
+            rating.rating = val
+            rating.save()
+        else:
+            Rating.objects.create(
+                rater=request.user,
+                ratee=ratee,
+                rating=val,
+            )
+        rating_list = Rating.objects.filter(
+            ratee=ratee,
+        )
+        mean_rating = 0.0
+        for item in rating_list:
+            mean_rating += item.rating
+        mean_rating /= len(rating_list)
+        ratee.rating = mean_rating
+        ratee.save()
+        return JsonResponse({'success': 'true', 'score': val}, safe=False)
+    return render(
+        request,
+        'rrapp/rate_user.html',
+        {'pk': ratee_id},
+    )
 
 
 @login_required

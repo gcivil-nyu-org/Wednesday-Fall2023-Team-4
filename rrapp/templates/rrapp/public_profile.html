@@ -42,9 +42,21 @@
                             <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Smokes :</b> {{ user.smokes }} </p>
                             <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Pets :</b> {{ user.pets }} </p>
                             <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Food Group :</b> {{ user.food_group }} </p>
+                            <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Rating :</b> {{ user.rating }} </p>
                         </div>
                     </div>
                 </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    {% if rated %}
+                        <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-left" name="rate">Update rating</button>
+                        <p>My current rating: {{ rating }}</p>
+                    {% else %}
+                        <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-mid" name="rate">Rate the user</button>
+                    {% endif %}
+                </form>
+
             </div>
         </div>
     </body>

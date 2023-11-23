@@ -107,4 +107,10 @@ urlpatterns = [
         views.PublicProfileView.as_view(),
         name='public_profile',
     ),
+    # ex: /rrapp/user/rating/2
+    path(
+        'user/rating/<int:ratee_id>',
+        views.rate_user,
+        name='rate_user',
+    ),
 ]
