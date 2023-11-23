@@ -673,7 +673,7 @@ class PublicProfileView(generic.DetailView):
             return HttpResponseRedirect(
                 reverse("rrapp:rate_user", args=(self.kwargs["pk"],))
             )
-        return HttpResponseRedirect(request.path_info)  # redirect to the same page
+        return HttpResponseRedirect(self.request.path_info) # redirect to the same page
 
 
 def rate_user(request, ratee_id):
