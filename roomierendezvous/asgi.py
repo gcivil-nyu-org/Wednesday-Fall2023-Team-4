@@ -14,11 +14,11 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator
 
-import chat.routing
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "roomierendezvous.settings")
 
 django_asgi_app = get_asgi_application()
+
+import chat.routing
 
 print('RR: ', chat.routing.websocket_urlpatterns)
 application = ProtocolTypeRouter(
