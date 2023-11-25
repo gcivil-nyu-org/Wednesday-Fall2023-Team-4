@@ -62,5 +62,8 @@ class ChatDmConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def save_message(self, senderUsername, receiverUsername, room, message):
         DirectMessage.objects.create(
-            sender=User.objects.get(username=senderUsername), receiver=User.objects.get(username=receiverUsername), room=room, content=message
+            sender=User.objects.get(username=senderUsername),
+            receiver=User.objects.get(username=receiverUsername),
+            room=room,
+            content=message,
         )

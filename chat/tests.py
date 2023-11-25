@@ -208,7 +208,154 @@ class ConversationHomeViewTest(ViewsTestCase):
         )
 
 
-class ConversationViewTest(ViewsTestCase):
+class ConversationHttpViewTest(ViewsTestCase):
+    def setUp(self):
+        self.receiverUser = User.objects.create_user(
+            username="testuser2", email="test2@example.edu", password="testpassword"
+        )
+        self.senderUsername = self.user.username
+        self.receiverUsername = self.receiverUser.username
+        self.permission = DirectMessagePermission.objects.create(
+            sender=self.user,
+            receiver=self.receiverUser,
+            permission=Permission.ALLOWED,
+        )
+        self.room_name = '_'.join(sorted([self.senderUsername, self.receiverUsername]))
+        self.messages = DirectMessage.objects.create(
+            sender=self.user,
+            receiver=self.receiverUser,
+            room=self.room_name,
+            content='hello',
+        )
+        self.receiverUsernameId = {
+            "username": self.receiverUsername,
+            "id": self.receiverUser.id,
+        }
+
+    def test_conversation_http_view_unauthenticated_user_GET(self):
+        recipientPermission = DirectMessagePermission.objects.create(
+            sender=self.receiverUser,
+            receiver=self.user,
+            permission=Permission.ALLOWED,
+        )
+        response = self.client.get(
+            reverse("chat:conversation_http", args=(self.receiverUsername,)),
+            {
+                'room_name': self.room_name,
+                'sender': self.senderUsername,
+                'receiver': self.receiverUsernameId,
+                'messages': self.messages,
+                'recipient_permission': recipientPermission,
+            },
+        )
+        self.assertRedirects(
+            response, expected_url=reverse("rrapp:login"), status_code=302
+        )
+
+    def test_conversation_http_view_authenticated_user_GET(self):
+        self.client.force_login(self.user)
+        recipientPermission = DirectMessagePermission.objects.create(
+            sender=self.receiverUser,
+            receiver=self.user,
+            permission=Permission.ALLOWED,
+        )
+        response = self.client.get(
+            reverse("chat:conversation_http", args=(self.receiverUsername,)),
+            {
+                'room_name': self.room_name,
+                'sender': self.senderUsername,
+                'receiver': self.receiverUsernameId,
+                'messages': self.messages,
+                'recipient_permission': recipientPermission,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "chat/conversation_http.html")
+
+    def test_conversation_http_view_authenticated_user_POST_chat(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse(
+                "chat:conversation_http",
+                args=(self.receiverUsername,),
+            ),
+            {
+                'chat-message-input': 'hello',
+                'messages': self.messages,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(
+            DirectMessage.objects.filter(
+                sender=self.senderUsername,
+                receiver=self.receiverUsername,
+                room=self.room_name,
+                content='hello',
+            ).exists()
+        )
+
+    def test_conversation_http_view_authenticated_user_POST_block(self):
+        self.client.force_login(self.user)
+        recipientPermission = DirectMessagePermission.objects.create(
+            sender=self.receiverUser,
+            receiver=self.user,
+            permission=Permission.ALLOWED,
+        )
+        response = self.client.post(
+            reverse(
+                "chat:conversation_http",
+                args=(self.receiverUsername,),
+            ),
+            {
+                'room_name': self.room_name,
+                'sender': self.senderUsername,
+                'receiver': self.receiverUsernameId,
+                'messages': self.messages,
+                'recipient_permission': recipientPermission,
+                'block-user': self.receiverUsername,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(
+            DirectMessagePermission.objects.filter(
+                sender=self.receiverUser,
+                receiver=self.user,
+                permission=Permission.BLOCKED,
+            ).exists()
+        )
+
+    def test_conversation_http_view_authenticated_user_POST_unblock(self):
+        self.client.force_login(self.user)
+        recipientPermission = DirectMessagePermission.objects.create(
+            sender=self.receiverUser,
+            receiver=self.user,
+            permission=Permission.BLOCKED,
+        )
+        response = self.client.post(
+            reverse(
+                "chat:conversation_http",
+                args=(self.receiverUsername,),
+            ),
+            {
+                'room_name': self.room_name,
+                'sender': self.senderUsername,
+                'receiver': self.receiverUsernameId,
+                'messages': self.messages,
+                'recipient_permission': recipientPermission,
+                'unblock-user': self.receiverUsername,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(
+            DirectMessagePermission.objects.filter(
+                sender=self.receiverUser,
+                receiver=self.user,
+                permission=Permission.ALLOWED,
+            ).exists()
+        )
+
+
+class ConversationWsViewTest(ViewsTestCase):
     def setUp(self):
         self.receiverUser = User.objects.create_user(
             username="testuser2", email="test2@example.edu", password="testpassword"
@@ -270,7 +417,7 @@ class ConversationViewTest(ViewsTestCase):
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "chat/conversation_http.html")
+        self.assertTemplateUsed(response, "chat/conversation.html")
 
     def test_conversation_view_authenticated_user_POST_chat(self):
         self.client.force_login(self.user)

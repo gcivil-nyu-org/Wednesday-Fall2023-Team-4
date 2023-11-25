@@ -226,22 +226,22 @@ BASE_COUNTRY = "US"
 
 # chat config
 
-# CHANNEL_LAYERS = {
-#     'default': {
-#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-#         'CONFIG': {
-#             "hosts": [('127.0.0.1', 6379)],
-#         },
-#     },
-# }
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('roomierendezvous-redis.ivffkn.ng.0001.use1.cache.amazonaws.com', 6379)],
+            "hosts": [('127.0.0.1', 6379)],
         },
     },
 }
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [('roomierendezvous-redis.ivffkn.ng.0001.use1.cache.amazonaws.com', 6379)],
+#         },
+#     },
+# }
 
 if "AWS_STORAGE_BUCKET_NAME" in os.environ:
     CHANNEL_LAYERS = {

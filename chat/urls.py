@@ -6,14 +6,14 @@ app_name = "chat"
 urlpatterns = [
     path('', views.index, name='index'),
     path(
-        'conversationws/<str:receiverUsername>/',
-        views.conversation,
-        name='conversation'
+        'conversation/<str:receiverUsername>/',
+        views.ConversationWsView.as_view(),
+        name='conversation',
     ),
     path(
-        'conversation/<str:receiverUsername>/',
-        views.ConversationView.as_view(),
-        name='conversation',
+        'conversation_http/<str:receiverUsername>/',
+        views.ConversationHttpView.as_view(),
+        name='conversation_http',
     ),
     path(
         'conversations/', views.ConversationHomeView.as_view(), name='conversation_home'
