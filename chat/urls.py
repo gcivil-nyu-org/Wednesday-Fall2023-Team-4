@@ -4,7 +4,6 @@ from . import views
 
 app_name = "chat"
 urlpatterns = [
-    path('', views.index, name='index'),
     path(
         'conversation/<str:receiverUsername>/',
         views.ConversationWsView.as_view(),

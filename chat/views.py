@@ -10,21 +10,6 @@ from rrapp.models import User
 from .models import DirectMessage, DirectMessagePermission, Permission
 
 
-def index(request):
-    return render(request, 'chat/index.html')
-
-
-def get_pending_connections_count(username):
-    try:
-        pending_connections_count = DirectMessagePermission.objects.filter(
-            Q(receiver__exact=username) & Q(permission__exact=Permission.REQUESTED)
-        ).count()
-    except DirectMessagePermission.DoesNotExist:
-        pending_connections_count = 0
-
-    return pending_connections_count
-
-
 class ConversationWsView(generic.View):
     def dispatch(self, request, *args, **kwargs):
         # will redirect to the home page if a user tries to
@@ -35,18 +20,11 @@ class ConversationWsView(generic.View):
         return super(ConversationWsView, self).dispatch(request, *args, **kwargs)
 
     def canDmReceiver(self, senderUsername, receiverUsername):
-        try:
-            permissions = list(
-                DirectMessagePermission.objects.filter(
-                    (
-                        Q(sender__exact=senderUsername)
-                        & Q(receiver__exact=receiverUsername)
-                    )
-                )
+        permissions = list(
+            DirectMessagePermission.objects.filter(
+                (Q(sender__exact=senderUsername) & Q(receiver__exact=receiverUsername))
             )
-        except DirectMessagePermission.DoesNotExist:
-            # permission does not exist
-            return False
+        )
 
         if len(permissions) == 0:
             return False
@@ -140,15 +118,12 @@ class ConversationHomeView(generic.View):
         active_connections = []
         requested_connections = []
 
-        try:
-            pending_connections = list(
-                DirectMessagePermission.objects.filter(
-                    Q(receiver__exact=cur_username)
-                    & Q(permission__exact=Permission.REQUESTED)
-                )
+        pending_connections = list(
+            DirectMessagePermission.objects.filter(
+                Q(receiver__exact=cur_username)
+                & Q(permission__exact=Permission.REQUESTED)
             )
-        except DirectMessagePermission.DoesNotExist:
-            pending_connections = []
+        )
 
         all_pending_connection_usernamesids = []
         for p in pending_connections:
@@ -159,39 +134,27 @@ class ConversationHomeView(generic.View):
                 }
             )
 
-        try:
-            active_connections = list(
-                DirectMessagePermission.objects.filter(
-                    Q(sender__exact=cur_username)
-                    & Q(permission__exact=Permission.ALLOWED)
-                )
+        active_connections = list(
+            DirectMessagePermission.objects.filter(
+                Q(sender__exact=cur_username) & Q(permission__exact=Permission.ALLOWED)
             )
-        except DirectMessagePermission.DoesNotExist:
-            active_connections = []
+        )
 
         all_active_connection_usernamesids = []
         for p in active_connections:
-            if p.sender.username == cur_username:
-                all_active_connection_usernamesids.append(
-                    {
-                        'id': p.receiver.id,
-                        'username': p.receiver.username,
-                    }
-                )
-            else:
-                all_active_connection_usernamesids.append(
-                    {'id': p.sender.id, 'username': p.sender.username}
-                )
-
-        try:
-            requested_connections = list(
-                DirectMessagePermission.objects.filter(
-                    Q(sender__exact=cur_username)
-                    & Q(permission__exact=Permission.REQUESTED)
-                )
+            all_active_connection_usernamesids.append(
+                {
+                    'id': p.receiver.id,
+                    'username': p.receiver.username,
+                }
             )
-        except DirectMessagePermission.DoesNotExist:
-            requested_connections = []
+
+        requested_connections = list(
+            DirectMessagePermission.objects.filter(
+                Q(sender__exact=cur_username)
+                & Q(permission__exact=Permission.REQUESTED)
+            )
+        )
 
         all_requested_connection_usernamesids = []
         for p in requested_connections:
@@ -202,15 +165,12 @@ class ConversationHomeView(generic.View):
                 }
             )
 
-        try:
-            blocked_connections = list(
-                DirectMessagePermission.objects.filter(
-                    Q(receiver__exact=cur_username)
-                    & Q(permission__exact=Permission.BLOCKED)
-                )
+        blocked_connections = list(
+            DirectMessagePermission.objects.filter(
+                Q(receiver__exact=cur_username)
+                & Q(permission__exact=Permission.BLOCKED)
             )
-        except DirectMessagePermission.DoesNotExist:
-            blocked_connections = []
+        )
 
         all_blocked_connection_usernamesids = []
         for p in blocked_connections:
@@ -282,18 +242,11 @@ class ConversationHttpView(generic.View):
         return super(ConversationHttpView, self).dispatch(request, *args, **kwargs)
 
     def canDmReceiver(self, senderUsername, receiverUsername):
-        try:
-            permissions = list(
-                DirectMessagePermission.objects.filter(
-                    (
-                        Q(sender__exact=senderUsername)
-                        & Q(receiver__exact=receiverUsername)
-                    )
-                )
+        permissions = list(
+            DirectMessagePermission.objects.filter(
+                (Q(sender__exact=senderUsername) & Q(receiver__exact=receiverUsername))
             )
-        except DirectMessagePermission.DoesNotExist:
-            # permission does not exist
-            return False
+        )
 
         if len(permissions) == 0:
             return False
