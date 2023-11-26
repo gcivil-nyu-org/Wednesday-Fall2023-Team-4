@@ -340,6 +340,7 @@ class ListingForm(ModelForm):
                     )
         return age_range
 
+
 class QuizForm(ModelForm):
     class Meta:
         model = Quiz
@@ -353,12 +354,12 @@ class QuizForm(ModelForm):
             "question7",
             "question8",
         ]
-        
+
     def clean(self):
         cleaned_data = super().clean()
-        
+
         for field_name, field_value in cleaned_data.items():
             if not field_value:
                 raise forms.ValidationError("Please answer for" + field_name)
-        
+
         return cleaned_data
