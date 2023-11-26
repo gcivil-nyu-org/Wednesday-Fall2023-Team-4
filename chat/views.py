@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied
 
-from rrapp.models import User
+from rrapp.models import Quiz, User
 from .models import DirectMessage, DirectMessagePermission, Permission
 
 
@@ -98,6 +98,7 @@ class ConversationHomeView(generic.View):
                 {
                     'id': p.sender.id,
                     'username': p.sender.username,
+                    'matchLevel': self.calculateMatchLevel(cur_username, p.sender.username),
                 }
             )
 
@@ -214,6 +215,34 @@ class ConversationHomeView(generic.View):
 
         return HttpResponseRedirect(reverse("chat:conversation_home"))
 
+    def calculateMatchLevel(self, cur_username, target_username):
+        print(cur_username, target_username)
+        cur_user = User.objects.get(username=cur_username)
+        target_user = User.objects.get(username=target_username)
+        cur_quiz, created_cur = Quiz.objects.get_or_create(user=cur_user)
+        target_quiz, created_tar = Quiz.objects.get_or_create(user=target_user)
+        match_level = 0
+        
+        if created_cur or created_tar:
+            return -3
+        
+        for i in range(1, 9):
+            cur_field = "question" + str(i)
+            if not getattr(target_quiz, cur_field, None):
+                print("Rentee quiz have not been filled")
+                return
+            elif not getattr(cur_quiz, cur_field, None):
+                print("Renter quiz have not been filled")
+                return
+            else:
+                num_choices = len(cur_quiz._meta.get_field(cur_field).choices)           
+                value_cur = getattr(cur_quiz, cur_field)
+                value_target = getattr(target_quiz, cur_field)
+                print(value_cur, value_target)
+                print(type(value_cur), type(value_target))
+                cur_level = 1 - (abs(value_cur - value_target) / (num_choices - 1))
+                match_level += cur_level
+        return int(match_level/8 * 100)
 
 class ConversationView(generic.View):
     def dispatch(self, request, *args, **kwargs):
