@@ -186,19 +186,23 @@ class Quiz(models.Model):
         choices=[
             (
                 1,
-                "Wait for that paycheck – you'll just have to spend as little as possible until then.",
+                "Wait for that paycheck – you'll just"
+                "have to spend as little as possible until then.",
             ),
             (
                 2,
-                'Ask your roommate for a small loan and pay him/her back when you get your paycheck.',
+                "Ask your roommate for a small loan and pay"
+                "him/her back when you get your paycheck.",
             ),
             (
                 3,
-                'Ask your roommate for a small loan, and pay him/her back in installments.',
+                "Ask your roommate for a small loan,"
+                "and pay him/her back in installments.",
             ),
             (
                 4,
-                "Take some money out of your roommate's top drawer and return it as soon as you get your pay.",
+                "Take some money out of your roommate's"
+                "top drawer and return it as soon as you get your pay.",
             ),
         ],
         null=True,
@@ -207,13 +211,18 @@ class Quiz(models.Model):
         choices=[
             (
                 1,
-                "Borrow the jacket and put it back before your roommate gets home – you'll only be gone for a few hours.",
+                "Borrow the jacket and put it back before your "
+                "roommate gets home – you'll only be gone for a few hours.",
             ),
             (
                 2,
-                "Borrow the jacket and explain to your roommate later how dire your situation was.",
+                "Borrow the jacket and explain to your "
+                "roommate later how dire your situation was.",
             ),
-            (3, "Try to get a hold of him/her and ask if you can borrow the jacket."),
+            (
+                3,
+                "Try to get a hold of him/her" " and ask if you can borrow the jacket.",
+            ),
             (4, "Find something else to wear to dinner."),
         ],
         null=True,
@@ -222,16 +231,19 @@ class Quiz(models.Model):
         choices=[
             (
                 1,
-                "Go out looking for him/her so you can give him/her the message personally.",
+                "Go out looking for him/her so you can "
+                "give him/her the message personally.",
             ),
             (
                 2,
-                "Write the note twice and put one on the bulletin board and the other in a place where she/he is sure to find it.",
+                "Write the note twice and put one on the "
+                "bulletin board and the other in a place where she/he is sure to find it.",
             ),
             (3, "Leave him/her a note on the fridge."),
             (
                 4,
-                "Don't write the message but remind yourself to pass the message along when you see him/her.",
+                "Don't write the message but remind yourself"
+                " to pass the message along when you see him/her.",
             ),
             (5, "Tell him/her when she/he gets home."),
         ],
@@ -241,25 +253,31 @@ class Quiz(models.Model):
         choices=[
             (
                 1,
-                "Pick up the slack and take on some of your roommate's responsibilities yourself.",
+                "Pick up the slack and take on some of your "
+                "roommate's responsibilities yourself.",
             ),
             (
                 2,
-                "Nothing, just lower your living standards to keep in line with those of your roommate. Maybe she/he will get so sick of the mess that she/he will actually start cleaning up.",
+                "Nothing, just lower your living standards to keep in "
+                "line with those of your roommate. Maybe she/he will get so "
+                "sick of the mess that she/he will actually start cleaning up.",
             ),
             (
                 3,
-                "Mope around hoping she/he will ask you what's up and then complain about the state of the house.",
+                "Mope around hoping she/he will ask you what's "
+                "up and then complain about the state of the house.",
             ),
             (4, "Mention it once in a casual tone and hope she/he gets the message."),
             (5, "Have a serious talk with your roommate as soon as possible."),
             (
                 6,
-                "Tell him/her straight out that she/he has to do more around the place - there is no need to soften the demand with 'please' and 'thank you'.",
+                "Tell him/her straight out that she/he has to do more around the"
+                " place - there is no need to soften the demand with 'please' and 'thank you'.",
             ),
             (
                 7,
-                "Accuse him/her of being a lazy slob and threaten non-payment of the rent if she/he doesn't clean up her/his act - literally.",
+                "Accuse him/her of being a lazy slob and threaten non-payment "
+                "of the rent if she/he doesn't clean up her/his act - literally.",
             ),
         ],
         null=True,
@@ -268,27 +286,34 @@ class Quiz(models.Model):
         choices=[
             (
                 1,
-                "Put the computer back where you found it and claim to have never touched it when your roommate asks about it.",
+                "Put the computer back where you found it and claim to have"
+                " never touched it when your roommate asks about it.",
             ),
             (
                 2,
-                "Take it to the computer store and pay for the repairs but don't tell your roommate when s/he gets home.",
+                "Take it to the computer store and pay for the repairs but "
+                "don't tell your roommate when s/he gets home.",
             ),
             (
                 3,
-                "Tell your roommate what happened when she/he gets back, hoping s/he won't ask you to pay for the damage.",
+                "Tell your roommate what happened when she/he gets back, "
+                "hoping s/he won't ask you to pay for the damage.",
             ),
             (
                 4,
-                "Take it to the computer store and pay for the repairs, explaining the accident to your roommate when she/he gets home.",
+                "Take it to the computer store and pay for the repairs, explaining "
+                "the accident to your roommate when she/he gets home.",
             ),
             (
                 5,
-                "Wait for your roommate to get home, explain the situation, and offer to pay for the damage.",
+                "Wait for your roommate to get home, explain the situation, and "
+                "offer to pay for the damage.",
             ),
             (
                 6,
-                "Contact your roommate prior to his/her arrival home and explain the situation. Ask her/him how to proceed, emphasizing that you'll do whatever it takes to fix the situation.",
+                "Contact your roommate prior to his/her arrival home and explain "
+                "the situation. Ask her/him how to proceed, emphasizing "
+                "that you'll do whatever it takes to fix the situation.",
             ),
         ],
         null=True,
@@ -299,11 +324,13 @@ class Quiz(models.Model):
             (2, "Call your roommate and ask if it is okay to have people over."),
             (
                 3,
-                "Invite them all over to your place but make them promise to keep the “fun” volume down.",
+                "Invite them all over to your place but make "
+                "them promise to keep the “fun” volume down.",
             ),
             (
                 4,
-                "Throw caution to the wind and invite everyone over - your roommate will survive a bit of noise.",
+                "Throw caution to the wind and invite everyone over"
+                " - your roommate will survive a bit of noise.",
             ),
         ],
         null=True,
@@ -319,7 +346,8 @@ class Quiz(models.Model):
             ),
             (
                 5,
-                "You'll remember that the bill has to be paid, but end up procrastinating and paying it late.",
+                "You'll remember that the bill has to be paid, "
+                "but end up procrastinating and paying it late.",
             ),
             (6, "You'll forget and end up paying it way passed the deadline."),
         ],
