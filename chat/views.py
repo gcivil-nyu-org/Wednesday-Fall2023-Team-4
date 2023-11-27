@@ -223,10 +223,11 @@ class ConversationHomeView(generic.View):
         target_user = User.objects.get(username=target_username)
         cur_quiz, created_cur = Quiz.objects.get_or_create(user=cur_user)
         target_quiz, created_tar = Quiz.objects.get_or_create(user=target_user)
+
         match_level = 0
 
-        if created_cur or created_tar:
-            return -3
+        if created_tar:
+            return
 
         for i in range(1, 9):
             cur_field = "question" + str(i)
@@ -235,7 +236,7 @@ class ConversationHomeView(generic.View):
                 return
             elif not getattr(cur_quiz, cur_field, None):
                 print("Renter quiz have not been filled")
-                return
+                return -1  # Ask the renter to fill the quiz
             else:
                 num_choices = len(cur_quiz._meta.get_field(cur_field).choices)
                 value_cur = getattr(cur_quiz, cur_field)
