@@ -2,6 +2,8 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
+from rrapp.forms import QuizForm
+
 from .models import Listing, Rentee, Renter, SavedListing
 from chat.models import DirectMessagePermission, Permission
 
@@ -413,4 +415,50 @@ class ListingUpdateViewTest(TestCase):
             reverse("rrapp:listing_detail_modify", kwargs={"pk": 1}),
             {"title": "Updated Listing"},
         )
+        self.assertIn(response.status_code, [200, 302])
+
+class PersonalQuizViewTest(TestCase):
+    def test_personal_quiz_view_get(self):
+        client = Client()
+        response = client.get(reverse("rrapp:personal_quiz"))
+        self.assertIn(response.status_code, [200, 302])
+
+    def test_personal_quiz_view_post(self):
+        client = Client()
+        data = {
+            "question1": 1,
+            "question2": 1,
+            "question3": 1,
+            "question4": 1,
+            "question5": 1,
+            "question6": 1,
+            "question7": 1,
+            "question8": 1,
+        }
+        form = QuizForm(data)
+        response = client.post(
+            reverse("rrapp:personal_quiz"),
+            data
+        )
+        self.assertTrue(form.is_valid())
+        self.assertIn(response.status_code, [200, 302])
+        
+    def test_personal_quiz_view_post_invalid(self):
+        client = Client()
+        data = {
+            "question1": "In your roommate's bed",
+            "question2": 1,
+            "question3": 1,
+            "question4": 1,
+            "question5": 1,
+            "question6": 1,
+            "question7": 1,
+            "question8": 1,
+        }
+        form = QuizForm(data)
+        response = client.post(
+            reverse("rrapp:personal_quiz"),
+            data
+        )
+        self.assertFalse(form.is_valid())
         self.assertIn(response.status_code, [200, 302])
