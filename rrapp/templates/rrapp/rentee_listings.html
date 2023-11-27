@@ -7,6 +7,12 @@
         {% load static %}
         <link rel="stylesheet" href="{% static 'rrapp/common.css' %}">
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4J7XIaU4AfV9ig7w8_VTaREoojNxhZx0&callback=initMap" async defer></script>
+        <!-- Add noUiSlider CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/nouislider/distribute/nouislider.min.css" rel="stylesheet">
+
+        <!-- Add noUiSlider JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/nouislider/distribute/nouislider.min.js"></script>
+
         <!-- Script for Google Maps -->
         <script>
             function initMap() {
@@ -148,23 +154,23 @@
                         <form method="get" action="{% url 'rrapp:rentee_listings' %}">
                             <div class="mb-3 row">
                                 <!-- Monthly Rent Filter -->
-                                <div class="col-md-3">
-                                    <label for="filter-monthly_rent">Monthly Rent: <span id="monthly_rent_value"></span></label>
-                                    <input type="range" class="form-range" min="0" max="10000" id="filter-monthly_rent" name="monthly_rent" value="{{ request.GET.monthly_rent }}" oninput="document.getElementById('monthly_rent_value').textContent = this.value">
-                                </div>
-                            
-                                <!-- Number of Bedrooms Slider -->
-                                <div class="col-md-3">
-                                    <label for="filter-number_of_bedrooms">Number of Bedrooms: <span id="number_of_bedrooms_value"></span></label>
-                                    <input type="range" class="form-range" min="0" max="10" id="filter-number_of_bedrooms" name="number_of_bedrooms" value="{{ request.GET.number_of_bedrooms }}" oninput="document.getElementById('number_of_bedrooms_value').textContent = this.value">
-                                </div>
+                                <div id="monthly_rent_slider"></div>
+                                <input type="hidden" id="monthly_rent_min" name="monthly_rent_min" value="{{ request.GET.monthly_rent_min }}">
+                                <input type="hidden" id="monthly_rent_max" name="monthly_rent_max" value="{{ request.GET.monthly_rent_max }}">
+                                <p>Monthly Rent Range: <span id="monthly_rent_range"></span></p>
+
+
+                                <!-- Number of Bedrooms Filter -->
+                                <div id="number_of_bedrooms_slider"></div>
+                                <input type="hidden" id="number_of_bedrooms_min" name="number_of_bedrooms_min" value="{{ request.GET.number_of_bedrooms_min }}">
+                                <input type="hidden" id="number_of_bedrooms_max" name="number_of_bedrooms_max" value="{{ request.GET.number_of_bedrooms_max }}">
+                                <p>Number of Bedrooms Range: <span id="number_of_bedrooms_range"></span></p>
 
                                 <!-- Number of Bathrooms Slider -->
-                                <div class="col-md-3">
-                                    <label for="filter-number_of_bathrooms">Number of Bathrooms: <span id="number_of_bathrooms_value"></span></label>
-                                    <input type="range" class="form-range" min="0" max="10" id="filter-number_of_bathrooms" name="number_of_bathrooms" value="{{ request.GET.number_of_bathrooms }}" oninput="document.getElementById('number_of_bathrooms_value').textContent = this.value">
-                                </div>
-
+                                <div id="number_of_bathrooms_slider"></div>
+                                <input type="hidden" id="number_of_bathrooms_min" name="number_of_bathrooms_min" value="{{ request.GET.number_of_bathrooms_min }}">
+                                <input type="hidden" id="number_of_bathrooms_max" name="number_of_bathrooms_max" value="{{ request.GET.number_of_bathrooms_max }}">
+                                <p>Number of Bathrooms Range: <span id="number_of_bathrooms_range"></span></p>
                             </div>
                             
                             <div class="mb-3 row">
@@ -326,12 +332,30 @@
             }
             function resetFilters() {
         // Get existing filter parameters
-                var queryParams = new URLSearchParams(window.location.search);
+                var defaultMinRent = 0, defaultMaxRent = 10000;
+                var defaultMinBedrooms = 0, defaultMaxBedrooms = 10;
+                var defaultMinBathrooms = 0, defaultMaxBathrooms = 10;
 
-                // Remove all filter parameters
-                queryParams.delete('monthly_rent');
-                queryParams.delete('number_of_bedrooms');
-                queryParams.delete('number_of_bathrooms');
+                if (monthly_rent_slider.noUiSlider) {
+                    monthly_rent_slider.noUiSlider.set([defaultMinRent, defaultMaxRent]);
+                }
+                if (number_of_bedrooms_slider.noUiSlider) {
+                    number_of_bedrooms_slider.noUiSlider.set([defaultMinBedrooms, defaultMaxBedrooms]);
+                }
+                if (number_of_bathrooms_slider.noUiSlider) {
+                    number_of_bathrooms_slider.noUiSlider.set([defaultMinBathrooms, defaultMaxBathrooms]);
+                }
+
+                // Get existing filter parameters
+                var queryParams = new URLSearchParams();
+
+                // Update the query parameters with default slider values
+                queryParams.set('monthly_rent_min', defaultMinRent);
+                queryParams.set('monthly_rent_max', defaultMaxRent);
+                queryParams.set('number_of_bedrooms_min', defaultMinBedrooms);
+                queryParams.set('number_of_bedrooms_max', defaultMaxBedrooms);
+                queryParams.set('number_of_bathrooms_min', defaultMinBathrooms);
+                queryParams.set('number_of_bathrooms_max', defaultMaxBathrooms);
                 queryParams.delete('washer');
                 queryParams.delete('dryer');
                 queryParams.delete('utilities_included');
@@ -349,11 +373,71 @@
         </script>
         <script>
             window.onload = function() {
-                document.getElementById('monthly_rent_value').textContent = document.getElementById('filter-monthly_rent').value;
-                document.getElementById('number_of_bedrooms_value').textContent = document.getElementById('filter-number_of_bedrooms').value;
-                document.getElementById('number_of_bathrooms_value').textContent = document.getElementById('filter-number_of_bathrooms').value;
+                var queryParams = new URLSearchParams(window.location.search);
+
+                // Check if the query parameters exist and set the filter values
+                if (queryParams.has('monthly_rent_min')) {
+                    document.getElementById('monthly_rent_min').value = queryParams.get('monthly_rent_min');
+                    // Similarly set the slider position
+                }
+                if (queryParams.has('monthly_rent_max')) {
+                    document.getElementById('monthly_rent_max').value = queryParams.get('monthly_rent_max');
+                    // Similarly set the slider position
+                }
+                if (queryParams.has('number_of_bedrooms_min')) {
+                    document.getElementById('number_of_bedrooms_min').value = queryParams.get('number_of_bedrooms_min');
+                    // And so on...
+                }
+                // Continue for other filters
+                if (queryParams.has('number_of_bedrooms_max')) {
+                    document.getElementById('number_of_bedrooms_max').value = queryParams.get('number_of_bedrooms_max');
+                    // And so on...
+                }
+                if (queryParams.has('number_of_bathrooms_min')) {
+                    document.getElementById('number_of_bathrooms_min').value = queryParams.get('number_of_bathrooms_min');
+                    // And so on...
+                }
+                // Continue for other filters
+                if (queryParams.has('number_of_bathrooms_max')) {
+                    document.getElementById('number_of_bathrooms_max').value = queryParams.get('number_of_bathrooms_max');
+                    // And so on...
+                }
+
+                // Initialize sliders with these values
             };
         </script>
+        <script>
+            function setupSlider(sliderId, minValueInputId, maxValueInputId, rangeElementId, defaultMinVal, defaultMaxVal) {
+                var minVal = parseInt(document.getElementById(minValueInputId).value) || defaultMinVal;
+                var maxVal = parseInt(document.getElementById(maxValueInputId).value) || defaultMaxVal;
+
+                var slider = document.getElementById(sliderId);
+                noUiSlider.create(slider, {
+                    start: [minVal, maxVal],
+                    connect: true,
+                    range: {
+                        'min': defaultMinVal,
+                        'max': defaultMaxVal
+                    }
+                });
+
+                slider.noUiSlider.on('update', function (values, handle) {
+                    var minValue = parseInt(values[0], 10);
+                    var maxValue = parseInt(values[1], 10);
+
+                    document.getElementById(minValueInputId).value = minValue;
+                    document.getElementById(maxValueInputId).value = maxValue;
+                    document.getElementById(rangeElementId).innerHTML = `${minValue} - ${maxValue}`;
+                });
+            }
+
+            // Initialize sliders with default range and current values
+            setupSlider('monthly_rent_slider', 'monthly_rent_min', 'monthly_rent_max', 'monthly_rent_range', 0, 10000);
+            setupSlider('number_of_bedrooms_slider', 'number_of_bedrooms_min', 'number_of_bedrooms_max', 'number_of_bedrooms_range', 0, 10);
+            setupSlider('number_of_bathrooms_slider', 'number_of_bathrooms_min', 'number_of_bathrooms_max', 'number_of_bathrooms_range', 0, 10);
+            // Similar setup for other sliders
+
+        </script>        
             
         </div>
     </div>
