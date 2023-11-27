@@ -361,7 +361,7 @@ class QuizForm(ModelForm):
         for field_name, field_value in cleaned_data.items():
             if not field_value:
                 raise forms.ValidationError("Please answer for" + field_name)
-            
+
             field = self.fields[field_name]
             if isinstance(field, forms.ChoiceField):
                 valid_choices = [choice[0] for choice in field.choices]

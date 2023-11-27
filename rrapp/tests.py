@@ -417,6 +417,7 @@ class ListingUpdateViewTest(TestCase):
         )
         self.assertIn(response.status_code, [200, 302])
 
+
 class PersonalQuizViewTest(TestCase):
     def test_personal_quiz_view_get(self):
         client = Client()
@@ -436,13 +437,10 @@ class PersonalQuizViewTest(TestCase):
             "question8": 1,
         }
         form = QuizForm(data)
-        response = client.post(
-            reverse("rrapp:personal_quiz"),
-            data
-        )
+        response = client.post(reverse("rrapp:personal_quiz"), data)
         self.assertTrue(form.is_valid())
         self.assertIn(response.status_code, [200, 302])
-        
+
     def test_personal_quiz_view_post_invalid(self):
         client = Client()
         data = {
@@ -456,9 +454,6 @@ class PersonalQuizViewTest(TestCase):
             "question8": 1,
         }
         form = QuizForm(data)
-        response = client.post(
-            reverse("rrapp:personal_quiz"),
-            data
-        )
+        response = client.post(reverse("rrapp:personal_quiz"), data)
         self.assertFalse(form.is_valid())
         self.assertIn(response.status_code, [200, 302])
