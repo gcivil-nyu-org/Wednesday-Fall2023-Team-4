@@ -17,7 +17,9 @@ def delete_old_file_on_update(sender, instance, **kwargs):
         new_avatar = instance.profile_picture
         if old_avatar and old_avatar.url != new_avatar.url:  # if avatar has changed
             old_avatar_path = old_avatar.name
-            if old_avatar_path != DEFAULT_AVATAR_PATH and os.path.exists(old_avatar_path):
+            if old_avatar_path != DEFAULT_AVATAR_PATH and os.path.exists(
+                old_avatar_path
+            ):
                 default_storage.delete(old_avatar_path)
 
 
