@@ -125,7 +125,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         upload_to=user_directory_path,
         height_field=None,
         width_field=None,
-        default="DefaultProfile.jpg",
+        default=settings.MEDIA_ROOT + "DefaultProfile.jpg",
     )
     smokes = models.BooleanField(default=False)
     pets = models.CharField(

@@ -35,10 +35,14 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from .tokens import account_activation_token
 
-from chat.views import get_pending_connections_count
+from chat.utils import get_pending_connections_count
 from django.conf import settings
 
 User = get_user_model()
+
+
+def healthcheck(request):
+    return HttpResponse(status=200)
 
 
 class HomeView(generic.View):
@@ -638,7 +642,8 @@ class PublicProfileView(generic.DetailView):
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
         context_data["user_id"] = self.kwargs["pk"]
-        context_data["user"] = User.objects.get(id=self.kwargs["pk"])
+        context_data["user"] = self.request.user
+        context_data["other_user"] = User.objects.get(id=self.kwargs["pk"])
         context_data["path"] = self.request.path_info.__contains__("renter")
         context_data["inbox"] = get_inbox_count(
             User.objects.get(id=self.kwargs["pk"]).username
