@@ -273,3 +273,4 @@ class Rating(models.Model):
         on_delete=models.CASCADE,
     )
     rating = models.FloatField(null=True, default=0.0)
+    created_at = models.DateTimeField(default=timezone.now)

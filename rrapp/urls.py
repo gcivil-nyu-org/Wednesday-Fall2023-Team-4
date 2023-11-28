@@ -110,7 +110,12 @@ urlpatterns = [
     # ex: /rrapp/user/rating/2
     path(
         'user/rating/<int:ratee_id>',
-        views.rate_user,
+        views.RatingView.as_view(),
         name='rate_user',
     ),
+    # path(
+    #     'user/rating/<int:ratee_id>',
+    #     views.rate_user,
+    #     name='rate_user',
+    # ),
 ]

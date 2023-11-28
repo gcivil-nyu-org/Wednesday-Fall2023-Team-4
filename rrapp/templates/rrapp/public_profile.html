@@ -47,15 +47,19 @@
                     </div>
                 </div>
 
-                <form method="POST">
-                    {% csrf_token %}
-                    {% if rated %}
-                        <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-left" name="rate">Update rating</button>
-                        <p>My current rating: {{ rating }}</p>
-                    {% else %}
-                        <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-mid" name="rate">Rate the user</button>
-                    {% endif %}
-                </form>
+<!--                 <form method="POST">
+                    {% csrf_token %} -->
+                {% if rated %}
+                    <a href="{% url 'rrapp:rate_user' user_id %}">
+                        <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-left" name='rate'>Update rating</button>
+                    </a>
+                    <p>My current rating: {{ rating }}</p>
+                {% else %}
+                    <a href="{% url 'rrapp:rate_user' user_id %}">
+                        <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-mid" name='rate'>Rate the user</button>
+                    </a>
+                {% endif %}
+                <!-- </form> -->
 
             </div>
         </div>
