@@ -675,9 +675,7 @@ class PublicProfileView(generic.DetailView):
         context_data["user"] = self.request.user
         context_data["tarUser"] = User.objects.get(id=self.kwargs["pk"])
         context_data["path"] = self.request.path_info.__contains__("renter")
-        context_data["inbox"] = get_inbox_count(
-            self.request.user.username
-        )
+        context_data["inbox"] = get_inbox_count(self.request.user.username)
         return context_data
 
     def get_success_url(self):
@@ -779,6 +777,7 @@ def get_inbox_count(username):
 
 def rrapp_403(request, exception):
     return render(request, "rrapp/403.html", {}, status=403)
+
 
 def check_quiz_state(user_id):
     if Quiz.objects.filter(user=user_id).exists():
