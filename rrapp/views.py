@@ -392,17 +392,47 @@ class ListingResultsView(generic.ListView):
         # Apply filters
         filters = Q()
 
-        monthly_rent = self.request.GET.get("monthly_rent")
-        if monthly_rent:
-            filters &= Q(monthly_rent__lte=monthly_rent)
+        try:
+            monthly_rent_min = int(self.request.GET.get("monthly_rent_min", "0"))
+            monthly_rent_max = int(self.request.GET.get("monthly_rent_max", "10000"))
+            filters &= Q(
+                monthly_rent__gte=monthly_rent_min, monthly_rent__lte=monthly_rent_max
+            )
+        except ValueError:
+            # Handle error or ignore
+            pass
 
-        number_of_bedrooms = self.request.GET.get("number_of_bedrooms")
-        if number_of_bedrooms:
-            filters &= Q(number_of_bedrooms__lte=number_of_bedrooms)
+        # Convert and apply Number of Bedrooms filter
+        try:
+            number_of_bedrooms_min = int(
+                self.request.GET.get("number_of_bedrooms_min", "0")
+            )
+            number_of_bedrooms_max = int(
+                self.request.GET.get("number_of_bedrooms_max", "10")
+            )
+            filters &= Q(
+                number_of_bedrooms__gte=number_of_bedrooms_min,
+                number_of_bedrooms__lte=number_of_bedrooms_max,
+            )
+        except ValueError:
+            # Handle error or ignore
+            pass
 
-        number_of_bathrooms = self.request.GET.get("number_of_bathrooms")
-        if number_of_bathrooms:
-            filters &= Q(number_of_bathrooms__lte=number_of_bathrooms)
+        # Convert and apply Number of Bathrooms filter
+        try:
+            number_of_bathrooms_min = int(
+                self.request.GET.get("number_of_bathrooms_min", "0")
+            )
+            number_of_bathrooms_max = int(
+                self.request.GET.get("number_of_bathrooms_max", "10")
+            )
+            filters &= Q(
+                number_of_bathrooms__gte=number_of_bathrooms_min,
+                number_of_bathrooms__lte=number_of_bathrooms_max,
+            )
+        except ValueError:
+            # Handle error or ignore
+            pass
 
         washer = self.request.GET.get("washer")
         if washer == "on":
