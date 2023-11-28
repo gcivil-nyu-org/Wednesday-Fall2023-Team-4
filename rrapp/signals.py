@@ -2,8 +2,6 @@ from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
 from .models import User, Photo
 from django.core.files.storage import default_storage
-from django.conf import settings
-import os
 
 DEFAULT_AVATAR_PATH = 'DefaultProfile.jpg'
 
