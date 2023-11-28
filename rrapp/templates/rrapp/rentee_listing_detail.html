@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
         {% load static %}
         <link rel="stylesheet" href="{% static 'rrapp/common.css' %}">
     </head>
@@ -394,7 +395,15 @@
                                 <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-mid" name="shortlist">Shortlist</button>
                             {% endif %}
                         </form>
-
+                        {% if quizState%}
+                            <a href="{% url 'rrapp:personal_quiz'%}" >
+                                <button type="button" class="btn align-item-center rounded-pill btn-lg btn-primary">Update Quiz</button>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'rrapp:personal_quiz'%}" >
+                                <button type="button" class="btn align-item-center rounded-pill btn-lg btn-primary">Take Quiz</button>
+                            </a>
+                        {% endif %}
                         <button type="button" class="btn align-item-center rounded-pill btn-lg cus-btn-right" onclick="window.history.back()">Back</button>
                     </div>
 
@@ -435,7 +444,13 @@
                             <div>
                                 <form method="POST">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn align-item-center rounded-pill btn-lg btn btn-success" name="connection_request">Connect with Renter</button>
+                                    {% if quizState%}
+                                        <button type="submit" class="btn align-item-center rounded-pill btn-lg btn btn-success" name="connection_request">Connect with Renter</button>
+                                    {% else %}
+                                        <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Click Take Quiz button to finish the quiz first.">
+                                            <button class="btn align-item-center rounded-pill btn-lg btn btn-success" type="button" disabled>Connect with Renter</button>
+                                        </span>
+                                    {% endif %}
                                 </form>
                             </div>
                         {% endif %}
@@ -446,6 +461,13 @@
 
         </div>
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+        <script>
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+              return new bootstrap.Popover(popoverTriggerEl)
+            })
+        </script>
     </body>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </html>
