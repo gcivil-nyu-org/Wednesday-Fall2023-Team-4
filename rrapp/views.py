@@ -21,8 +21,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from chat.models import DirectMessagePermission, Permission
 
-from .models import Listing, Renter, Rentee, SavedListing, Photo
-from .forms import MyUserCreationForm, ListingForm, UserForm, LoginForm
+from .models import Listing, Renter, Rentee, SavedListing, Photo, Quiz
+from .forms import MyUserCreationForm, ListingForm, UserForm, LoginForm, QuizForm
 
 from django.urls import reverse_lazy
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
@@ -361,6 +361,7 @@ class ListingDetailRenteeView(generic.DetailView):
                     receiver=listing.user,
                     permission=Permission.REQUESTED,
                 )
+            return HttpResponseRedirect(reverse("rrapp:personal_quiz"))
 
         return HttpResponseRedirect(request.path_info)  # redirect to the same page
 
@@ -682,6 +683,49 @@ class PublicProfileView(generic.DetailView):
 
     def get_success_url(self):
         return reverse('rrapp:rentee_listings')
+
+
+@method_decorator(login_required, name='dispatch')
+class PersonalQuizView(generic.UpdateView):
+    model = Quiz
+    template_name = "rrapp/quiz.html"
+    form_class = QuizForm
+
+    def get_object(self, queryset=None):
+        quiz, created = Quiz.objects.get_or_create(user=self.request.user)
+        if created:
+            self.request.user.quiz = quiz
+            self.request.user.save()
+        return quiz
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs: Any):
+        context_data = super().get_context_data(**kwargs)
+        context_data["user_id"] = self.request.user.id
+        context_data["user"] = self.request.user
+        context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(self.request.user.username)
+        return context_data
+
+    def get_success_url(self):
+        return reverse("rrapp:rentee_listings")
+
+    # TODO: 怎么处理renter没做过match的情况。先做quiz然后返送请求和match level
+
+    def post(self, request, *args, **kwargs):
+        print("Call Post")
+        self.object = self.get_object()
+        form = self.get_form()
+
+        if form.is_valid():
+            print("Form is valid")
+            return self.form_valid(form)
+        else:
+            print("Form is invalid")
+            return self.form_invalid(form)
 
 
 @login_required

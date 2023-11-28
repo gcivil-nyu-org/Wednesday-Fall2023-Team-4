@@ -108,4 +108,9 @@ urlpatterns = [
         views.PublicProfileView.as_view(),
         name='public_profile',
     ),
+    path(
+        'user/quiz',
+        views.PersonalQuizView.as_view(),
+        name='personal_quiz',
+    ),
 ]

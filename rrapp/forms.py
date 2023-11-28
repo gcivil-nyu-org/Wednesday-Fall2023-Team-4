@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 import datetime
 
-from .models import Listing, Photo
+from .models import Listing, Photo, Quiz
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -339,3 +339,37 @@ class ListingForm(ModelForm):
                         "Maximum age cannot be greater than 100"
                     )
         return age_range
+
+
+class QuizForm(ModelForm):
+    class Meta:
+        model = Quiz
+        fields = [
+            "question1",
+            "question2",
+            "question3",
+            "question4",
+            "question5",
+            "question6",
+            "question7",
+            "question8",
+        ]
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        for field_name, field_value in cleaned_data.items():
+            if not field_value:
+                raise forms.ValidationError("Please answer for" + field_name)
+
+            field = self.fields[field_name]
+            if isinstance(field, forms.ChoiceField):
+                valid_choices = [choice[0] for choice in field.choices]
+
+                # Check if the submitted value is in the list of valid choices
+                if field_value not in valid_choices:
+                    raise forms.ValidationError(
+                        f"The answer for {field_name} is not a valid choice."
+                    )
+
+        return cleaned_data
