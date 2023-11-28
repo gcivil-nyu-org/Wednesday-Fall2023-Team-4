@@ -17,7 +17,7 @@ def delete_old_file_on_update(sender, instance, **kwargs):
             return
         new_avatar = instance.profile_picture
         if old_avatar and old_avatar.url != new_avatar.url:  # if avatar has changed
-            old_avatar_path = old_avatar.path
+            old_avatar_path = old_avatar.name
             old_avatar_relative_path = os.path.relpath(
                 old_avatar_path, settings.MEDIA_ROOT
             )
@@ -28,6 +28,6 @@ def delete_old_file_on_update(sender, instance, **kwargs):
 
 @receiver(pre_delete, sender=Photo)
 def delete_file_pre_delete(sender, instance, **kwargs):
-    print(instance.image.path)
+    print(instance.image.name)
     if instance.image:
         default_storage.delete(instance.image.path)
