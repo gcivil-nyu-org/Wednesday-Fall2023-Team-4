@@ -283,6 +283,7 @@ class ListingDetailRenteeView(generic.DetailView):
         context_data["cur_permission"] = self.cur_permission(user_id, self.kwargs["pk"])
         context_data["photos"] = Photo.objects.filter(listing=self.kwargs["pk"])
         context_data["inbox"] = get_inbox_count(User.objects.get(id=user_id).username)
+        context_data["quizState"] = check_quiz_state(user_id)
         return context_data
 
     def check_state(self, user_id, listing_id):
@@ -357,8 +358,6 @@ class ListingDetailRenteeView(generic.DetailView):
                     receiver=listing.user,
                     permission=Permission.REQUESTED,
                 )
-            return HttpResponseRedirect(reverse("rrapp:personal_quiz"))
-
         return HttpResponseRedirect(request.path_info)  # redirect to the same page
 
 
@@ -745,3 +744,14 @@ def get_inbox_count(username):
 
 def rrapp_403(request, exception):
     return render(request, "rrapp/403.html", {}, status=403)
+
+def check_quiz_state(user_id):
+    if Quiz.objects.filter(user=user_id).exists():
+        cur_quiz = Quiz.objects.get(user=user_id)
+        for i in range(1, 9):
+            cur_field = "question" + str(i)
+            if getattr(cur_quiz, cur_field, None) is None:
+                return False
+        return True
+    else:
+        return False
