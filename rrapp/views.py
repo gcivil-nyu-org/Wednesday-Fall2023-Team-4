@@ -637,11 +637,12 @@ class PublicProfileView(generic.DetailView):
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        context_data["user_id"] = self.kwargs["pk"]
-        context_data["user"] = User.objects.get(id=self.kwargs["pk"])
+        context_data["user_id"] = self.request.user.id
+        context_data["user"] = self.request.user
+        context_data["tarUser"] = User.objects.get(id=self.kwargs["pk"])
         context_data["path"] = self.request.path_info.__contains__("renter")
         context_data["inbox"] = get_inbox_count(
-            User.objects.get(id=self.kwargs["pk"]).username
+            self.request.user.username
         )
         return context_data
 
