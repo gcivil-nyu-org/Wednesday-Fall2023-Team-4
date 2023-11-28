@@ -29,9 +29,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
-    "roomierendezvous-dev.us-east-1.elasticbeanstalk.com",
+    "roomierendezvous-app-dev-ws.us-east-1.elasticbeanstalk.com",
     "roomierendezvous-app-dev.us-east-1.elasticbeanstalk.com",
-    "production-team4-2-dev.us-west-2.elasticbeanstalk.com",
+    "production-team4-2-dev3.us-west-2.elasticbeanstalk.com"
 ]
 
 
@@ -234,5 +234,22 @@ CHANNEL_LAYERS = {
         },
     },
 }
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [('roomierendezvous-redis.ivffkn.ng.0001.use1.cache.amazonaws.com', 6379)],
+#         },
+#     },
+# }
 
+if "AWS_STORAGE_BUCKET_NAME" in os.environ:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                "hosts": [('roomierendezvous-redis.ivffkn.ng.0001.use1.cache.amazonaws.com', 6379)],
+            },
+        },
+    }
 LOGIN_URL = 'rrapp:login'
