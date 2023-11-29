@@ -718,8 +718,6 @@ class RatingView(generic.UpdateView):
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
         context_data["pk"] = self.kwargs["ratee_id"]
-        print(self.kwargs["ratee_id"])
-        print('aaaaa')
         return context_data
 
     def get_success_url(self):
@@ -731,12 +729,7 @@ class RatingView(generic.UpdateView):
             receiver=User.objects.get(id=self.kwargs["ratee_id"]),
             permission=Permission.ALLOWED,
         ).exists():
-            print(User.objects.get(id=self.kwargs["ratee_id"]))
-            print(request.user)
-            print('bbbbbb')
             raise PermissionDenied('You should get permission from the user.')
-
-        # if request.method == 'POST':
         else:
             val = request.POST.get('val')
             ratee = User.objects.get(id=self.kwargs["ratee_id"])

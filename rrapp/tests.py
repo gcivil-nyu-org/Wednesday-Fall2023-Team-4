@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 
 from rrapp.forms import QuizForm
 
-from .models import Listing, Rentee, Renter, SavedListing
+from .models import Listing, Rentee, Renter, SavedListing, Rating
 from chat.models import DirectMessagePermission, Permission
 
 User = get_user_model()
@@ -457,3 +457,57 @@ class PersonalQuizViewTest(TestCase):
         response = client.post(reverse("rrapp:personal_quiz"), data)
         self.assertFalse(form.is_valid())
         self.assertIn(response.status_code, [200, 302])
+
+
+class RatingViewTest(ViewsTestCase):
+    def test_rating_view_get(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("rrapp:rate_user", kwargs={"ratee_id": self.user.id}))
+        self.assertIn(response.status_code, [200, 302])
+
+    def test_rating_view_post_unpermitted(self):
+        self.client.force_login(self.user)
+        user2 = User.objects.create_user(
+            username="testuser2", password="testpass2", email="testuser2@example.edu"
+        )
+        response = self.client.post(
+            reverse("rrapp:rate_user", kwargs={"ratee_id": user2.id}),
+            {
+                "pk": user2.id,
+                "val": 5.0,
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(
+            Rating.objects.filter(
+                rater=self.user, ratee=user2, rating=5.0
+            ).exists()
+        )
+
+    def test_rating_view_post_permitted(self):
+        self.client.force_login(self.user)
+        user2 = User.objects.create_user(
+            username="testuser2", password="testpass2", email="testuser2@example.edu"
+        )
+        DirectMessagePermission.objects.create(
+            sender=self.user,
+            receiver=user2,
+            permission=Permission.ALLOWED,
+        )
+        response = self.client.post(
+            reverse("rrapp:rate_user", kwargs={"ratee_id": user2.id}),
+            {
+                "pk": user2.id,
+                "val": 5.0,
+            },
+        )
+        self.assertIn(response.status_code, [200, 302])
+        self.assertTrue(
+            Rating.objects.filter(
+                rater=self.user, ratee=user2, rating=5.0
+            ).exists()
+        )
+        user = User.objects.get(id=user2.id)
+        self.assertTrue(
+            user.rating == 5.0
+        )
