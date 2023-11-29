@@ -234,21 +234,13 @@ CHANNEL_LAYERS = {
         },
     },
 }
-# CHANNEL_LAYERS = {
-#     'default': {
-#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-#         'CONFIG': {
-#             "hosts": [('roomierendezvous-redis.ivffkn.ng.0001.use1.cache.amazonaws.com', 6379)],
-#         },
-#     },
-# }
 
 if "AWS_STORAGE_BUCKET_NAME" in os.environ:
     CHANNEL_LAYERS = {
         'default': {
             'BACKEND': 'channels_redis.core.RedisChannelLayer',
             'CONFIG': {
-                "hosts": [('roomierendezvous-redis.ivffkn.ng.0001.use1.cache.amazonaws.com', 6379)],
+                "hosts": [(os.environ['AWS_REDIS_HOST'], os.environ['AWS_REDIS_PORT'])],
             },
         },
     }
