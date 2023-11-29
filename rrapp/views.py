@@ -769,6 +769,7 @@ class RatingView(generic.UpdateView):
         # )
 
 
+@method_decorator(login_required, name='dispatch')
 class PersonalQuizView(generic.UpdateView):
     model = Quiz
     template_name = "rrapp/quiz.html"
