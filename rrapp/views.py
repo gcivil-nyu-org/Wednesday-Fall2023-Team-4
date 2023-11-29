@@ -192,7 +192,6 @@ def verifyEmail(request):
                 complete the verification. Don\'t forget to check your spam folder.',
             extra_tags='alert alert-primary',
         )
-        # return render(request, 'rrapp/home.html')
         # return redirect('rrapp:home')
         return HttpResponseRedirect(reverse("rrapp:profile"))
     else:
