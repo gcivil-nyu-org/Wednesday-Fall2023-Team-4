@@ -462,7 +462,9 @@ class PersonalQuizViewTest(TestCase):
 class RatingViewTest(ViewsTestCase):
     def test_rating_view_get(self):
         self.client.force_login(self.user)
-        response = self.client.get(reverse("rrapp:rate_user", kwargs={"ratee_id": self.user.id}))
+        response = self.client.get(
+            reverse("rrapp:rate_user", kwargs={"ratee_id": self.user.id})
+        )
         self.assertIn(response.status_code, [200, 302])
 
     def test_rating_view_post_unpermitted(self):
@@ -479,9 +481,7 @@ class RatingViewTest(ViewsTestCase):
         )
         self.assertEqual(response.status_code, 403)
         self.assertFalse(
-            Rating.objects.filter(
-                rater=self.user, ratee=user2, rating=5.0
-            ).exists()
+            Rating.objects.filter(rater=self.user, ratee=user2, rating=5.0).exists()
         )
 
     def test_rating_view_post_permitted(self):
@@ -503,11 +503,7 @@ class RatingViewTest(ViewsTestCase):
         )
         self.assertIn(response.status_code, [200, 302])
         self.assertTrue(
-            Rating.objects.filter(
-                rater=self.user, ratee=user2, rating=5.0
-            ).exists()
+            Rating.objects.filter(rater=self.user, ratee=user2, rating=5.0).exists()
         )
         user = User.objects.get(id=user2.id)
-        self.assertTrue(
-            user.rating == 5.0
-        )
+        self.assertTrue(user.rating == 5.0)
