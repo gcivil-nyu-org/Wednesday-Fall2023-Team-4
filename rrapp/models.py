@@ -125,7 +125,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         upload_to=user_directory_path,
         height_field=None,
         width_field=None,
-        default="DefaultProfile.jpg",
+        default=settings.MEDIA_ROOT + "/DefaultProfile.jpg",
     )
     smokes = models.BooleanField(default=False)
     pets = models.CharField(
@@ -166,6 +166,193 @@ class Rentee(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="rentee",
+    )
+
+
+class Quiz(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="quiz",
+    )
+    question1 = models.IntegerField(
+        choices=[
+            (1, "In your roommate's bed"),
+            (2, 'On the couch'),
+            (3, 'In your bed'),
+        ],
+        null=True,
+    )
+    question2 = models.IntegerField(
+        choices=[
+            (
+                1,
+                "Wait for that paycheck – you'll just"
+                "have to spend as little as possible until then.",
+            ),
+            (
+                2,
+                "Ask your roommate for a small loan and pay"
+                "him/her back when you get your paycheck.",
+            ),
+            (
+                3,
+                "Ask your roommate for a small loan,"
+                "and pay him/her back in installments.",
+            ),
+            (
+                4,
+                "Take some money out of your roommate's"
+                "top drawer and return it as soon as you get your pay.",
+            ),
+        ],
+        null=True,
+    )
+    question3 = models.IntegerField(
+        choices=[
+            (
+                1,
+                "Borrow the jacket and put it back before your "
+                "roommate gets home – you'll only be gone for a few hours.",
+            ),
+            (
+                2,
+                "Borrow the jacket and explain to your "
+                "roommate later how dire your situation was.",
+            ),
+            (
+                3,
+                "Try to get a hold of him/her" " and ask if you can borrow the jacket.",
+            ),
+            (4, "Find something else to wear to dinner."),
+        ],
+        null=True,
+    )
+    question4 = models.IntegerField(
+        choices=[
+            (
+                1,
+                "Go out looking for him/her so you can "
+                "give him/her the message personally.",
+            ),
+            (
+                2,
+                "Write the note twice and put one on the "
+                "bulletin board and the other in a place where she/he is sure to find it.",
+            ),
+            (3, "Leave him/her a note on the fridge."),
+            (
+                4,
+                "Don't write the message but remind yourself"
+                " to pass the message along when you see him/her.",
+            ),
+            (5, "Tell him/her when she/he gets home."),
+        ],
+        null=True,
+    )
+    question5 = models.IntegerField(
+        choices=[
+            (
+                1,
+                "Pick up the slack and take on some of your "
+                "roommate's responsibilities yourself.",
+            ),
+            (
+                2,
+                "Nothing, just lower your living standards to keep in "
+                "line with those of your roommate. Maybe she/he will get so "
+                "sick of the mess that she/he will actually start cleaning up.",
+            ),
+            (
+                3,
+                "Mope around hoping she/he will ask you what's "
+                "up and then complain about the state of the house.",
+            ),
+            (4, "Mention it once in a casual tone and hope she/he gets the message."),
+            (5, "Have a serious talk with your roommate as soon as possible."),
+            (
+                6,
+                "Tell him/her straight out that she/he has to do more around the"
+                " place - there is no need to soften the demand with 'please' and 'thank you'.",
+            ),
+            (
+                7,
+                "Accuse him/her of being a lazy slob and threaten non-payment "
+                "of the rent if she/he doesn't clean up her/his act - literally.",
+            ),
+        ],
+        null=True,
+    )
+    question6 = models.IntegerField(
+        choices=[
+            (
+                1,
+                "Put the computer back where you found it and claim to have"
+                " never touched it when your roommate asks about it.",
+            ),
+            (
+                2,
+                "Take it to the computer store and pay for the repairs but "
+                "don't tell your roommate when s/he gets home.",
+            ),
+            (
+                3,
+                "Tell your roommate what happened when she/he gets back, "
+                "hoping s/he won't ask you to pay for the damage.",
+            ),
+            (
+                4,
+                "Take it to the computer store and pay for the repairs, explaining "
+                "the accident to your roommate when she/he gets home.",
+            ),
+            (
+                5,
+                "Wait for your roommate to get home, explain the situation, and "
+                "offer to pay for the damage.",
+            ),
+            (
+                6,
+                "Contact your roommate prior to his/her arrival home and explain "
+                "the situation. Ask her/him how to proceed, emphasizing "
+                "that you'll do whatever it takes to fix the situation.",
+            ),
+        ],
+        null=True,
+    )
+    question7 = models.IntegerField(
+        choices=[
+            (1, "Suggest an all-night café or club."),
+            (2, "Call your roommate and ask if it is okay to have people over."),
+            (
+                3,
+                "Invite them all over to your place but make "
+                "them promise to keep the “fun” volume down.",
+            ),
+            (
+                4,
+                "Throw caution to the wind and invite everyone over"
+                " - your roommate will survive a bit of noise.",
+            ),
+        ],
+        null=True,
+    )
+    question8 = models.IntegerField(
+        choices=[
+            (1, "You'll pay the bill on time."),
+            (2, "You'll forget at first, but end up paying it before the deadline."),
+            (3, "You'll forget until your roommate reminds you."),
+            (
+                4,
+                "You'll give the money to your roommate and let him/her take care of it.",
+            ),
+            (
+                5,
+                "You'll remember that the bill has to be paid, "
+                "but end up procrastinating and paying it late.",
+            ),
+            (6, "You'll forget and end up paying it way passed the deadline."),
+        ],
+        null=True,
     )
 
 

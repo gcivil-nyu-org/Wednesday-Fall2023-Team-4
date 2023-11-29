@@ -1,0 +1,146 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'rrapp/common.css' %}">
+    </head>
+
+    <body class = "align-items-stretch">
+        <div class="back-contianer">
+            {% include 'rrapp/left_bar.html' with user=user path=path inbox=inbox %}
+
+            <div class="text-center right-page">
+                <div class="container p-3">
+                    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+                        <ol class="breadcrumb p-3 bg-body-tertiary board rounded-3">
+                            <li class="breadcrumb-item">
+                                <a class="link-body-emphasis fw-semibold text-decoration-none">
+                                    Home
+                                </a>
+                            </li>
+        
+                            <li class="breadcrumb-item avtive">
+                                Quiz
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <div class = "w-100 align-items-center px-5 mb-3" >
+                    <div class = "d-flex flex-column align-items-center board rounded-3" style="background-color:#F8F8F8">
+                        <h1 class="font-monospace display-5 fw-medium text-body-emphasis my-3">Quiz</h1>
+
+                        <form method="post" class="row w-75 text-center">
+                            {% csrf_token %}
+                            {% load widget_tweaks %}
+
+                            {% if form.is_bound %}
+                                {% if form.errors %}
+                                    {% for filed in form%}
+                                        {% if filed.errors %}
+                                            {% for error in filed.errors%}
+                                                <div class="alert alert-warning" role="alert">
+                                                    {{ error }}
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}              
+                                {% endif %}
+                            {% endif %}
+                                              
+                            
+                            <div class="mx-auto" style="width:70%">
+                                <div class="card text-bg-light mb-3">
+                                    <div class="card-header">
+                                        Question 1
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text"><em>It is Friday night and your friend drops by with a DVD of your favorite movie. Your roommate has already left to spend the weekend with family. After a few too many drinks, your friend gets a little drunk and is no condition to drive home safely, so you suggest that she/he stay for the night. Where do you let him/her crash?</p>
+                                        {% render_field form.question1 class="form-control w-50 mx-auto my-2" %}
+                                    </div> 
+                                </div>
+
+                                <div class="card text-bg-light mb-3">
+                                    <div class="card-header">
+                                        Question 2
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text"><em>You are desperately short on cash, though you have enough food to last you until the end of the week. Payday is not for another three days. You know that your roommate is not starving for cash. You will?</p>
+                                        {% render_field form.question2 class="form-control w-50 mx-auto my-2" %}
+                                    </div> 
+                                </div>
+                                
+                                <div class="card text-bg-light mb-3">
+                                    <div class="card-header">
+                                        Question 3
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text"><em>You're getting ready for an important night out when you notice a pretty big stain on your dinner jacket. Unfortunately, the dry cleaner is closed and you're already running a little late. Your roommate has pretty much the same jacket as yours in his/her closet, but is already gone for the evening. What would you do?</p>
+                                        {% render_field form.question3 class="form-control w-50 mx-auto my-2" %}
+                                    </div> 
+                                </div>
+
+                                <div class="card text-bg-light mb-3">
+                                    <div class="card-header">
+                                        Question 4
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text"><em>	You take a phone message for your roommate before she/he gets home. It seems rather important that she/he receive the message before leaving town tomorrow. What do you do?</p>
+                                        {% render_field form.question4 class="form-control w-50 mx-auto my-2" %}
+                                    </div> 
+                                </div>
+
+                                <div class="card text-bg-light mb-3">
+                                    <div class="card-header">
+                                        Question 5
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text"><em>You are not happy with the cleaning arrangements you have with your roommate. She/he just doesn't seem to be pulling her/his weight around the house. What do you do?</p>
+                                        {% render_field form.question5 class="form-control w-50 mx-auto my-2" %}
+                                    </div> 
+                                </div>
+
+                                <div class="card text-bg-light mb-3">
+                                    <div class="card-header">
+                                        Question 6
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text"><em>	Your roommate has given you free reign over his/her laptop for the week while she/he is out of town. Unfortunately, you are enjoying the freedom of mobility a so much that you accidentally spill water all over the keyboard. You check whether there is anything wrong with the computer and to your horror, the keyboard is not responding. You pour all of the water out and put the hair dryer to it but the laptop still does not work. What do you do?</p>
+                                        {% render_field form.question6 class="form-control w-50 mx-auto my-2" %}
+                                    </div> 
+                                </div>
+
+                                <div class="card text-bg-light mb-3">
+                                    <div class="card-header">
+                                        Question 7
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text"><em>You are at a party having a blast with your friends. The party is ending, but you and your friends are still going full throttle. Unfortunately, you need to find another place to continue the fun. It's 1:00am and you are perfectly aware that your roommate is sound asleep (she/he works at 9:00 tomorrow morning). You will?</p>
+                                        {% render_field form.question7 class="form-control w-50 mx-auto my-2" %}
+                                    </div> 
+                                </div>
+
+                                <div class="card text-bg-light mb-3">
+                                    <div class="card-header">
+                                        Question 8
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text"><em>It is time to pay the phone bill. Your roommate took the initiative last month so now it is your turn. What would be the most likely outcome?</p>
+                                        {% render_field form.question8 class="form-control w-50 mx-auto my-2" %}
+                                    </div> 
+                                </div>
+
+                            </div>
+                             
+                            <input type="submit" value="Update" class="btn btn-success">
+                        </form>
+                    </div>
+                </div>
+                
+            </div>
+
+        </div>
+    </body>
+</html>

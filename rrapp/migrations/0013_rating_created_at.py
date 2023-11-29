@@ -6,7 +6,7 @@ import django.utils.timezone
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("rrapp", "0011_user_rating_rating"),
+        ("rrapp", "0012_user_rating_rating"),
     ]
 
     operations = [

@@ -21,8 +21,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from chat.models import DirectMessagePermission, Permission
 
-from .models import Listing, Renter, Rentee, SavedListing, Photo, Rating
-from .forms import MyUserCreationForm, ListingForm, UserForm, LoginForm
+from .models import Listing, Renter, Rentee, SavedListing, Photo, Rating, Quiz
+from .forms import MyUserCreationForm, ListingForm, UserForm, LoginForm, QuizForm
 
 from django.urls import reverse_lazy
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
@@ -35,12 +35,16 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from .tokens import account_activation_token
 
-from chat.views import get_pending_connections_count
+from chat.utils import get_pending_connections_count
 from django.conf import settings
 
 from django.core.exceptions import PermissionDenied
 
 User = get_user_model()
+
+
+def healthcheck(request):
+    return HttpResponse(status=200)
 
 
 class HomeView(generic.View):
@@ -285,6 +289,7 @@ class ListingDetailRenteeView(generic.DetailView):
         context_data["cur_permission"] = self.cur_permission(user_id, self.kwargs["pk"])
         context_data["photos"] = Photo.objects.filter(listing=self.kwargs["pk"])
         context_data["inbox"] = get_inbox_count(User.objects.get(id=user_id).username)
+        context_data["quizState"] = check_quiz_state(user_id)
         return context_data
 
     def check_state(self, user_id, listing_id):
@@ -359,7 +364,6 @@ class ListingDetailRenteeView(generic.DetailView):
                     receiver=listing.user,
                     permission=Permission.REQUESTED,
                 )
-
         return HttpResponseRedirect(request.path_info)  # redirect to the same page
 
 
@@ -390,17 +394,47 @@ class ListingResultsView(generic.ListView):
         # Apply filters
         filters = Q()
 
-        monthly_rent = self.request.GET.get("monthly_rent")
-        if monthly_rent:
-            filters &= Q(monthly_rent__lte=monthly_rent)
+        try:
+            monthly_rent_min = int(self.request.GET.get("monthly_rent_min", "0"))
+            monthly_rent_max = int(self.request.GET.get("monthly_rent_max", "10000"))
+            filters &= Q(
+                monthly_rent__gte=monthly_rent_min, monthly_rent__lte=monthly_rent_max
+            )
+        except ValueError:
+            # Handle error or ignore
+            pass
 
-        number_of_bedrooms = self.request.GET.get("number_of_bedrooms")
-        if number_of_bedrooms:
-            filters &= Q(number_of_bedrooms__lte=number_of_bedrooms)
+        # Convert and apply Number of Bedrooms filter
+        try:
+            number_of_bedrooms_min = int(
+                self.request.GET.get("number_of_bedrooms_min", "0")
+            )
+            number_of_bedrooms_max = int(
+                self.request.GET.get("number_of_bedrooms_max", "10")
+            )
+            filters &= Q(
+                number_of_bedrooms__gte=number_of_bedrooms_min,
+                number_of_bedrooms__lte=number_of_bedrooms_max,
+            )
+        except ValueError:
+            # Handle error or ignore
+            pass
 
-        number_of_bathrooms = self.request.GET.get("number_of_bathrooms")
-        if number_of_bathrooms:
-            filters &= Q(number_of_bathrooms__lte=number_of_bathrooms)
+        # Convert and apply Number of Bathrooms filter
+        try:
+            number_of_bathrooms_min = int(
+                self.request.GET.get("number_of_bathrooms_min", "0")
+            )
+            number_of_bathrooms_max = int(
+                self.request.GET.get("number_of_bathrooms_max", "10")
+            )
+            filters &= Q(
+                number_of_bathrooms__gte=number_of_bathrooms_min,
+                number_of_bathrooms__lte=number_of_bathrooms_max,
+            )
+        except ValueError:
+            # Handle error or ignore
+            pass
 
         washer = self.request.GET.get("washer")
         if washer == "on":
@@ -640,17 +674,16 @@ class PublicProfileView(generic.DetailView):
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        context_data["user_id"] = self.kwargs["pk"]
-        context_data["user"] = User.objects.get(id=self.kwargs["pk"])
+        context_data["user_id"] = self.request.user.id
+        context_data["user"] = self.request.user
+        context_data["tarUser"] = User.objects.get(id=self.kwargs["pk"])
         context_data["path"] = self.request.path_info.__contains__("renter")
-        context_data["inbox"] = get_inbox_count(
-            User.objects.get(id=self.kwargs["pk"]).username
-        )
-        if self.check_rating_exists(self.request.user, context_data["user"]):
+        context_data["inbox"] = get_inbox_count(self.request.user.username)
+        if self.check_rating_exists(self.request.user, context_data["tarUser"]):
             context_data["rated"] = True
             context_data["rating"] = Rating.objects.get(
                 rater=self.request.user,
-                ratee=context_data["user"],
+                ratee=context_data["tarUser"],
             ).rating
         else:
             context_data["rated"] = False
@@ -685,6 +718,7 @@ class RatingView(generic.UpdateView):
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
         context_data["pk"] = self.kwargs["ratee_id"]
+        print(self.kwargs["ratee_id"])
         print('aaaaa')
         return context_data
 
@@ -692,18 +726,14 @@ class RatingView(generic.UpdateView):
         return reverse("rrapp:rate_user", args=(self.kwargs["ratee_id"],))
 
     def post(self, request, *args, **kwargs):
-        if not (
-            DirectMessagePermission.objects.filter(
-                sender=User.objects.get(id=self.kwargs["ratee_id"]),
-                receiver=request.user,
-                permission=Permission.ALLOWED,
-            ).exists()
-            or DirectMessagePermission.objects.filter(
+        if not DirectMessagePermission.objects.filter(
                 sender=request.user,
                 receiver=User.objects.get(id=self.kwargs["ratee_id"]),
                 permission=Permission.ALLOWED,
-            ).exists()
-        ):
+            ).exists():
+            print(User.objects.get(id=self.kwargs["ratee_id"]))
+            print(request.user)
+            print('bbbbbb')
             raise PermissionDenied('You should get permission from the user.')
 
         # if request.method == 'POST':
@@ -744,6 +774,48 @@ class RatingView(generic.UpdateView):
         # return HttpResponseRedirect(
         #     reverse("rrapp:rate_user", args=(self.kwargs["pk"],))
         # )
+
+
+class PersonalQuizView(generic.UpdateView):
+    model = Quiz
+    template_name = "rrapp/quiz.html"
+    form_class = QuizForm
+
+    def get_object(self, queryset=None):
+        quiz, created = Quiz.objects.get_or_create(user=self.request.user)
+        if created:
+            self.request.user.quiz = quiz
+            self.request.user.save()
+        return quiz
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs: Any):
+        context_data = super().get_context_data(**kwargs)
+        context_data["user_id"] = self.request.user.id
+        context_data["user"] = self.request.user
+        context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(self.request.user.username)
+        return context_data
+
+    def get_success_url(self):
+        return reverse("rrapp:rentee_listings")
+
+    # TODO: 怎么处理renter没做过match的情况。先做quiz然后返送请求和match level
+
+    def post(self, request, *args, **kwargs):
+        print("Call Post")
+        self.object = self.get_object()
+        form = self.get_form()
+
+        if form.is_valid():
+            print("Form is valid")
+            return self.form_valid(form)
+        else:
+            print("Form is invalid")
+            return self.form_invalid(form)
 
 
 @login_required
@@ -798,3 +870,15 @@ def get_inbox_count(username):
 
 def rrapp_403(request, exception):
     return render(request, "rrapp/403.html", {}, status=403)
+
+
+def check_quiz_state(user_id):
+    if Quiz.objects.filter(user=user_id).exists():
+        cur_quiz = Quiz.objects.get(user=user_id)
+        for i in range(1, 9):
+            cur_field = "question" + str(i)
+            if getattr(cur_quiz, cur_field, None) is None:
+                return False
+        return True
+    else:
+        return False

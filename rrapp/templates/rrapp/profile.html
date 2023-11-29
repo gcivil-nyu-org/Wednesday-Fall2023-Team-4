@@ -81,11 +81,16 @@
                                         </div>
                                     {% endif %}
                                 {% endfor %}
+
+                                <div class="mx-auto">
+                                    <a href="{% url 'rrapp:personal_quiz' %}" class="btn btn-success m-2" >Take Quiz</a>
+                                </div>
                                
                                 <div class="col align-self-center m-2">
                                     <button type="submit" class="btn btn-primary m-2" >Save</button>
                                 </div>
                             </form>
+
                             {% if not user.is_verified %}
                                 <div class = "p-2">
                                     <a href="{% url 'rrapp:verify_email' %}" class="btn btn-danger">Verify Your Account</a>

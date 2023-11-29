@@ -15,114 +15,135 @@
             
             {% include 'rrapp/left_bar.html' with user=user path=path %}
             
-            <div class = "align-items-center">
-                <section class="section">
-                    <div class="align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
-                        <span class="fs-4 fw-semibold">Inbox</span>
-                    </div>
-                    <div>
-                        {% if pending_connections %}
-                            <div class="align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
-                                <span class="fs-6 fw-semibold">Pending connections</span>
+            <div class="text-center right-page">
+
+                <div class="container p-3">
+                    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+                        <ol class="breadcrumb p-3 bg-body-tertiary board rounded-3">
+                            <li class="breadcrumb-item">
+                                <a class="link-body-emphasis fw-semibold text-decoration-none">
+                                    Home
+                                </a>
+                            </li>
+        
+                            <li class="breadcrumb-item avtive">
+                                Inbox
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <div class = "w-100 align-items-center px-5 mb-3" >
+                    <div class = "d-flex flex-column align-items-center board rounded-3" style="background-color:#F8F8F8">
+                        <h1 class="font-monospace display-5 fw-medium text-body-emphasis my-3">Inbox</h1>
+
+                        <div class="row w-75 text-center">
+                            <div class="col-6">
+                                    {% if pending_connections %}
+                                        <span class="fs-5 fw-semibold">Pending connections</span>
+                                        {%for usr in pending_connections %}
+                                            <div class="card text-bg-light my-3">
+                                                <a href="{% url 'rrapp:public_profile' usr.id %}" class="card-header text-bg-warning btn"><span class="fs-5 fw-semibold">{{usr.username}}</span></a>
+                                                <div class="card-body">
+                                                    {% if usr.matchLevel %}
+                                                        {% if usr.matchLevel >= 0 %}
+                                                            <span class="fs-6 fw-semi">Match Level:</span>
+                                                            <div class="progress  my-2" role="progressbar" aria-label="Example with label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                                                <div class="progress-bar bg-success" style="width: {{usr.matchLevel}}%">{{usr.matchLevel}}%</div>
+                                                            </div>
+                                                        {% else %}
+                                                            <span class="fs-6 fw-semi">Finish the quiz to get match level here!</span>
+                                                            <a href="{% url 'rrapp:personal_quiz' %}" class="btn btn-primary m-2">Quiz</a>
+                                                        {% endif %}
+                                                    {% endif%}
+                                                    <form method="POST" >
+                                                        {% csrf_token %}
+                                                        
+                                                        <button type="submit" value={{usr.username}} class="btn btn-success m-3" name="connection_accept">
+                                                            <p class="m-1">Accept</p>
+                                                        </button>
+                                                        <button type="submit" value={{usr.username}} class="btn btn-secondary m-3" name="connection_reject">
+                                                            <p class="m-1">Reject</p>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="fs-5 fw-semibold">No pending connections</span>
+                                    {% endif %}
                             </div>
-                            <div class="list-group scrollarea">
-                                {%for usr in pending_connections %}
-                                    <a href="{% url 'rrapp:public_profile' usr.id %}" class="btn btn-warning">{{usr.username}}</a> 
-                                    <form method="POST">
-                                        {% csrf_token %}
-                                        <button type="submit" class="list-group-item list-group-item-action" name="connection_accept" value={{usr.username}}>
-                                            <span class="fs-5 fw-semi">
-                                                Accept
-                                            </span>
-                                        </button>
-                                        <button type="submit" class="list-group-item list-group-item-action" name="connection_reject" value={{usr.username}}>
-                                            <span class="fs-5 fw-semi">
-                                                Reject
-                                            </span>
-                                        </button>
-                                    </form>
-                                    {% endfor %}
+
+                            <div class="col-6">
+                                <div class="row">
+                                {% if active_connections %}
+                                    <span class="fs-5 fw-semibold">Active connections</span>
                                     
+                                    <!-- Add badge here to show the unread message-->
+                                    <div class="mx-auto mt-3" style="width:70%;">
+                                        <div class="list-group scrollarea">
+                                            {%for usr in active_connections %}
+                                            <button type="button" class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'chat:conversation' usr.username %}'" style="height:3.5rem;">
+                                                <span class="fs-5 fw-semi">
+                                                    {{usr.username}}
+                                                </span>
+                                            </button>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+
+                                    
+                                {% else %}
+                                    <span class="fs-5 fw-semibold">No active connections</span>
+                                {% endif %}
                                 </div>
-                        {% else %}
-                            <div class="align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
-                                <span class="fs-6 fw-semibold">No pending connections</span>
                             </div>
-                        {% endif %}
-                        <br>
-                    </div>
 
-                    <div>
-                        {% if active_connections %}
-                            <div class="align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
-                                <span class="fs-6 fw-semibold">Active connections</span>
+                            <div class="col-6">
+                                {% if requested_connections %}
+                                    <span class="fs-5 fw-semibold">Requested connections</span>
+                                    {%for usr in requested_connections %}
+                                        <div class="card text-bg-light my-3">
+                                            <a href="{% url 'rrapp:public_profile' usr.id %}" class="card-header text-bg-warning btn"><span class="fs-5 fw-semibold">{{usr.username}}</span></a>
+                                            <div class="card-body">
+                                                <form method="POST" >
+                                                    {% csrf_token %}
+                                                    <button type="submit" value={{usr.username}} class="btn btn-secondary m-3" name="connection_withdraw">
+                                                        <p class="m-1">Withdraw</p>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="fs-5 fw-semibold">No requested connections</span>
+                                {% endif %}
                             </div>
-                            <div class="list-group scrollarea">
-                                {%for usr in active_connections %}
-                                    <!-- TODO link to websocket conversation with usr when daphne server works on aws -->
-                                    <a href="{% url 'chat:conversation' usr.username %}" class="btn btn-warning">{{usr.username}}</a>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
-                                <span class="fs-6 fw-semibold">No active connections</span>
-                            </div>
-                        {% endif %}
-                        <br>
-                    </div>
-                    
-                    <div>
-                        {% if requested_connections %}
-                            <div class="align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
-                                <span class="fs-6 fw-semibold">Requested connections</span>
-                            </div>
-                            <div class="list-group scrollarea">
-                                {%for usr in requested_connections %}
-                                    <a href="{% url 'rrapp:public_profile' usr.id %}" class="btn btn-warning">{{usr.username}}</a>
-                                    <form method="POST">
-                                        {% csrf_token %}
-                                        <button type="submit" class="list-group-item list-group-item-action" name="connection_withdraw" value={{usr.username}}>
-                                            <span class="fs-5 fw-semi">
-                                                Withdraw
-                                            </span>
-                                        </button>
-                                    </form>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
-                                <span class="fs-6 fw-semibold">No requested connections</span>
-                            </div>
-                        {% endif %}
-                        <br>
-                    </div>
 
-                    <div>
-                        {% if blocked_connections %}
-                            <div class="align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
-                                <span class="fs-6 fw-semibold">Blocked connections</span>
+                            <div class="col-6">
+                                {% if blocked_connections %}
+                                    <span class="fs-5 fw-semibold">Blocked connections</span>
+                                    {%for usr in blocked_connections %}
+                                        <div class="card text-bg-light my-3">
+                                            <a href="{% url 'rrapp:public_profile' usr.id %}" class="card-header text-bg-warning btn"><span class="fs-5 fw-semibold">{{usr.username}}</span></a>
+                                            <div class="card-body">
+                                                <form method="POST" >
+                                                    {% csrf_token %}
+                                                    <button type="submit" value={{usr.username}} class="btn btn-secondary m-3" name="connection_unblock">
+                                                        <p class="m-1">Unblock</p>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="fs-5 fw-semibold">No blocked connections</span>
+                                {% endif %}
                             </div>
-                            <div class="list-group scrollarea">
-                                {%for usr in blocked_connections %}
-                                    <a href="{% url 'rrapp:public_profile' usr.id %}" class="btn btn-warning">{{usr.username}}</a> 
-                                    <form method="POST">
-                                        {% csrf_token %}
-                                        <button type="submit" class="list-group-item list-group-item-action" name="connection_unblock" value={{usr.username}}>
-                                            <span class="fs-5 fw-semi">
-                                                Unblock
-                                            </span>
-                                        </button>
-                                    </form>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
-                                <span class="fs-6 fw-semibold">No blocked connections</span>
-                            </div>
-                        {% endif %}
-                        <br>
+                        </div>
                     </div>
-                </section>
+                </div>
+
             </div>
         </div>
     </body>

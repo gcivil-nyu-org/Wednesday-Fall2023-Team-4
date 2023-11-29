@@ -7,7 +7,7 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("rrapp", "0010_alter_user_profile_picture"),
+        ("rrapp", "0011_quiz"),
     ]
 
     operations = [

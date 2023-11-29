@@ -5,6 +5,7 @@ from . import views
 
 app_name = "rrapp"
 urlpatterns = [
+    path("healthcheck", views.healthcheck, name="healthcheck"),
     # ex: /rrapp/
     path("", views.HomeView.as_view(), name="home"),
     path('login/', views.LoginView.as_view(), name="login"),
@@ -113,9 +114,9 @@ urlpatterns = [
         views.RatingView.as_view(),
         name='rate_user',
     ),
-    # path(
-    #     'user/rating/<int:ratee_id>',
-    #     views.rate_user,
-    #     name='rate_user',
-    # ),
+    path(
+        'user/quiz',
+        views.PersonalQuizView.as_view(),
+        name='personal_quiz',
+    ),
 ]
