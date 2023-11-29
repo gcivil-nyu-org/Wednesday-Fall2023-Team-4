@@ -94,7 +94,7 @@ DATABASES = {
         'USER': 'django-images',
         'PASSWORD': 'complexpassword123',
         'HOST': 'localhost',
-        'PORT': '8080',
+        'PORT': '5432',
     }
 }
 

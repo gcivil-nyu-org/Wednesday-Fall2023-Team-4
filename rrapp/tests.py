@@ -466,6 +466,7 @@ class RatingViewTest(ViewsTestCase):
             reverse("rrapp:rate_user", kwargs={"ratee_id": self.user.id})
         )
         self.assertIn(response.status_code, [200, 302])
+        self.assertTemplateUsed(response, "rrapp/rate_user.html")
 
     def test_rating_view_post_unpermitted(self):
         self.client.force_login(self.user)
@@ -484,7 +485,32 @@ class RatingViewTest(ViewsTestCase):
             Rating.objects.filter(rater=self.user, ratee=user2, rating=5.0).exists()
         )
 
-    def test_rating_view_post_permitted(self):
+    def test_rating_view_post_permitted_rating_exists(self):
+        self.client.force_login(self.user)
+        user2 = User.objects.create_user(
+            username="testuser2", password="testpass2", email="testuser2@example.edu"
+        )
+        DirectMessagePermission.objects.create(
+            sender=self.user,
+            receiver=user2,
+            permission=Permission.ALLOWED,
+        )
+        Rating.objects.create(rater=self.user, ratee=user2, rating=4.0)
+        response = self.client.post(
+            reverse("rrapp:rate_user", kwargs={"ratee_id": user2.id}),
+            {
+                "pk": user2.id,
+                "val": 5.0,
+            },
+        )
+        self.assertIn(response.status_code, [200, 302])
+        self.assertTrue(
+            Rating.objects.filter(rater=self.user, ratee=user2, rating=5.0).exists()
+        )
+        user = User.objects.get(id=user2.id)
+        self.assertTrue(user.rating == 5.0)
+
+    def test_rating_view_post_permitted_rating_unexists(self):
         self.client.force_login(self.user)
         user2 = User.objects.create_user(
             username="testuser2", password="testpass2", email="testuser2@example.edu"

@@ -720,9 +720,6 @@ class RatingView(generic.UpdateView):
         context_data["pk"] = self.kwargs["ratee_id"]
         return context_data
 
-    def get_success_url(self):
-        return reverse("rrapp:rate_user", args=(self.kwargs["ratee_id"],))
-
     def post(self, request, *args, **kwargs):
         if not DirectMessagePermission.objects.filter(
             sender=request.user,
