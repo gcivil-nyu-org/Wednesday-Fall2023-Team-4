@@ -27,4 +27,4 @@ def delete_old_file_on_update(sender, instance, **kwargs):
 def delete_file_pre_delete(sender, instance, **kwargs):
     print(instance.image.name)
     if instance.image:
-        default_storage.delete(instance.image.path)
+        default_storage.delete(instance.image.name)
