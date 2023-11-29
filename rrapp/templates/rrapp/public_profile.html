@@ -11,7 +11,7 @@
     <body class = "align-items-stretch">
         <div class="back-contianer">
 
-            {% include 'rrapp/left_bar.html' with user=user path=path %}
+            {% include 'rrapp/left_bar.html' with user=user path=path inbox=inbox %}
 
             <div class="text-center right-page">
                 
@@ -35,16 +35,29 @@
                     <div class = "d-flex flex-column align-items-center board rounded-3" style="background-color:#F8F8F8">
                         <h1 class="font-monospace display-5 fw-medium text-body-emphasis my-3">User Profile</h1>
                         <div>
-                            <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Username :</b> {{ user.username }}</p>
-                            <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Email :</b> {{ user.email }}</p>
-                            <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Name :</b> {{ user.first_name }} {{ user.last_name }} </p>
-                            <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Bio :</b> {{ user.bio }} </p>
-                            <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Smokes :</b> {{ user.smokes }} </p>
-                            <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Pets :</b> {{ user.pets }} </p>
-                            <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Food Group :</b> {{ user.food_group }} </p>
+                            <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Username :</b> {{ tarUser.username }}</p>
+                            <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Email :</b> {{ tarUser.email }}</p>
+                            <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Name :</b> {{ tarUser.first_name }} {{ tarUser.last_name }} </p>
+                            <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Bio :</b> {{ tarUser.bio }} </p>
+                            <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Smokes :</b> {{ tarUser.smokes }} </p>
+                            <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Pets :</b> {{ tarUser.pets }} </p>
+                            <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Food Group :</b> {{ tarUser.food_group }} </p>
+                            <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Rating :</b> {{ tarUser.rating }} </p>
                         </div>
                     </div>
                 </div>
+
+                {% if rated %}
+                    <a href="{% url 'rrapp:rate_user' tarUser.id %}">
+                        <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-left" name='rate'>Update rating</button>
+                    </a>
+                    <p>My current rating: {{ rating }}</p>
+                {% else %}
+                    <a href="{% url 'rrapp:rate_user' tarUser.id %}">
+                        <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-mid" name='rate'>Rate the user</button>
+                    </a>
+                {% endif %}
+
             </div>
         </div>
     </body>

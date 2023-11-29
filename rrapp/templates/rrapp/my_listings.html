@@ -10,7 +10,7 @@
     <body class = "align-items-stretch">
         <div class="back-contianer">
 
-        {% include 'rrapp/left_bar.html' with user=user path=path %}
+        {% include 'rrapp/left_bar.html' with user=user path=path inbox=inbox %}
 
         <div class="text-center right-page">
             {% if messages %}
@@ -44,7 +44,7 @@
                         {% if latest_listings %}
                             <div class="list-group scrollarea">
                                 {% for listing in latest_listings %}
-                                    <button type="button" class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'rrapp:listing_detail' user_id listing.id %}'" style="height:3.5rem;">
+                                    <button type="button" class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'rrapp:listing_detail' listing.id %}'" style="height:3.5rem;">
                                         <span class="fs-5 fw-semi">
                                             {{ listing.title }}
                                         </span>
@@ -75,7 +75,7 @@
                     </div>
 
                     <div class = "p-3">
-                        <a href="{% url 'rrapp:listing_new' user_id %}" class="btn btn-primary">Create new</a>
+                        <a href="{% url 'rrapp:listing_new' %}" class="btn btn-primary">Create new</a>
                     </div>
             </div>
         </div>

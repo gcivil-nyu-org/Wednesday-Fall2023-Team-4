@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
             model_name="listing",
             name="state",
             field=models.CharField(
-                default="New York", max_length=10, verbose_name="State"
+                default="New York", max_length=15, verbose_name="State"
             ),
         ),
         migrations.AlterField(

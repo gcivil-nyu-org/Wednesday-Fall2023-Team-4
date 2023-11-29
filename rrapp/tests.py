@@ -2,7 +2,9 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
-from .models import Listing, Rentee, Renter, SavedListing
+from rrapp.forms import QuizForm
+
+from .models import Listing, Rentee, Renter, SavedListing, Rating
 from chat.models import DirectMessagePermission, Permission
 
 User = get_user_model()
@@ -34,9 +36,7 @@ class HomeViewTest(ViewsTestCase):
         response = self.client.post(
             reverse("rrapp:home"),
         )
-        self.assertRedirects(
-            response, reverse("rrapp:rentee_listings", args=(self.user.id,))
-        )
+        self.assertRedirects(response, reverse("rrapp:rentee_listings"))
 
 
 class LoginViewTest(ViewsTestCase):
@@ -50,9 +50,7 @@ class LoginViewTest(ViewsTestCase):
             reverse("rrapp:login"),
             {"email": "test@example.edu", "password": "testpassword123"},
         )
-        self.assertRedirects(
-            response, reverse("rrapp:rentee_listings", args=(self.user.id,))
-        )
+        self.assertRedirects(response, reverse("rrapp:rentee_listings"))
 
     def test_login_view_post_invalid_credentials(self):
         response = self.client.post(
@@ -67,9 +65,7 @@ class LoginViewTest(ViewsTestCase):
         response = self.client.post(
             reverse("rrapp:login"),
         )
-        self.assertRedirects(
-            response, reverse("rrapp:rentee_listings", args=(self.user.id,))
-        )
+        self.assertRedirects(response, reverse("rrapp:rentee_listings"))
 
 
 class RegisterViewTest(ViewsTestCase):
@@ -156,7 +152,7 @@ class RegisterViewTest(ViewsTestCase):
         )
         self.assertRedirects(
             response,
-            expected_url=reverse("rrapp:rentee_listings", args=(newUser.id,)),
+            expected_url=reverse("rrapp:rentee_listings"),
             status_code=302,
         )
 
@@ -176,9 +172,7 @@ class RegisterViewTest(ViewsTestCase):
         response = self.client.post(
             reverse("rrapp:register"),
         )
-        self.assertRedirects(
-            response, reverse("rrapp:rentee_listings", args=(self.user.id,))
-        )
+        self.assertRedirects(response, reverse("rrapp:rentee_listings"))
 
 
 class ListingDetailViewTest(ViewsTestCase):
@@ -190,10 +184,7 @@ class ListingDetailViewTest(ViewsTestCase):
         response = self.client.get(
             reverse(
                 "rrapp:listing_detail",
-                args=(
-                    self.user.id,
-                    listing.id,
-                ),
+                args=(listing.id,),
             )
         )
         self.assertEqual(response.status_code, 200)
@@ -214,10 +205,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
         response = self.client.get(
             reverse(
                 "rrapp:rentee_listing_detail",
-                args=(
-                    self.user.id,
-                    listing.id,
-                ),
+                args=(listing.id,),
             )
         )
         self.assertEqual(response.status_code, 200)
@@ -237,10 +225,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
         response = self.client.post(
             reverse(
                 "rrapp:rentee_listing_detail",
-                args=(
-                    self.user.id,
-                    listing.id,
-                ),
+                args=(listing.id,),
             ),
             {"shortlist": "true"},
         )
@@ -264,17 +249,14 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
             monthly_rent=1000,
         )
         DirectMessagePermission.objects.create(
-            sender=self.user.username,
-            receiver=user2.username,
+            sender=self.user,
+            receiver=user2,
             permission=Permission.ALLOWED,
         )
         response = self.client.post(
             reverse(
                 "rrapp:rentee_listing_detail",
-                args=(
-                    self.user.id,
-                    listing.id,
-                ),
+                args=(listing.id,),
             ),
             {"connection_request": "true"},
         )
@@ -295,18 +277,15 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
         response = self.client.post(
             reverse(
                 "rrapp:rentee_listing_detail",
-                args=(
-                    self.user.id,
-                    listing.id,
-                ),
+                args=(listing.id,),
             ),
             {"connection_request": "true"},
         )
         self.assertEqual(response.status_code, 302)
         self.assertTrue(
             DirectMessagePermission.objects.filter(
-                sender=self.user.username,
-                receiver=user2.username,
+                sender=self.user,
+                receiver=user2,
                 permission=Permission.REQUESTED,
             ).exists()
         )
@@ -316,7 +295,7 @@ class ListingResultsViewTest(ViewsTestCase):
     def test_listing_results_view_authenticated_user(self):
         self.client.force_login(self.user)
         response = self.client.get(
-            reverse("rrapp:rentee_listings", args=(self.user.id,)),
+            reverse("rrapp:rentee_listings"),
             {
                 "monthly_rent": 1000,
                 "number_of_bedrooms": 2,
@@ -348,28 +327,18 @@ class ConfirmPasswordResetViewTest(ViewsTestCase):
         self.assertTemplateUsed(response, "rrapp/password_reset_confirm.html")
 
 
-class ActivateEmailViewTest(ViewsTestCase):
-    def test_activate_email_view(self):
+class VerifyEmailViewTest(ViewsTestCase):
+    def test_verify_email_view(self):
         self.client.force_login(self.user)
-        response = self.client.get(reverse("rrapp:activate_email"))
+        response = self.client.get(reverse("rrapp:verify_email"))
         self.assertIn(response.status_code, [200, 302])
-        self.assertTemplateUsed(response, "rrapp/template_activate_account.html")
-
-
-# class ActivateViewTest(ViewsTestCase):
-#     def test_activate_view(self):
-#         # self.client.force_login(self.user)
-#         uidb64 = "<valid_uidb64>"
-#         token = "<valid_token>"
-#         response = self.client.get(reverse("rrapp:activate", args=(uidb64, token)))
-#         self.assertEqual(response.status_code, 302)
-#         # self.assertTemplateUsed(response, "rrapp/template_activate_account.html")
+        self.assertTemplateUsed(response, "rrapp/template_verify_account.html")
 
 
 class ListingIndexViewTest(ViewsTestCase):
     def test_listing_index_view_authenticated_user(self):
         self.client.force_login(self.user)
-        response = self.client.get(reverse("rrapp:my_listings", args=(self.user.id,)))
+        response = self.client.get(reverse("rrapp:my_listings"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/my_listings.html")
 
@@ -399,7 +368,7 @@ class ListingNewViewTest(TestCase):
     def test_listing_new_view_post(self):
         client = Client()
         response = client.post(
-            reverse("rrapp:listing_new", kwargs={"user_id": 1}),
+            reverse("rrapp:listing_new"),
             {"title": "Test Listing", "monthly_rent": 1000},
         )
         self.assertEqual(response.status_code, 302)
@@ -408,13 +377,13 @@ class ListingNewViewTest(TestCase):
 class ProfileViewTest(TestCase):
     def test_profile_view_get(self):
         client = Client()
-        response = client.get(reverse("rrapp:profile", kwargs={"pk": 1}))
+        response = client.get(reverse("rrapp:profile"))
         self.assertIn(response.status_code, [200, 302])
 
     def test_profile_view_post(self):
         client = Client()
         response = client.post(
-            reverse("rrapp:profile", kwargs={"pk": 1}),
+            reverse("rrapp:profile"),
             {"first_name": "Test", "last_name": "User"},
         )
         self.assertEqual(response.status_code, 302)
@@ -430,22 +399,137 @@ class PublicProfileViewTest(TestCase):
 class ShortListViewTest(TestCase):
     def test_shortlist_view(self):
         client = Client()
-        response = client.get(reverse("rrapp:shortlist", kwargs={"user_id": 1}))
+        response = client.get(reverse("rrapp:shortlist"))
         self.assertIn(response.status_code, [200, 302])
 
 
 class ListingUpdateViewTest(TestCase):
     def test_listing_update_view_get(self):
         client = Client()
-        response = client.get(
-            reverse("rrapp:listing_detail_modify", kwargs={"user_id": 1, "pk": 1})
-        )
+        response = client.get(reverse("rrapp:listing_detail_modify", kwargs={"pk": 1}))
         self.assertIn(response.status_code, [200, 302])
 
     def test_listing_update_view_post(self):
         client = Client()
         response = client.post(
-            reverse("rrapp:listing_detail_modify", kwargs={"user_id": 1, "pk": 1}),
+            reverse("rrapp:listing_detail_modify", kwargs={"pk": 1}),
             {"title": "Updated Listing"},
         )
         self.assertIn(response.status_code, [200, 302])
+
+
+class PersonalQuizViewTest(TestCase):
+    def test_personal_quiz_view_get(self):
+        client = Client()
+        response = client.get(reverse("rrapp:personal_quiz"))
+        self.assertIn(response.status_code, [200, 302])
+
+    def test_personal_quiz_view_post(self):
+        client = Client()
+        data = {
+            "question1": 1,
+            "question2": 1,
+            "question3": 1,
+            "question4": 1,
+            "question5": 1,
+            "question6": 1,
+            "question7": 1,
+            "question8": 1,
+        }
+        form = QuizForm(data)
+        response = client.post(reverse("rrapp:personal_quiz"), data)
+        self.assertTrue(form.is_valid())
+        self.assertIn(response.status_code, [200, 302])
+
+    def test_personal_quiz_view_post_invalid(self):
+        client = Client()
+        data = {
+            "question1": "In your roommate's bed",
+            "question2": 1,
+            "question3": 1,
+            "question4": 1,
+            "question5": 1,
+            "question6": 1,
+            "question7": 1,
+            "question8": 1,
+        }
+        form = QuizForm(data)
+        response = client.post(reverse("rrapp:personal_quiz"), data)
+        self.assertFalse(form.is_valid())
+        self.assertIn(response.status_code, [200, 302])
+
+
+class RatingViewTest(ViewsTestCase):
+    def test_rating_view_get(self):
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("rrapp:rate_user", kwargs={"ratee_id": self.user.id})
+        )
+        self.assertIn(response.status_code, [200, 302])
+        self.assertTemplateUsed(response, "rrapp/rate_user.html")
+
+    def test_rating_view_post_unpermitted(self):
+        self.client.force_login(self.user)
+        user2 = User.objects.create_user(
+            username="testuser2", password="testpass2", email="testuser2@example.edu"
+        )
+        response = self.client.post(
+            reverse("rrapp:rate_user", kwargs={"ratee_id": user2.id}),
+            {
+                "pk": user2.id,
+                "val": 5.0,
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(
+            Rating.objects.filter(rater=self.user, ratee=user2, rating=5.0).exists()
+        )
+
+    def test_rating_view_post_permitted_rating_exists(self):
+        self.client.force_login(self.user)
+        user2 = User.objects.create_user(
+            username="testuser2", password="testpass2", email="testuser2@example.edu"
+        )
+        DirectMessagePermission.objects.create(
+            sender=self.user,
+            receiver=user2,
+            permission=Permission.ALLOWED,
+        )
+        Rating.objects.create(rater=self.user, ratee=user2, rating=4.0)
+        response = self.client.post(
+            reverse("rrapp:rate_user", kwargs={"ratee_id": user2.id}),
+            {
+                "pk": user2.id,
+                "val": 5.0,
+            },
+        )
+        self.assertIn(response.status_code, [200, 302])
+        self.assertTrue(
+            Rating.objects.filter(rater=self.user, ratee=user2, rating=5.0).exists()
+        )
+        user = User.objects.get(id=user2.id)
+        self.assertTrue(user.rating == 5.0)
+
+    def test_rating_view_post_permitted_rating_unexists(self):
+        self.client.force_login(self.user)
+        user2 = User.objects.create_user(
+            username="testuser2", password="testpass2", email="testuser2@example.edu"
+        )
+        DirectMessagePermission.objects.create(
+            sender=self.user,
+            receiver=user2,
+            permission=Permission.ALLOWED,
+        )
+        response = self.client.post(
+            reverse("rrapp:rate_user", kwargs={"ratee_id": user2.id}),
+            {
+                "pk": user2.id,
+                "val": 5.0,
+            },
+        )
+        self.assertIn(response.status_code, [200, 302])
+        self.assertTrue(
+            Rating.objects.filter(rater=self.user, ratee=user2, rating=5.0).exists()
+        )
+        user = User.objects.get(id=user2.id)
+        self.assertTrue(user.rating == 5.0)

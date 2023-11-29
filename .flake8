@@ -8,3 +8,4 @@ exclude =
     migrations,
     settings*,
     __pycache__,
+    *asgi.py

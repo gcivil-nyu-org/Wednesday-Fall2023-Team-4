@@ -18,7 +18,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 'data' is my media folder
 MEDIA_URL = '/media/'
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -30,9 +29,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
-    "roomierendezvous-dev.us-east-1.elasticbeanstalk.com",
+    "roomierendezvous-app-dev-ws.us-east-1.elasticbeanstalk.com",
     "roomierendezvous-app-dev.us-east-1.elasticbeanstalk.com",
-    "production-team4-2-dev3.us-west-2.elasticbeanstalk.com",
+    "production-team4-2-dev3.us-west-2.elasticbeanstalk.com"
 ]
 
 
@@ -153,10 +152,13 @@ if "AWS_STORAGE_BUCKET_NAME" in os.environ:
 
     AWS_LOCATION = 'static'
     STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
+
+    AWS_MEDIA_LOCATION = 'media'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_MEDIA_LOCATION}/'
 else:
     STATIC_URL = "/static/"
     STATIC_ROOT = os.path.join(BASE_DIR, "static")
-    
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -194,8 +196,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'rrapp', 'static', 'rrapp'),)
-STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -216,6 +216,14 @@ if 'EMAIL_HOST_PASSWORD' in os.environ:
 
 EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
 
+
+GOOGLE_API_KEY = ""
+if 'GOOGLE_API_KEY' in os.environ:
+    GOOGLE_API_KEY = os.environ['GOOGLE_API_KEY']
+
+
+BASE_COUNTRY = "US"
+
 # chat config
 
 CHANNEL_LAYERS = {
@@ -226,3 +234,14 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+if "AWS_STORAGE_BUCKET_NAME" in os.environ:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                "hosts": [(os.environ['AWS_REDIS_HOST'], os.environ['AWS_REDIS_PORT'])],
+            },
+        },
+    }
+LOGIN_URL = 'rrapp:login'
