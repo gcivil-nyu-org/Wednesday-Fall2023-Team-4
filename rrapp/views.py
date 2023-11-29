@@ -202,7 +202,6 @@ def verifyEmail(request):
             please check if you typed it correctly.',
             extra_tags='alert alert-danger',
         )
-        # return render(request, 'rrapp/home.html')
         # return redirect('rrapp:home')
         return HttpResponseRedirect(reverse("rrapp:profile"))
 
