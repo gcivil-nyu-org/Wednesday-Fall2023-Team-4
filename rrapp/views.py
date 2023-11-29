@@ -21,7 +21,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from chat.models import DirectMessagePermission, Permission
 
-from .models import Listing, Renter, Rentee, SavedListing, Photo, Quiz
+from .models import Listing, Renter, Rentee, SavedListing, Photo, Rating, Quiz
 from .forms import MyUserCreationForm, ListingForm, UserForm, LoginForm, QuizForm
 
 from django.urls import reverse_lazy
@@ -37,6 +37,8 @@ from .tokens import account_activation_token
 
 from chat.utils import get_pending_connections_count
 from django.conf import settings
+
+from django.core.exceptions import PermissionDenied
 
 User = get_user_model()
 
@@ -667,6 +669,7 @@ class PublicProfileView(generic.DetailView):
         'smokes',
         'pets',
         'food_group',
+        'rating',
     ]
 
     def get_context_data(self, **kwargs: Any):
@@ -676,10 +679,86 @@ class PublicProfileView(generic.DetailView):
         context_data["tarUser"] = User.objects.get(id=self.kwargs["pk"])
         context_data["path"] = self.request.path_info.__contains__("renter")
         context_data["inbox"] = get_inbox_count(self.request.user.username)
+        if self.check_rating_exists(self.request.user, context_data["tarUser"]):
+            context_data["rated"] = True
+            context_data["rating"] = Rating.objects.get(
+                rater=self.request.user,
+                ratee=context_data["tarUser"],
+            ).rating
+        else:
+            context_data["rated"] = False
         return context_data
+
+    def check_rating_exists(self, rater, ratee):
+        if Rating.objects.filter(
+            rater=rater,
+            ratee=ratee,
+        ).exists():
+            return True
+        else:
+            return False
 
     def get_success_url(self):
         return reverse('rrapp:rentee_listings')
+
+
+@method_decorator(login_required, name='dispatch')
+class RatingView(generic.UpdateView):
+    model = Rating
+    template_name = "rrapp/rate_user.html"
+    fields = []
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().get(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_context_data(self, **kwargs: Any):
+        context_data = super().get_context_data(**kwargs)
+        context_data["pk"] = self.kwargs["ratee_id"]
+        return context_data
+
+    def post(self, request, *args, **kwargs):
+        if not DirectMessagePermission.objects.filter(
+            sender=request.user,
+            receiver=User.objects.get(id=self.kwargs["ratee_id"]),
+            permission=Permission.ALLOWED,
+        ).exists():
+            raise PermissionDenied('You should get permission from the user.')
+        else:
+            val = request.POST.get('val')
+            ratee = User.objects.get(id=self.kwargs["ratee_id"])
+            if Rating.objects.filter(
+                rater=request.user,
+                ratee=ratee,
+            ).exists():
+                rating = Rating.objects.get(
+                    rater=request.user,
+                    ratee=ratee,
+                )
+                rating.rating = val
+                rating.save()
+            else:
+                Rating.objects.create(
+                    rater=request.user,
+                    ratee=ratee,
+                    rating=val,
+                )
+            rating_list = Rating.objects.filter(
+                ratee=ratee,
+            )
+            mean_rating = 0.0
+            for item in rating_list:
+                mean_rating += item.rating
+            mean_rating /= len(rating_list)
+            ratee.rating = mean_rating
+            ratee.save()
+            return JsonResponse({'success': 'true', 'score': val}, safe=False)
+        return HttpResponseRedirect(
+            reverse("rrapp:rate_user", args=(self.kwargs["ratee_id"],))
+        )
 
 
 @method_decorator(login_required, name='dispatch')
