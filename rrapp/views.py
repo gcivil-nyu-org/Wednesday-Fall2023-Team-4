@@ -21,8 +21,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from chat.models import DirectMessagePermission, Permission
 
-from .models import Listing, Renter, Rentee, SavedListing, Photo
-from .forms import MyUserCreationForm, ListingForm, UserForm, LoginForm
+from .models import Listing, Renter, Rentee, SavedListing, Photo, Rating, Quiz
+from .forms import MyUserCreationForm, ListingForm, UserForm, LoginForm, QuizForm
 
 from django.urls import reverse_lazy
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
@@ -35,7 +35,16 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from .tokens import account_activation_token
 
+from chat.utils import get_pending_connections_count
+from django.conf import settings
+
+from django.core.exceptions import PermissionDenied
+
 User = get_user_model()
+
+
+def healthcheck(request):
+    return HttpResponse(status=200)
 
 
 class HomeView(generic.View):
@@ -43,9 +52,7 @@ class HomeView(generic.View):
         # will redirect to the home page if a user tries to
         # access the register page while logged in
         if request.user.is_authenticated:
-            return HttpResponseRedirect(
-                reverse("rrapp:rentee_listings", args=(request.user.id,))
-            )
+            return HttpResponseRedirect(reverse("rrapp:rentee_listings"))
         # else process dispatch as it otherwise normally would
         return super(HomeView, self).dispatch(request, *args, **kwargs)
 
@@ -60,9 +67,7 @@ class LoginView(generic.View):
         # will redirect to the home page if a user tries to
         # access the register page while logged in
         if request.user.is_authenticated:
-            return HttpResponseRedirect(
-                reverse("rrapp:rentee_listings", args=(request.user.id,))
-            )
+            return HttpResponseRedirect(reverse("rrapp:rentee_listings"))
         # else process dispatch as it otherwise normally would
         return super(LoginView, self).dispatch(request, *args, **kwargs)
 
@@ -79,9 +84,7 @@ class LoginView(generic.View):
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect(
-                    reverse("rrapp:rentee_listings", args=(request.user.id,))
-                )
+                return HttpResponseRedirect(reverse("rrapp:rentee_listings"))
             else:
                 messages.error(request, "Username OR password does not exist")
         else:
@@ -113,9 +116,7 @@ class RegisterView(generic.View):
         # will redirect to the home page if a user tries to
         # access the register page while logged in
         if request.user.is_authenticated:
-            return HttpResponseRedirect(
-                reverse("rrapp:rentee_listings", args=(request.user.id,))
-            )
+            return HttpResponseRedirect(reverse("rrapp:rentee_listings"))
         # else process dispatch as it otherwise normally would
         return super(RegisterView, self).dispatch(request, *args, **kwargs)
 
@@ -128,21 +129,18 @@ class RegisterView(generic.View):
         if form.is_valid():
             user = form.save(commit=False)
             user.save()
-            user_id = user.id
 
             type_renter = Renter.objects.create(user=user)
             type_rentee = Rentee.objects.create(user=user)
             type_renter.save()
             type_rentee.save()
             login(request, user)
-            return HttpResponseRedirect(
-                reverse("rrapp:rentee_listings", args=(user_id,))
-            )
+            return HttpResponseRedirect(reverse("rrapp:rentee_listings"))
 
         return render(request, "rrapp/login_register.html", {"form": form})
 
 
-def activate(request, uidb64, token):
+def verificationCheck(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
@@ -155,23 +153,23 @@ def activate(request, uidb64, token):
         # return redirect('home')
         messages.success(
             request,
-            "Thank you for your email confirmation. Your email is now activated!",
+            "Thank you for confirming. Your email is now verified!",
             extra_tags='alert alert-success',
         )
     else:
         messages.error(
-            request, "Activation link is invalid!", extra_tags='alert alert-danger'
+            request, "Verification link is invalid!", extra_tags='alert alert-danger'
         )
 
     # return redirect('rrapp:home')
-    return HttpResponseRedirect(reverse("rrapp:profile", args=(uid,)))
+    return HttpResponseRedirect(reverse("rrapp:profile"))
 
 
-@login_required(login_url='login')
-def activateEmail(request):
+@login_required
+def verifyEmail(request):
     mail_subject = "Activate your user account."
     message = render_to_string(
-        "rrapp/template_activate_account.html",
+        "rrapp/template_verify_account.html",
         {
             'user': request.user.username,
             'domain': get_current_site(request).domain,
@@ -188,24 +186,24 @@ def activateEmail(request):
         #         complete the registration. Note: Check your spam folder.')
         messages.success(
             request,
-            f'Dear {request.user}, please go to your email \
-            {request.user.email} inbox and click on \
+            f'Hi {request.user}, please check your email \
+            {request.user.email}\'s inbox and click on \
                 received activation link to confirm and \
-                complete the registration. Note: Check your spam folder.',
+                complete the verification. Don\'t forget to check your spam folder.',
             extra_tags='alert alert-primary',
         )
         # return render(request, 'rrapp/home.html')
         # return redirect('rrapp:home')
-        return HttpResponseRedirect(reverse("rrapp:profile", args=(request.user.id,)))
+        return HttpResponseRedirect(reverse("rrapp:profile"))
     else:
         messages.error(
             request,
             f'Problem sending email to {request.user.email}, \
-            check if you typed it correctly.',
+            please check if you typed it correctly.',
             extra_tags='alert alert-danger',
         )
         # return redirect('rrapp:home')
-        return HttpResponseRedirect(reverse("rrapp:profile", args=(request.user.id,)))
+        return HttpResponseRedirect(reverse("rrapp:profile"))
 
 
 @method_decorator(login_required, name="dispatch")
@@ -215,7 +213,7 @@ class ListingIndexView(generic.ListView):
 
     def get_queryset(self):
         """Return the last five published questions."""
-        user_id = self.kwargs["user_id"]
+        user_id = self.request.user.id
         all_listings = Listing.objects.filter(user=user_id).order_by("-created_at")
         paginator = Paginator(all_listings, 10)
         page_number = self.request.GET.get("page")
@@ -224,10 +222,11 @@ class ListingIndexView(generic.ListView):
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        user_id = self.kwargs["user_id"]
+        user_id = self.request.user.id
         context_data["user_id"] = user_id
-        context_data["user"] = User.objects.get(id=user_id)
+        context_data["user"] = self.request.user
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(User.objects.get(id=user_id).username)
         return context_data
 
 
@@ -238,7 +237,7 @@ class ShortListView(generic.ListView):
 
     def get_queryset(self):
         """Return the last five published questions."""
-        user_id = self.kwargs["user_id"]
+        user_id = self.request.user.id
         # shortlistings = Listing.objects.filter(user=user_id).order_by("-created_at")
         shortlistings = SavedListing.objects.filter(rentee_id__user=user_id).order_by(
             "-saved_listings__created_at"
@@ -250,10 +249,11 @@ class ShortListView(generic.ListView):
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        user_id = self.kwargs["user_id"]
+        user_id = self.request.user.id
         context_data["user_id"] = user_id
-        context_data["user"] = User.objects.get(id=user_id)
+        context_data["user"] = self.request.user
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(User.objects.get(id=user_id).username)
         return context_data
 
 
@@ -264,11 +264,12 @@ class ListingDetailView(generic.DetailView):
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        user_id = self.kwargs["user_id"]
+        user_id = self.request.user.id
         context_data["user_id"] = user_id
-        context_data["user"] = User.objects.get(id=user_id)
+        context_data["user"] = self.request.user
         context_data["path"] = self.request.path_info.__contains__("renter")
         context_data["photos"] = Photo.objects.filter(listing=self.kwargs["pk"])
+        context_data["inbox"] = get_inbox_count(User.objects.get(id=user_id).username)
         return context_data
 
 
@@ -279,18 +280,15 @@ class ListingDetailRenteeView(generic.DetailView):
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        user_id = self.kwargs["user_id"]
+        user_id = self.request.user.id
         context_data["user_id"] = user_id
         context_data["user"] = User.objects.get(id=user_id)
         context_data["path"] = self.request.path_info.__contains__("renter")
-        context_data["saved"] = self.check_state(
-            self.kwargs["user_id"], self.kwargs["pk"]
-        )
-        context_data["cur_permission"] = self.cur_permission(
-            self.kwargs["user_id"], self.kwargs["pk"]
-        )
+        context_data["saved"] = self.check_state(user_id, self.kwargs["pk"])
+        context_data["cur_permission"] = self.cur_permission(user_id, self.kwargs["pk"])
         context_data["photos"] = Photo.objects.filter(listing=self.kwargs["pk"])
-
+        context_data["inbox"] = get_inbox_count(User.objects.get(id=user_id).username)
+        context_data["quizState"] = check_quiz_state(user_id)
         return context_data
 
     def check_state(self, user_id, listing_id):
@@ -309,13 +307,13 @@ class ListingDetailRenteeView(generic.DetailView):
         try:
             p = list(
                 DirectMessagePermission.objects.filter(
-                    sender=cur_user.username, receiver=listing.user.username
+                    sender=cur_user, receiver=listing.user
                 )
             )
 
             p_equivalent = list(
                 DirectMessagePermission.objects.filter(
-                    receiver=cur_user.username, sender=listing.user.username
+                    receiver=cur_user, sender=listing.user
                 )
             )
         except DirectMessagePermission.DoesNotExist:
@@ -330,9 +328,8 @@ class ListingDetailRenteeView(generic.DetailView):
             return None
 
     def post(self, request, *args, **kwargs):
-        print('RRAPP :', request.POST, args, kwargs)
         listing_id = self.kwargs["pk"]
-        user_id = self.kwargs["user_id"]
+        user_id = request.user.id
         save_state = self.check_state(user_id, listing_id)
         if "shortlist" in request.POST:
             if save_state:
@@ -350,7 +347,7 @@ class ListingDetailRenteeView(generic.DetailView):
             try:
                 p = list(
                     DirectMessagePermission.objects.filter(
-                        sender=cur_user.username, receiver=listing.user.username
+                        sender=cur_user, receiver=listing.user
                     )
                 )
             except DirectMessagePermission.DoesNotExist:
@@ -362,11 +359,10 @@ class ListingDetailRenteeView(generic.DetailView):
                 # create DirectMessagePermission object in db
                 print("creating permission")
                 DirectMessagePermission.objects.create(
-                    sender=cur_user.username,
-                    receiver=listing.user.username,
+                    sender=cur_user,
+                    receiver=listing.user,
                     permission=Permission.REQUESTED,
                 )
-
         return HttpResponseRedirect(request.path_info)  # redirect to the same page
 
 
@@ -397,17 +393,47 @@ class ListingResultsView(generic.ListView):
         # Apply filters
         filters = Q()
 
-        monthly_rent = self.request.GET.get("monthly_rent")
-        if monthly_rent:
-            filters &= Q(monthly_rent__lte=monthly_rent)
+        try:
+            monthly_rent_min = int(self.request.GET.get("monthly_rent_min", "0"))
+            monthly_rent_max = int(self.request.GET.get("monthly_rent_max", "10000"))
+            filters &= Q(
+                monthly_rent__gte=monthly_rent_min, monthly_rent__lte=monthly_rent_max
+            )
+        except ValueError:
+            # Handle error or ignore
+            pass
 
-        number_of_bedrooms = self.request.GET.get("number_of_bedrooms")
-        if number_of_bedrooms:
-            filters &= Q(number_of_bedrooms__lte=number_of_bedrooms)
+        # Convert and apply Number of Bedrooms filter
+        try:
+            number_of_bedrooms_min = int(
+                self.request.GET.get("number_of_bedrooms_min", "0")
+            )
+            number_of_bedrooms_max = int(
+                self.request.GET.get("number_of_bedrooms_max", "10")
+            )
+            filters &= Q(
+                number_of_bedrooms__gte=number_of_bedrooms_min,
+                number_of_bedrooms__lte=number_of_bedrooms_max,
+            )
+        except ValueError:
+            # Handle error or ignore
+            pass
 
-        number_of_bathrooms = self.request.GET.get("number_of_bathrooms")
-        if number_of_bathrooms:
-            filters &= Q(number_of_bathrooms__lte=number_of_bathrooms)
+        # Convert and apply Number of Bathrooms filter
+        try:
+            number_of_bathrooms_min = int(
+                self.request.GET.get("number_of_bathrooms_min", "0")
+            )
+            number_of_bathrooms_max = int(
+                self.request.GET.get("number_of_bathrooms_max", "10")
+            )
+            filters &= Q(
+                number_of_bathrooms__gte=number_of_bathrooms_min,
+                number_of_bathrooms__lte=number_of_bathrooms_max,
+            )
+        except ValueError:
+            # Handle error or ignore
+            pass
 
         washer = self.request.GET.get("washer")
         if washer == "on":
@@ -457,10 +483,11 @@ class ListingResultsView(generic.ListView):
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        user_id = self.kwargs["user_id"]
+        user_id = self.request.user.id
         context_data["user_id"] = user_id
-        context_data["user"] = User.objects.get(id=user_id)
+        context_data["user"] = self.request.user
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(self.request.user.username)
         return context_data
 
 
@@ -472,9 +499,8 @@ class ListingUpdateView(generic.UpdateView):
     success_url = "rrapp:listing_detail"
 
     def get_success_url(self):
-        user_id = self.kwargs["user_id"]
         listing_id = self.kwargs["pk"]
-        return reverse("rrapp:listing_detail", args=(user_id, listing_id))
+        return reverse("rrapp:listing_detail", args=(listing_id,))
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -485,11 +511,14 @@ class ListingUpdateView(generic.UpdateView):
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        context_data["user_id"] = self.kwargs["user_id"]
+        context_data["user_id"] = self.request.user.id
         context_data["listing_id"] = self.kwargs["pk"]
         context_data["list_title"] = Listing.objects.get(id=self.kwargs["pk"]).title
-        context_data["user"] = User.objects.get(id=self.kwargs["user_id"])
+        context_data["user"] = self.request.user
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(self.request.user.username)
+        context_data['google_api_key'] = settings.GOOGLE_API_KEY
+        context_data['base_country'] = settings.BASE_COUNTRY
         return context_data
 
     def post(self, request, *args, **kwargs):
@@ -524,14 +553,16 @@ class ListingNewView(generic.CreateView):
         return self.request.user
 
     def get_success_url(self):
-        user_id = self.kwargs["user_id"]
-        return reverse("rrapp:listing_new", args=(user_id,))
+        return reverse("rrapp:listing_new")
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        context_data["user_id"] = self.kwargs["user_id"]
-        context_data["user"] = User.objects.get(id=self.kwargs["user_id"])
+        context_data["user_id"] = self.request.user.id
+        context_data["user"] = self.request.user
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(self.request.user.username)
+        context_data['google_api_key'] = settings.GOOGLE_API_KEY
+        context_data['base_country'] = settings.BASE_COUNTRY
 
         return context_data
 
@@ -546,12 +577,12 @@ class ListingNewView(generic.CreateView):
         """
         self.object = self.get_object()
         form = self.get_form()
-        u = User.objects.get(pk=self.kwargs["user_id"])
+
         if form.is_valid():
             form_data = form.cleaned_data
 
             listing = Listing.objects.create(
-                user=u,
+                user=request.user,
                 status=form_data.get("status"),
                 title=form_data.get("title"),
                 description=form_data.get("description"),
@@ -586,9 +617,7 @@ class ListingNewView(generic.CreateView):
             listing.save()
             for file in request.FILES.getlist('add_photos'):
                 Photo.objects.create(image=file, listing=listing)
-            return HttpResponseRedirect(
-                reverse("rrapp:my_listings", args=(kwargs["user_id"],))
-            )
+            return HttpResponseRedirect(reverse("rrapp:my_listings"))
         else:
             return self.form_invalid(form)
 
@@ -598,26 +627,25 @@ class ProfileView(generic.UpdateView):
     model = User
     template_name = "rrapp/profile.html"
     form_class = UserForm
-    success_url = 'rrapp:rentee_listings'
+    success_url = 'rrapp:profile'
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         return super().get(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
-        # return self.request.user
-        return User.objects.get(id=self.kwargs["pk"])
+        return self.request.user
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        context_data["user_id"] = self.kwargs["pk"]
-        context_data["user"] = User.objects.get(id=self.kwargs["pk"])
+        context_data["user_id"] = self.request.user.id
+        context_data["user"] = self.request.user
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(self.request.user.username)
         return context_data
 
     def get_success_url(self):
-        user_id = self.kwargs['pk']
-        return reverse('rrapp:rentee_listings', args=(user_id,))
+        return reverse('rrapp:profile')
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -640,43 +668,168 @@ class PublicProfileView(generic.DetailView):
         'smokes',
         'pets',
         'food_group',
+        'rating',
     ]
-    # success_url = 'rrapp:rentee_listings'
 
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
-        context_data["user_id"] = self.kwargs["pk"]
-        context_data["user"] = User.objects.get(id=self.kwargs["pk"])
+        context_data["user_id"] = self.request.user.id
+        context_data["user"] = self.request.user
+        context_data["tarUser"] = User.objects.get(id=self.kwargs["pk"])
         context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(self.request.user.username)
+        if self.check_rating_exists(self.request.user, context_data["tarUser"]):
+            context_data["rated"] = True
+            context_data["rating"] = Rating.objects.get(
+                rater=self.request.user,
+                ratee=context_data["tarUser"],
+            ).rating
+        else:
+            context_data["rated"] = False
+        return context_data
+
+    def check_rating_exists(self, rater, ratee):
+        if Rating.objects.filter(
+            rater=rater,
+            ratee=ratee,
+        ).exists():
+            return True
+        else:
+            return False
+
+    def get_success_url(self):
+        return reverse('rrapp:rentee_listings')
+
+
+@method_decorator(login_required, name='dispatch')
+class RatingView(generic.UpdateView):
+    model = Rating
+    template_name = "rrapp/rate_user.html"
+    fields = []
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().get(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_context_data(self, **kwargs: Any):
+        context_data = super().get_context_data(**kwargs)
+        context_data["pk"] = self.kwargs["ratee_id"]
+        return context_data
+
+    def post(self, request, *args, **kwargs):
+        if not DirectMessagePermission.objects.filter(
+            sender=request.user,
+            receiver=User.objects.get(id=self.kwargs["ratee_id"]),
+            permission=Permission.ALLOWED,
+        ).exists():
+            raise PermissionDenied('You should get permission from the user.')
+        else:
+            val = request.POST.get('val')
+            ratee = User.objects.get(id=self.kwargs["ratee_id"])
+            if Rating.objects.filter(
+                rater=request.user,
+                ratee=ratee,
+            ).exists():
+                rating = Rating.objects.get(
+                    rater=request.user,
+                    ratee=ratee,
+                )
+                rating.rating = val
+                rating.save()
+            else:
+                Rating.objects.create(
+                    rater=request.user,
+                    ratee=ratee,
+                    rating=val,
+                )
+            rating_list = Rating.objects.filter(
+                ratee=ratee,
+            )
+            mean_rating = 0.0
+            for item in rating_list:
+                mean_rating += item.rating
+            mean_rating /= len(rating_list)
+            ratee.rating = mean_rating
+            ratee.save()
+            return JsonResponse({'success': 'true', 'score': val}, safe=False)
+        return HttpResponseRedirect(
+            reverse("rrapp:rate_user", args=(self.kwargs["ratee_id"],))
+        )
+
+
+@method_decorator(login_required, name='dispatch')
+class PersonalQuizView(generic.UpdateView):
+    model = Quiz
+    template_name = "rrapp/quiz.html"
+    form_class = QuizForm
+
+    def get_object(self, queryset=None):
+        quiz, created = Quiz.objects.get_or_create(user=self.request.user)
+        if created:
+            self.request.user.quiz = quiz
+            self.request.user.save()
+        return quiz
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs: Any):
+        context_data = super().get_context_data(**kwargs)
+        context_data["user_id"] = self.request.user.id
+        context_data["user"] = self.request.user
+        context_data["path"] = self.request.path_info.__contains__("renter")
+        context_data["inbox"] = get_inbox_count(self.request.user.username)
         return context_data
 
     def get_success_url(self):
-        user_id = self.kwargs['pk']
-        return reverse('rrapp:rentee_listings', args=(user_id,))
+        return reverse("rrapp:rentee_listings")
+
+    # TODO: 怎么处理renter没做过match的情况。先做quiz然后返送请求和match level
+
+    def post(self, request, *args, **kwargs):
+        print("Call Post")
+        self.object = self.get_object()
+        form = self.get_form()
+
+        if form.is_valid():
+            print("Form is valid")
+            return self.form_valid(form)
+        else:
+            print("Form is invalid")
+            return self.form_invalid(form)
 
 
-@login_required(login_url='login')
-def listing_delete(request, user_id, pk):
-    # TODO:add the check  if request.user.is_authenticated():
-    listing = get_object_or_404(Listing, pk=pk, user_id=user_id)
+@login_required
+def listing_delete(request, pk):
+    listing = get_object_or_404(Listing, pk=pk, user_id=request.user.id)
 
     if request.method == 'POST':
         listing.delete()
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
-        return HttpResponseRedirect(reverse('rrapp:my_listings', args=(user_id,)))
-    return render(request, 'rrapp/confirm_delete.html', {"user_id": user_id, "pk": pk})
+        return HttpResponseRedirect(reverse('rrapp:my_listings'))
+    return render(
+        request,
+        'rrapp/confirm_delete_listing.html',
+        {"user_id": request.user.id, "pk": pk},
+    )
 
 
-@login_required(login_url='login')
-def deleteAccount(request, user_id):
-    user = get_object_or_404(User, pk=user_id)
+@login_required
+def deleteAccount(request):
+    user = get_object_or_404(User, pk=request.user.id)
     if request.method == 'POST':
         user.delete()
         logout(request)
         return HttpResponseRedirect(reverse('rrapp:home'))
-    return render(request, 'rrapp/confirm_delete_user.html', {"user_id": user_id})
+    return render(
+        request, 'rrapp/confirm_delete_user.html', {"user_id": request.user.id}
+    )
 
 
 class UsersListView(LoginRequiredMixin, generic.ListView):
@@ -692,3 +845,25 @@ class UsersListView(LoginRequiredMixin, generic.ListView):
 
         data = [{"username": usr.get_username(), "pk": str(usr.pk)} for usr in users]
         return JsonResponse(data, safe=False, **response_kwargs)
+
+
+def get_inbox_count(username):
+    i = 0
+    i += get_pending_connections_count(username)
+    return i
+
+
+def rrapp_403(request, exception):
+    return render(request, "rrapp/403.html", {}, status=403)
+
+
+def check_quiz_state(user_id):
+    if Quiz.objects.filter(user=user_id).exists():
+        cur_quiz = Quiz.objects.get(user=user_id)
+        for i in range(1, 9):
+            cur_field = "question" + str(i)
+            if getattr(cur_quiz, cur_field, None) is None:
+                return False
+        return True
+    else:
+        return False

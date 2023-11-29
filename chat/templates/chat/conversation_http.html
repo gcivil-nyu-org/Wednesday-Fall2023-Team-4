@@ -32,7 +32,7 @@
                             <div class="list-group scrollarea" id="chat-messages" style="max-height: 500px; overflow-y: scroll; text-align: center;">
                                 {%for m in messages %}
                                     <p>
-                                        <b>{{ m.sender }}</b>: {{ m.content }}<br>
+                                        <b>{{ m.sender.username }}</b>: {{ m.content }}<br>
                                     </p>
                                 {% endfor %}
                             </div>

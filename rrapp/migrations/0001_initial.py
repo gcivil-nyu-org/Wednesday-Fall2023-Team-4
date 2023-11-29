@@ -177,7 +177,7 @@ class Migration(migrations.Migration):
                 (
                     "country",
                     models.CharField(
-                        default="USA", max_length=3, verbose_name="Country"
+                        default="US", max_length=3, verbose_name="Country"
                     ),
                 ),
                 ("washer", models.BooleanField(default=True)),

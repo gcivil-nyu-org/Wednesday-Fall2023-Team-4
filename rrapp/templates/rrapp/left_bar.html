@@ -12,35 +12,53 @@
                         Status :  <span class="badge text-bg-success">Rentee</span >
                     {% endif %}
                 </div>
-                <a href="{% url 'rrapp:profile' user.id %}" class="btn btn-primary m-1">Edit</a>
+                <a href="{% url 'rrapp:profile' %}" class="btn btn-primary m-1">Edit</a>
             </div>
         </div>
 
         {% if path %}
             <div class = "p-3">
-                <a href="{% url 'rrapp:my_listings' user.id %}" class="btn btn-secondary">Home</a>
+                <a href="{% url 'rrapp:my_listings' %}" class="btn btn-secondary">Home</a>
             </div>
             <div class = "p-3">
-                <a href="{% url 'chat:conversation_home' %}" class="btn btn-secondary">Inbox</a>
+                <a href="{% url 'chat:conversation_home' %}" class="btn btn-primary position-relative">
+                    Inbox
+                    {% if inbox and inbox > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ inbox }}
+                        </span>
+                    {% endif %}
+                </a>
             </div>
             <div class = "p-3">
-                <a href="{% url 'rrapp:rentee_listings' user.id %}" class="btn btn-warning">Switch Status</a>
+                <a href="{% url 'rrapp:rentee_listings' %}" class="btn btn-warning">Switch Status</a>
             </div>
         {% else %}
             <div class = "p-3">
-                <a href="{% url 'rrapp:rentee_listings' user.id %}" class="btn btn-secondary">Home</a>
+                <a href="{% url 'rrapp:rentee_listings' %}" class="btn btn-secondary">Home</a>
             </div>
             <div class = "p-3">
-                <a href="{% url 'chat:conversation_home' %}" class="btn btn-secondary">Inbox</a>
+                <a href="{% url 'chat:conversation_home' %}" class="btn btn-primary position-relative">
+                    Inbox
+                    {% if inbox and inbox > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ inbox }}
+                        </span>
+                    {% endif %}
+                </a>
             </div>
             <div class = "p-3">
-                <a href="{% url 'rrapp:my_listings' user.id %}" class="btn btn-warning">Switch Status</a>
+                <a href="{% url 'rrapp:my_listings' %}" class="btn btn-warning">Switch Status</a>
             </div>
             <div class = "p-3">
-                <a href="{% url 'rrapp:shortlist' user.id %}" class="btn btn-success">My ShortList</a>
+                <a href="{% url 'rrapp:shortlist' %}" class="btn btn-success">My ShortList</a>
             </div>
         {% endif %}
-
+        
+        <div class = "p-3">
+            <!-- Add your new blog link here -->
+            <a href="https://www.stilt.com/blog/2018/07/find-housing-international-student/" target="_blank" class="btn btn-info">Housing Tips</a>
+        </div>
         <div class = "p-3">
             <a href="{% url 'rrapp:logout' %}" class="btn btn-danger">Log out</a>
         </div>
