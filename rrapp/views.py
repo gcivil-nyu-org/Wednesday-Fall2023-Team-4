@@ -727,10 +727,10 @@ class RatingView(generic.UpdateView):
 
     def post(self, request, *args, **kwargs):
         if not DirectMessagePermission.objects.filter(
-                sender=request.user,
-                receiver=User.objects.get(id=self.kwargs["ratee_id"]),
-                permission=Permission.ALLOWED,
-            ).exists():
+            sender=request.user,
+            receiver=User.objects.get(id=self.kwargs["ratee_id"]),
+            permission=Permission.ALLOWED,
+        ).exists():
             print(User.objects.get(id=self.kwargs["ratee_id"]))
             print(request.user)
             print('bbbbbb')
