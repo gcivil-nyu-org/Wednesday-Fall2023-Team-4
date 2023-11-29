@@ -756,14 +756,9 @@ class RatingView(generic.UpdateView):
             ratee.rating = mean_rating
             ratee.save()
             return JsonResponse({'success': 'true', 'score': val}, safe=False)
-        return render(
-            request,
-            'rrapp/rate_user.html',
-            {'pk': self.kwargs["ratee_id"]},
+        return HttpResponseRedirect(
+            reverse("rrapp:rate_user", args=(self.kwargs["ratee_id"],))
         )
-        # return HttpResponseRedirect(
-        #     reverse("rrapp:rate_user", args=(self.kwargs["pk"],))
-        # )
 
 
 @method_decorator(login_required, name='dispatch')
