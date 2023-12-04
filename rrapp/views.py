@@ -34,8 +34,6 @@ from django.template.loader import render_to_string
 from psycopg2.extras import NumericRange
 from typing import Any, List
 
-import datetime
-
 from chat.models import DirectMessagePermission, Permission
 from chat.utils import get_pending_connections_count
 
@@ -47,8 +45,6 @@ from .models import (
     Photo,
     Rating,
     Quiz,
-    Pets,
-    FoodGroup,
 )
 from .forms import MyUserCreationForm, ListingForm, UserForm, LoginForm, QuizForm
 from .utils import check_user_listing_match
@@ -278,7 +274,7 @@ class ListingDetailView(generic.DetailView):
 
     def get_object(self, queryset=None):
         return Listing.objects.get(id=self.kwargs["pk"])
-    
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         if self.object.user != request.user:
@@ -352,13 +348,15 @@ class ListingDetailRenteeView(generic.DetailView):
 
     def get_object(self, queryset=None):
         return Listing.objects.get(id=self.kwargs["pk"])
-    
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if self.object.restrict_to_matches and not check_user_listing_match(request.user, self.object):
+        if self.object.restrict_to_matches and not check_user_listing_match(
+            request.user, self.object
+        ):
             raise PermissionDenied('User must match the listing preferences to view it')
         return super().get(request, *args, **kwargs)
-    
+
     def post(self, request, *args, **kwargs):
         listing_id = self.kwargs["pk"]
         user_id = request.user.id
@@ -509,14 +507,14 @@ class ListingResultsView(generic.ListView):
         all_listings = all_listings.filter(filters)
 
         final_listings = []
-        for l in all_listings:
-            if not l.restrict_to_matches:
+        for listing in all_listings:
+            if not listing.restrict_to_matches:
                 # no restrictions
-                final_listings.append(l)
+                final_listings.append(listing)
             else:
                 # check is user matches listing preference
-                if check_user_listing_match(self.request.user, l):
-                    final_listings.append(l)
+                if check_user_listing_match(self.request.user, listing):
+                    final_listings.append(listing)
 
         paginator = Paginator(final_listings, 10)
         page_number = self.request.GET.get("page")

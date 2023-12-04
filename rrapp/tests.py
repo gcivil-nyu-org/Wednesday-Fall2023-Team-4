@@ -204,7 +204,7 @@ class ListingDetailViewTest(ViewsTestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/listing_detail.html")
-    
+
     def test_listing_detail_view_authenticated_malicious_user(self):
         self.client.force_login(self.user)
         user2 = User.objects.create_user(
@@ -242,10 +242,10 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/rentee_listing_detail.html")
-    
+
     def test_listing_detail_rentee_view_matching_user(self):
         self.user.pets = Pets.DOGS
-        self.user.birth_date = datetime.date.today() - datetime.timedelta(365*20)
+        self.user.birth_date = datetime.date.today() - datetime.timedelta(365 * 20)
         self.user.save()
         self.client.force_login(self.user)
         self.assertTrue(self.user.pets == Pets.DOGS)
@@ -256,7 +256,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
             title="Test Listing",
             monthly_rent=1000,
             restrict_to_matches=True,
-            pets_allowed=Pets.DOGS
+            pets_allowed=Pets.DOGS,
         )
         response = self.client.get(
             reverse(
@@ -269,7 +269,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
 
     def test_listing_detail_rentee_view_nonmatching_user(self):
         self.user.pets = Pets.DOGS
-        self.user.birth_date = datetime.date.today() - datetime.timedelta(365*20)
+        self.user.birth_date = datetime.date.today() - datetime.timedelta(365 * 20)
         self.user.save()
         self.client.force_login(self.user)
         self.assertTrue(self.user.pets == Pets.DOGS)
@@ -280,7 +280,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
             title="Test Listing",
             monthly_rent=1000,
             restrict_to_matches=True,
-            pets_allowed=Pets.CATS
+            pets_allowed=Pets.CATS,
         )
         response = self.client.get(
             reverse(
@@ -392,7 +392,7 @@ class ListingResultsViewTest(ViewsTestCase):
             },
         )
         self.assertEqual(response.status_code, 302)
-    
+
     def test_listing_results_view_authenticated_user(self):
         self.client.force_login(self.user)
         response = self.client.get(
@@ -414,7 +414,7 @@ class ListingResultsViewTest(ViewsTestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/rentee_listings.html")
-    
+
     def test_listing_results_view_authenticated_user_matched(self):
         self.client.force_login(self.user)
         user2 = User.objects.create_user(
@@ -436,7 +436,9 @@ class ListingResultsViewTest(ViewsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/rentee_listings.html")
         self.assertEqual(len(response.context['queried_listings_page']), 2)
-    
+        self.assertEqual(response.context['queried_listings_page'][0], listing1)
+        self.assertEqual(response.context['queried_listings_page'][1], listing2)
+
     def test_listing_results_view_authenticated_user_unmatched(self):
         self.user.smokes = True
         self.user.save()
@@ -454,7 +456,7 @@ class ListingResultsViewTest(ViewsTestCase):
             title="Test Listing 2",
             monthly_rent=2000,
             restrict_to_matches=True,
-            smoking_allowed=False
+            smoking_allowed=False,
         )
         response = self.client.get(
             reverse("rrapp:rentee_listings"),
@@ -464,6 +466,7 @@ class ListingResultsViewTest(ViewsTestCase):
         # only the first listing should be available
         self.assertEqual(len(response.context['queried_listings_page']), 1)
         self.assertEqual(response.context['queried_listings_page'][0], listing1)
+        self.assertNotEqual(response.context['queried_listings_page'][0], listing2)
 
 
 class ConfirmPasswordResetViewTest(ViewsTestCase):
