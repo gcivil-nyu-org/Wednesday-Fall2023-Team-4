@@ -4,18 +4,6 @@ from .models import Pets, FoodGroup
 
 
 def check_user_listing_match(user, listing):
-    print(
-        (
-            listing.age_range.lower * 365
-            <= (datetime.date.today() - user.birth_date).days
-            < listing.age_range.upper * 365
-        ),
-        listing.age_range.lower * 365,
-        datetime.date.today(),
-        user.birth_date,
-        (datetime.date.today() - user.birth_date).days,
-        listing.age_range.upper * 365,
-    )
     if (
         (
             user.pets == listing.pets_allowed
