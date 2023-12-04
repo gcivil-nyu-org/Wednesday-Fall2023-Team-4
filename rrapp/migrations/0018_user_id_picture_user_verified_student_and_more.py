@@ -6,7 +6,7 @@ import rrapp.models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("rrapp", "0016_merge_20231204_1146"),
+        ("rrapp", "0017_alter_quiz_question2_alter_user_profile_picture"),
     ]
 
     operations = [

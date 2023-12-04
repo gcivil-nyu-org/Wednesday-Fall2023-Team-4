@@ -12,7 +12,6 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 
-
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.shortcuts import get_current_site
 
@@ -344,7 +343,6 @@ class ListingDetailRenteeView(generic.DetailView):
             p = None
 
         if len(p) > 0:
-            print(p[0].permission)
             return p[0].permission
         else:
             if len(p_equivalent) > 0:
@@ -392,7 +390,6 @@ class ListingDetailRenteeView(generic.DetailView):
                 print("permission already exists", p)
             else:
                 # create DirectMessagePermission object in db
-                print("creating permission")
                 DirectMessagePermission.objects.create(
                     sender=cur_user,
                     receiver=listing.user,
@@ -954,18 +951,13 @@ class PersonalQuizView(generic.UpdateView):
     def get_success_url(self):
         return reverse("rrapp:rentee_listings")
 
-    # TODO: 怎么处理renter没做过match的情况。先做quiz然后返送请求和match level
-
     def post(self, request, *args, **kwargs):
-        print("Call Post")
         self.object = self.get_object()
         form = self.get_form()
 
         if form.is_valid():
-            print("Form is valid")
             return self.form_valid(form)
         else:
-            print("Form is invalid")
             return self.form_invalid(form)
 
 

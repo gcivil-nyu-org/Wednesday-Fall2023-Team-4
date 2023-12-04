@@ -90,7 +90,6 @@ class RegisterViewTest(ViewsTestCase):
                 "phone_number": "1234",
             },
         )
-        print(response)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/login_register.html")
         self.assertFormError(response, "form", "username", "This field is required.")
@@ -296,8 +295,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
 
     def test_listing_detail_rentee_view_save_listing(self):
         self.client.force_login(self.user)
-        rentee = Rentee.objects.create(user=self.user)
-        print(rentee)
+        Rentee.objects.create(user=self.user)
         listing = Listing.objects.create(
             user=User.objects.create_user(
                 username="testuser2", password="testpass2", email="testuser@example.edu"
@@ -321,8 +319,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
 
     def test_listing_detail_rentee_view_connection_request_exists(self):
         self.client.force_login(self.user)
-        rentee = Rentee.objects.create(user=self.user)
-        print(rentee)
+        Rentee.objects.create(user=self.user)
         user2 = User.objects.create_user(
             username="testuser2", password="testpass2", email="testuser2@example.edu"
         )
@@ -347,8 +344,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
 
     def test_listing_detail_rentee_view_connection_request_create(self):
         self.client.force_login(self.user)
-        rentee = Rentee.objects.create(user=self.user)
-        print(rentee)
+        Rentee.objects.create(user=self.user)
         user2 = User.objects.create_user(
             username="testuser2", password="testpass2", email="testuser@example.edu"
         )
