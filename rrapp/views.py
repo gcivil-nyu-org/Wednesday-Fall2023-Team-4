@@ -44,7 +44,7 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 
 import numpy as np
-from sklearn.neighbors import NearestNeighbors
+from scikit-learn.neighbors import NearestNeighbors
 
 User = get_user_model()
 
