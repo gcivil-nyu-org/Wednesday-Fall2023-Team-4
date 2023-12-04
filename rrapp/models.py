@@ -431,6 +431,7 @@ class Listing(models.Model):
         choices=FoodGroup.choices,
         default=FoodGroup.ALL,
     )
+    restrict_to_matches = models.BooleanField(default=False)
 
 
 def get_uploaded_to(instance, filename):
