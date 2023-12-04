@@ -6,7 +6,7 @@ import rrapp.models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("rrapp", "0013_rating_created_at"),
+        ("rrapp", "0016_merge_20231204_1146"),
     ]
 
     operations = [

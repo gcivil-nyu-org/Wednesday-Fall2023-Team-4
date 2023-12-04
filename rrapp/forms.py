@@ -291,6 +291,7 @@ class ListingForm(ModelForm):
             "smoking_allowed",
             "pets_allowed",
             "food_groups_allowed",
+            "restrict_to_matches",
             "existing_photos",
             "add_photos",
         ]

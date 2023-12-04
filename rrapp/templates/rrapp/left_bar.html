@@ -1,7 +1,12 @@
+{% load static %}
 <div class="bg-dark left-bar">
     <div class = "d-flex flex-column align-items-center">
         <div class="card m-3 text-bg-secondary" style="max-width: 90%;">
-            <img src="{{ user.profile_picture.url }}" class="card-img-top" width="100%"></img>
+            {% if user.profile_picture %}
+                <img src="{{ user.profile_picture.url }}" class="card-img-top" width="100%"></img>
+            {% else %}
+                <img src="{% static 'rrapp/DefaultProfile.jpg' %}" class="card-img-top" width="100%"></img>
+            {% endif %}
             <h3 class="card-header border-dark">{{user.username}}</h3>
             <div class="card-body">
                 <div class="card-text mx-1 my-2">

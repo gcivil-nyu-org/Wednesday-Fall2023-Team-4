@@ -1,49 +1,58 @@
 from django.shortcuts import get_object_or_404, render
-from typing import Any, List
 from django.db.models import Q, Case, When, Value, IntegerField
 
 # Create your views here.
-from django.core.paginator import Paginator
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
-from django.urls import reverse
-from django.views import generic
-
-from psycopg2.extras import NumericRange
-
 from django.contrib import messages
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.utils import timezone
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-from chat.models import DirectMessagePermission, Permission
-
-from .models import Listing, Renter, Rentee, SavedListing, Photo, Rating, Quiz
-from .forms import MyUserCreationForm, ListingForm, UserForm, LoginForm, QuizForm
-from .HEOM import HEOM
-
-from django.urls import reverse_lazy
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
+
+
 from django.contrib.messages.views import SuccessMessageMixin
-
-from django.core.mail import EmailMessage
 from django.contrib.sites.shortcuts import get_current_site
-from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes, force_str
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from .tokens import account_activation_token
 
-from chat.utils import get_pending_connections_count
 from django.conf import settings
 
+from django.core.paginator import Paginator
+from django.core.mail import EmailMessage
 from django.core.exceptions import PermissionDenied
 
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.urls import reverse
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils import timezone
+
+from django.views import generic
+from django.template.loader import render_to_string
+
+from psycopg2.extras import NumericRange
+from typing import Any, List
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
+
+from chat.models import DirectMessagePermission, Permission
+from chat.utils import get_pending_connections_count
+
+from .models import (
+    Listing,
+    Renter,
+    Rentee,
+    SavedListing,
+    Photo,
+    Rating,
+    Quiz,
+)
+from .forms import MyUserCreationForm, ListingForm, UserForm, LoginForm, QuizForm
+from .utils import check_user_listing_match
+from .tokens import account_activation_token
 
 User = get_user_model()
 
@@ -130,7 +139,7 @@ class RegisterView(generic.View):
         return render(request, "rrapp/login_register.html", {"form": form})
 
     def post(self, request, *args, **kwargs):
-        form = MyUserCreationForm(request.POST)
+        form = MyUserCreationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save(commit=False)
             user.save()
@@ -139,7 +148,9 @@ class RegisterView(generic.View):
             type_rentee = Rentee.objects.create(user=user)
             type_renter.save()
             type_rentee.save()
+
             login(request, user)
+
             return HttpResponseRedirect(reverse("rrapp:rentee_listings"))
 
         return render(request, "rrapp/login_register.html", {"form": form})
@@ -266,6 +277,15 @@ class ListingDetailView(generic.DetailView):
     model = Listing
     template_name = "rrapp/listing_detail.html"
 
+    def get_object(self, queryset=None):
+        return Listing.objects.get(id=self.kwargs["pk"])
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object.user != request.user:
+            raise PermissionDenied('User not authorized to access this listing')
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs: Any):
         context_data = super().get_context_data(**kwargs)
         user_id = self.request.user.id
@@ -330,6 +350,17 @@ class ListingDetailRenteeView(generic.DetailView):
             if len(p_equivalent) > 0:
                 return p_equivalent[0].permission
             return None
+
+    def get_object(self, queryset=None):
+        return Listing.objects.get(id=self.kwargs["pk"])
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object.restrict_to_matches and not check_user_listing_match(
+            request.user, self.object
+        ):
+            raise PermissionDenied('User must match the listing preferences to view it')
+        return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         listing_id = self.kwargs["pk"]
@@ -601,7 +632,17 @@ class ListingResultsView(generic.ListView):
         # Combine filters
         all_listings = all_listings.filter(filters)
 
-        paginator = Paginator(all_listings, 10)
+        final_listings = []
+        for listing in all_listings:
+            if not listing.restrict_to_matches:
+                # no restrictions
+                final_listings.append(listing)
+            else:
+                # check is user matches listing preference
+                if check_user_listing_match(self.request.user, listing):
+                    final_listings.append(listing)
+
+        paginator = Paginator(final_listings, 10)
         page_number = self.request.GET.get("page")
         queried_listings_page = paginator.get_page(page_number)
         return queried_listings_page

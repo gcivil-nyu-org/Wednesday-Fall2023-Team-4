@@ -131,7 +131,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         upload_to=user_directory_path,
         height_field=None,
         width_field=None,
-        default=settings.MEDIA_ROOT + "/DefaultProfile.jpg",
+        null=True,
+        blank=True,
     )
     id_picture = models.ImageField(
         upload_to=user_id_directory_path,
@@ -201,12 +202,12 @@ class Quiz(models.Model):
         choices=[
             (
                 1,
-                "Wait for that paycheck – you'll just"
+                "Wait for that paycheck – you'll just "
                 "have to spend as little as possible until then.",
             ),
             (
                 2,
-                "Ask your roommate for a small loan and pay"
+                "Ask your roommate for a small loan and pay "
                 "him/her back when you get your paycheck.",
             ),
             (
@@ -216,7 +217,7 @@ class Quiz(models.Model):
             ),
             (
                 4,
-                "Take some money out of your roommate's"
+                "Take some money out of your roommate's "
                 "top drawer and return it as soon as you get your pay.",
             ),
         ],
@@ -445,6 +446,7 @@ class Listing(models.Model):
         choices=FoodGroup.choices,
         default=FoodGroup.ALL,
     )
+    restrict_to_matches = models.BooleanField(default=False)
 
 
 def get_uploaded_to(instance, filename):
