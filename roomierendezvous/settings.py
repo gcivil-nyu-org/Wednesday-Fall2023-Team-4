@@ -158,7 +158,7 @@ if "AWS_STORAGE_BUCKET_NAME" in os.environ:
 
     STORAGES = {
         "default": {
-            "BACKEND": "storages.backends.s3.S3Storage",
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
             "OPTIONS": {
                 "AWS_S3_REGION_NAME" : os.environ["AWS_S3_REGION_NAME"],
                 "AWS_STORAGE_BUCKET_NAME" : os.environ["AWS_STORAGE_BUCKET_NAME"],
@@ -168,7 +168,7 @@ if "AWS_STORAGE_BUCKET_NAME" in os.environ:
             },
         },
         "staticfiles": {
-            "BACKEND": "storages.backends.s3.S3Storage",
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
             "OPTIONS": {
                 "AWS_S3_REGION_NAME" : os.environ["AWS_S3_REGION_NAME"],
                 "AWS_STORAGE_BUCKET_NAME" : os.environ["AWS_STORAGE_BUCKET_NAME"],
