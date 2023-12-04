@@ -143,6 +143,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
+    rating = models.FloatField(null=True, default=None)
 
     objects = CustomUserManager()
 
@@ -445,3 +446,19 @@ class Photo(models.Model):
 
     def __str__(self):
         return str(self.listing.title) + ": " + str(self.image)
+
+
+class Rating(models.Model):
+    rater = models.ForeignKey(
+        "User",
+        related_name="rater",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    ratee = models.ForeignKey(
+        "User",
+        related_name="ratee",
+        on_delete=models.CASCADE,
+    )
+    rating = models.FloatField(null=True, default=0.0)
+    created_at = models.DateTimeField(default=timezone.now)

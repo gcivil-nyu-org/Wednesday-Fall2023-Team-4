@@ -80,3 +80,12 @@ html, body{
                 0% {opacity: 0;}
                 100% {opacity: 1;}
 }
+
+.checked {
+    color: red;
+}
+
+.my-rating-btn {
+    background-color: inherit !important;
+    border: 0 !important;
+}
