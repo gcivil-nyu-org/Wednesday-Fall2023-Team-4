@@ -52,6 +52,7 @@ from .models import (
 from .forms import MyUserCreationForm, ListingForm, UserForm, LoginForm, QuizForm
 from .utils import check_user_listing_match
 from .tokens import account_activation_token
+from .HEOM import HEOM
 
 User = get_user_model()
 
