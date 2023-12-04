@@ -137,8 +137,8 @@ if "RDS_DB_NAME" in os.environ:
     }
 
 if "AWS_STORAGE_BUCKET_NAME" in os.environ:
-    # STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-    # DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
     AWS_STORAGE_BUCKET_NAME = os.environ["AWS_STORAGE_BUCKET_NAME"]
     AWS_S3_REGION_NAME = os.environ["AWS_S3_REGION_NAME"]
@@ -146,37 +146,17 @@ if "AWS_STORAGE_BUCKET_NAME" in os.environ:
     AWS_S3_ACCESS_KEY_ID = os.environ["AWS_ACCESS_KEY_ID"]
     AWS_S3_SECRET_ACCESS_KEY = os.environ["AWS_SECRET_ACCESS_KEY"]
 
-    # AWS_DEFAULT_ACL = 'public-read'
-    # AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-    # AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
-
-    # AWS_MEDIA_LOCATION = 'media'
-    # MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_MEDIA_LOCATION}/'
+    AWS_DEFAULT_ACL = 'public-read'
+    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
     
-    # AWS_STATIC_LOCATION = 'static'
-    # STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_STATIC_LOCATION}/'
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+    AWS_LOCATION = 'roomierendezvous_files'
 
-    STORAGES = {
-        "default": {
-            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
-            "OPTIONS": {
-                "AWS_S3_REGION_NAME" : os.environ["AWS_S3_REGION_NAME"],
-                "AWS_STORAGE_BUCKET_NAME" : os.environ["AWS_STORAGE_BUCKET_NAME"],
-                "AWS_LOCATION" : 'mediafiles',
-                "AWS_DEFAULT_ACL" : "private"
-
-            },
-        },
-        "staticfiles": {
-            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
-            "OPTIONS": {
-                "AWS_S3_REGION_NAME" : os.environ["AWS_S3_REGION_NAME"],
-                "AWS_STORAGE_BUCKET_NAME" : os.environ["AWS_STORAGE_BUCKET_NAME"],
-                "AWS_LOCATION" : 'staticfiles',
-                "AWS_DEFAULT_ACL" : "public-read"
-            },
-        },
-    }
+    AWS_MEDIA_LOCATION = 'media'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_MEDIA_LOCATION}/'
+    
+    AWS_STATIC_LOCATION = 'static'
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_STATIC_LOCATION}/'
     
 else:
     STATIC_URL = "/static/"
