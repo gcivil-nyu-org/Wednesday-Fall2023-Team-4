@@ -466,54 +466,6 @@ class ListingResultsViewTest(ViewsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/rentee_listings.html")
 
-    # def test_listing_results_view_recommendation_not_all_0_authenticated_user(self):
-    #     self.client.force_login(self.user)
-    #     self.user.birth_date = timezone.now().date() - timedelta(days=6000)
-    #     self.user.save()
-    #     user2 = User.objects.create_user(
-    #         username="testuser2",
-    #         password="testpass2",
-    #         email="testuser2@example.edu",
-    #     )
-    #     user2.smokes=True
-    #     user2.birth_date = timezone.now().date() - timedelta(days=7000)
-    #     user2.save()
-    #     print(user2.birth_date)
-    #     user3 = User.objects.create_user(
-    #         username="testuser3",
-    #         password="testpass3",
-    #         email="testuser3@example.edu",
-    #     )
-    #     user3.pets=Pets.DOGS
-    #     user3.birth_date = timezone.now().date() - timedelta(days=5500)
-    #     user3.save()
-    #     Listing.objects.create(
-    #         user=user2,
-    #         title="Test Listing 2-1",
-    #         monthly_rent=1000,
-    #     )
-    #     Listing.objects.create(
-    #         user=user3,
-    #         title="Test Listing 3-1",
-    #         monthly_rent=1000,
-    #     )
-    #     Listing.objects.create(
-    #         user=user2,
-    #         title="Test Listing 2-2",
-    #         monthly_rent=1100,
-    #     )
-    #     Rating.objects.create(rater=self.user, ratee=user2, rating=4.0)
-    #     Rating.objects.create(rater=user3, ratee=user2, rating=1.0)
-    #     Rating.objects.create(rater=user2, ratee=user3, rating=5.0)
-    #     response = self.client.get(
-    #         reverse("rrapp:rentee_listings"),
-    #         {
-    #             "sort": "recommendation",
-    #         },
-    #     )
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertTemplateUsed(response, "rrapp/rentee_listings.html")
-
     def test_listing_results_view_recommendation_no_rating_authenticated_user(self):
         self.client.force_login(self.user)
         user2 = User.objects.create_user(
