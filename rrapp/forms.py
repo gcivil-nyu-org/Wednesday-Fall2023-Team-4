@@ -35,6 +35,8 @@ class LoginForm(forms.Form):
 
 
 class MyUserCreationForm(UserCreationForm):
+    birth_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+
     class Meta:
         model = User
         fields = [
@@ -44,11 +46,13 @@ class MyUserCreationForm(UserCreationForm):
             "email",
             "phone_number",
             "profile_picture",
+            "birth_date",
             "smokes",
             "pets",
             "food_group",
             "password1",
             "password2",
+            "id_picture",
         ]
 
     def clean_first_name(self):
@@ -113,6 +117,12 @@ class MyUserCreationForm(UserCreationForm):
             raise forms.ValidationError("Phone number must only contain numbers")
         return phone_number
 
+    def clean_birth_date(self):
+        birth_date = self.cleaned_data.get("birth_date")
+        if birth_date > datetime.date.today():
+            raise forms.ValidationError("Birth date cannot be in the future")
+        return birth_date
+
     def clean_password1(self):
         password1 = self.cleaned_data.get("password1")
         if len(password1) == 0:
@@ -150,6 +160,7 @@ class UserForm(ModelForm):
             "food_group",
             "phone_number",
             "profile_picture",
+            "id_picture",
         ]
 
     def clean_first_name(self):

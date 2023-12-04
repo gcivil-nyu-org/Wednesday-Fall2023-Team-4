@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from typing import Any, List
-from django.db.models import Q
+from django.db.models import Q, Case, When, Value, IntegerField
 
 # Create your views here.
 from django.core.paginator import Paginator
@@ -14,6 +14,8 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.utils import timezone
+from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractBaseUser
@@ -23,6 +25,7 @@ from chat.models import DirectMessagePermission, Permission
 
 from .models import Listing, Renter, Rentee, SavedListing, Photo, Rating, Quiz
 from .forms import MyUserCreationForm, ListingForm, UserForm, LoginForm, QuizForm
+from .HEOM import HEOM
 
 from django.urls import reverse_lazy
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
@@ -39,6 +42,9 @@ from chat.utils import get_pending_connections_count
 from django.conf import settings
 
 from django.core.exceptions import PermissionDenied
+
+import numpy as np
+from sklearn.neighbors import NearestNeighbors
 
 User = get_user_model()
 
@@ -381,13 +387,134 @@ class ListingResultsView(generic.ListView):
             sorting_order = "-"  # Set to descending order
 
         # Apply sorting
-        if sort_option not in [
-            "monthly_rent",
-            "number_of_bedrooms",
-            "number_of_bathrooms",
-        ]:
-            sort_option = "created_at"
-        all_listings = all_listings.order_by(f"{sorting_order}{sort_option}")
+        if sort_option == "recommendation":
+            # all raters in our dataset
+            all_ratings = Rating.objects.all()
+            if len(all_ratings) == 0:
+                pass
+            else:
+                full_rater_list = []
+                for rating in all_ratings:
+                    full_rater_list.append(rating.rater)
+                full_rater_list = list(set(full_rater_list))
+                print('full_rater_list: ', full_rater_list)
+
+                # all users that have listings
+                listing_user_list = []
+                for listing in all_listings:
+                    listing_user_list.append(listing.user)
+                listing_user_list = list(set(listing_user_list))
+                print(listing_user_list)
+
+                # get the listing users and their corresponding recommendation level
+                smokes_dic = {True: 1, False: 0}
+                pets_dic = {'cats': 0, 'dogs': 1, 'none': 2, 'all': 3}
+                food_group_dic = {
+                    'vegan': 0,
+                    'vegetarian': 1,
+                    'non_vegetarian': 2,
+                    'all': 3,
+                }
+                data = np.array(
+                    [
+                        [
+                            (timezone.now().date() - user.birth_date).days,
+                            smokes_dic[user.smokes],
+                            pets_dic[user.pets],
+                            food_group_dic[user.food_group],
+                        ]
+                        for user in full_rater_list
+                    ]
+                )
+                full_rater_id = [user.id for user in full_rater_list]
+                print('data: ', data)
+                print('full_rater_id: ', full_rater_id)
+                categorical_ix = [1, 2, 3]  # categorical feature indices
+                nan_eqv = 12345  # this can change to whatever nan in our dataset is
+
+                heom_metric = HEOM(data, categorical_ix, nan_equivalents=[nan_eqv])
+                neighbor = NearestNeighbors(metric=heom_metric.heom)
+                neighbor.fit(data)
+                curr_user_data = np.array(
+                    [
+                        (timezone.now().date() - self.request.user.birth_date).days,
+                        smokes_dic[self.request.user.smokes],
+                        pets_dic[self.request.user.pets],
+                        food_group_dic[self.request.user.food_group],
+                    ]
+                ).reshape(1, -1)
+                print('timezone.now().date(): ', timezone.now().date())
+                print('user_data: ', curr_user_data)
+                sim_index, index = neighbor.kneighbors(
+                    curr_user_data, n_neighbors=len(data)
+                )
+                sim_index, index = sim_index[0], index[0]
+                print('sim_index: ', sim_index)
+                print('index: ', index)
+                recom_tuple_list = []
+                for ratee in listing_user_list:
+                    rater_list = Rating.objects.filter(ratee=ratee)
+                    print('rater_list: ', rater_list)
+                    if len(rater_list) == 0:
+                        recommendation_level = 0.0
+                    else:
+                        recommendation_level = 0
+                        for rating in rater_list:
+                            recommendation_level += (
+                                (rating.rating - 3.0)
+                                / 2.0
+                                / (
+                                    sim_index[
+                                        index[full_rater_id.index(rating.rater.id)]
+                                    ]
+                                    + 1
+                                )
+                            )
+                        recommendation_level /= np.sqrt(len(rater_list))
+                        print('recommendation_level: ', recommendation_level)
+                    recom_tuple_list.append((ratee.id, recommendation_level))
+                print('recom_tuple_list: ', recom_tuple_list)
+
+                # sort the users according to recommendation level
+                sorted_recom_tuple_list = sorted(
+                    recom_tuple_list, key=lambda x: x[1], reverse=True
+                )
+                print('sorted_recom_tuple_list: ', sorted_recom_tuple_list)
+                sorted_listing_user_id = [x[0] for x in sorted_recom_tuple_list]
+                print('sorted_listing_user_id: ', sorted_listing_user_id)
+
+                # get the sorted listing ids
+                order_indices = []
+                for user_id in sorted_listing_user_id:
+                    user = User.objects.filter(id=user_id)[0]
+                    print(user)
+                    listing_list = Listing.objects.filter(user=user)
+                    print(listing_list)
+                    for l in listing_list:
+                        order_indices.append(l.id)
+                print('order_indices: ', order_indices)
+
+                # Create a Case expression to order the queryset based on the indices
+                ordering_cases = [
+                    When(id=pk, then=Value(index))
+                    for index, pk in enumerate(order_indices, start=1)
+                ]
+                ordering = Case(
+                    *ordering_cases, default=Value(0), output_field=IntegerField()
+                )
+
+                # Use the queryset with the order_by method
+                all_listings = all_listings.order_by(ordering)
+
+        else:
+            if sort_option not in [
+                "monthly_rent",
+                "number_of_bedrooms",
+                "number_of_bathrooms",
+                "recommendation",
+            ]:
+                sort_option = "created_at"
+            all_listings = all_listings.order_by(f"{sorting_order}{sort_option}")
 
         # Apply filters
         filters = Q()

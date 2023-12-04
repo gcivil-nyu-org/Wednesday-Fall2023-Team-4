@@ -113,6 +113,12 @@ def user_directory_path(instance, filename):
     return os.path.join('profile_pictures', filename)
 
 
+def user_id_directory_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f'{instance.email}_{instance.id}.{ext}'
+    return os.path.join('id_pictures', filename)
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=30, unique=True)
@@ -126,6 +132,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         height_field=None,
         width_field=None,
         default=settings.MEDIA_ROOT + "/DefaultProfile.jpg",
+    )
+    id_picture = models.ImageField(
+        upload_to=user_id_directory_path,
+        height_field=None,
+        width_field=None,
+        blank=True,
+        null=True,
     )
     smokes = models.BooleanField(default=False)
     pets = models.CharField(
@@ -142,6 +155,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
+    verified_student = models.BooleanField(default=False)
     rating = models.FloatField(null=True, default=None)
 
     objects = CustomUserManager()
