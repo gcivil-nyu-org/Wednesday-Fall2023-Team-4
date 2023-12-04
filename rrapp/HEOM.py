@@ -40,8 +40,6 @@ class HEOM:
         print('self.range: ', self.range)
         no_diff = np.nanmax(X, axis=0) == np.nanmin(X, axis=0)
         print('no_diff: ', no_diff)
-        # all_numeric_0 = (np.nanmax(X, axis=0) == np.nanmin(X, axis=0)) * (np.nanmin(X, axis=0) == [0 for i in range(X.shape[1])])
-        # print('all_numeric_0: ', all_numeric_0)
         self.range[no_diff] = np.nanmin(X, axis=0)[no_diff]
         all_numeric_0 = self.range == 0
         print('all_numeric_0: ', all_numeric_0)

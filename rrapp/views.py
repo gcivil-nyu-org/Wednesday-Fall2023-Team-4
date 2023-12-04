@@ -15,7 +15,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.utils import timezone
-from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractBaseUser
@@ -490,8 +489,8 @@ class ListingResultsView(generic.ListView):
                     print(user)
                     listing_list = Listing.objects.filter(user=user)
                     print(listing_list)
-                    for l in listing_list:
-                        order_indices.append(l.id)
+                    for listing in listing_list:
+                        order_indices.append(listing.id)
                 print('order_indices: ', order_indices)
 
                 # Create a Case expression to order the queryset based on the indices
