@@ -2,7 +2,6 @@
 *__pycache__
 
 media/*
-!media/DefaultProfile.jpg
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
