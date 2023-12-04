@@ -123,7 +123,7 @@ class RegisterView(generic.View):
         return render(request, "rrapp/login_register.html", {"form": form})
 
     def post(self, request, *args, **kwargs):
-        form = MyUserCreationForm(request.POST)
+        form = MyUserCreationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save(commit=False)
             user.save()
@@ -132,7 +132,9 @@ class RegisterView(generic.View):
             type_rentee = Rentee.objects.create(user=user)
             type_renter.save()
             type_rentee.save()
+
             login(request, user)
+
             return HttpResponseRedirect(reverse("rrapp:rentee_listings"))
 
         return render(request, "rrapp/login_register.html", {"form": form})
