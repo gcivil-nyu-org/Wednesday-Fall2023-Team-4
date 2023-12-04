@@ -31,7 +31,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "roomierendezvous-app-dev-ws.us-east-1.elasticbeanstalk.com",
     "roomierendezvous-app-dev.us-east-1.elasticbeanstalk.com",
-    "production-team4-2-dev3.us-west-2.elasticbeanstalk.com"
+    "production-team4-2-dev3.us-west-2.elasticbeanstalk.com",
 ]
 
 
@@ -152,10 +152,10 @@ if "AWS_STORAGE_BUCKET_NAME" in os.environ:
 
     AWS_MEDIA_LOCATION = '/media/'
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_MEDIA_LOCATION}/'
-    
+
     AWS_STATIC_LOCATION = '/static/'
     STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_STATIC_LOCATION}/'
-    
+
 else:
     STATIC_URL = "/static/"
     STATIC_ROOT = os.path.join(BASE_DIR, "static")

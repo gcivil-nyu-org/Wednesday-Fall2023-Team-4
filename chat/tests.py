@@ -577,10 +577,13 @@ class ConversationWsViewTest(ViewsTestCase):
         self.assertEqual(response.status_code, 403)
         self.assertTemplateNotUsed(response, "chat/conversation.html")
 
+
 class SignalReceiversTestCase(TestCase):
     def test_delete_old_file_on_update(self):
         # Test case for delete_old_file_on_update signal receiver
-        user = User.objects.create(username="testuser", email="test@example.com", password="testpassword")
+        user = User.objects.create(
+            username="testuser", email="test@example.com", password="testpassword"
+        )
         # Create a new instance with a different profile picture
         new_profile_picture = "new_profile_picture.jpg"
         user.profile_picture = new_profile_picture
@@ -590,7 +593,9 @@ class SignalReceiversTestCase(TestCase):
 
     def test_delete_file_pre_delete(self):
         # Test case for delete_file_pre_delete signal receiver
-        user = User.objects.create(username="testuser", email="test@example.com", password="testpassword")
+        user = User.objects.create(
+            username="testuser", email="test@example.com", password="testpassword"
+        )
         photo = Photo.objects.create(user=user, image="photo.jpg")
         photo.delete()
         # Assert that the photo file is deleted
