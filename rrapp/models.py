@@ -120,7 +120,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    bio = models.TextField(default="")
+    bio = models.TextField(default="") # Does it nullable?
     profile_picture = models.ImageField(
         upload_to=user_directory_path,
         height_field=None,
@@ -143,7 +143,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
-    rating = models.FloatField(null=True, default=None)
+    rating = models.FloatField(null=True, default=None, blank=True)
 
     objects = CustomUserManager()
 
