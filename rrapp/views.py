@@ -453,8 +453,6 @@ class ListingResultsView(generic.ListView):
                     ]
                 )
                 full_rater_id = [user.id for user in full_rater_list]
-                # print('data: ', data)
-                # print('full_rater_id: ', full_rater_id)
                 categorical_ix = [1, 2, 3]  # categorical feature indices
                 nan_eqv = 12345  # this can change to whatever nan in our dataset is
 
