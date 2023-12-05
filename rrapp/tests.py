@@ -430,7 +430,6 @@ class ListingResultsViewTest(ViewsTestCase):
         user2.smokes = True
         user2.birth_date = timezone.now().date() - timedelta(days=0)
         user2.save()
-        print(user2.birth_date)
         user3 = User.objects.create_user(
             username="testuser3",
             password="testpass3",

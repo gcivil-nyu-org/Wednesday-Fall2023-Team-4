@@ -425,14 +425,12 @@ class ListingResultsView(generic.ListView):
                 for rating in all_ratings:
                     full_rater_list.append(rating.rater)
                 full_rater_list = list(set(full_rater_list))
-                print('full_rater_list: ', full_rater_list)
 
                 # all users that have listings
                 listing_user_list = []
                 for listing in all_listings:
                     listing_user_list.append(listing.user)
                 listing_user_list = list(set(listing_user_list))
-                print(listing_user_list)
 
                 # get the listing users and their corresponding recommendation level
                 smokes_dic = {True: 1, False: 0}
@@ -455,8 +453,8 @@ class ListingResultsView(generic.ListView):
                     ]
                 )
                 full_rater_id = [user.id for user in full_rater_list]
-                print('data: ', data)
-                print('full_rater_id: ', full_rater_id)
+                # print('data: ', data)
+                # print('full_rater_id: ', full_rater_id)
                 categorical_ix = [1, 2, 3]  # categorical feature indices
                 nan_eqv = 12345  # this can change to whatever nan in our dataset is
 
@@ -471,18 +469,13 @@ class ListingResultsView(generic.ListView):
                         food_group_dic[self.request.user.food_group],
                     ]
                 ).reshape(1, -1)
-                print('timezone.now().date(): ', timezone.now().date())
-                print('user_data: ', curr_user_data)
                 sim_index, index = neighbor.kneighbors(
                     curr_user_data, n_neighbors=len(data)
                 )
                 sim_index, index = sim_index[0], index[0]
-                print('sim_index: ', sim_index)
-                print('index: ', index)
                 recom_tuple_list = []
                 for ratee in listing_user_list:
                     rater_list = Rating.objects.filter(ratee=ratee)
-                    print('rater_list: ', rater_list)
                     if len(rater_list) == 0:
                         recommendation_level = 0.0
                     else:
@@ -499,28 +492,21 @@ class ListingResultsView(generic.ListView):
                                 )
                             )
                         recommendation_level /= np.sqrt(len(rater_list))
-                        print('recommendation_level: ', recommendation_level)
                     recom_tuple_list.append((ratee.id, recommendation_level))
-                print('recom_tuple_list: ', recom_tuple_list)
 
                 # sort the users according to recommendation level
                 sorted_recom_tuple_list = sorted(
                     recom_tuple_list, key=lambda x: x[1], reverse=True
                 )
-                print('sorted_recom_tuple_list: ', sorted_recom_tuple_list)
                 sorted_listing_user_id = [x[0] for x in sorted_recom_tuple_list]
-                print('sorted_listing_user_id: ', sorted_listing_user_id)
 
                 # get the sorted listing ids
                 order_indices = []
                 for user_id in sorted_listing_user_id:
                     user = User.objects.filter(id=user_id)[0]
-                    print(user)
                     listing_list = Listing.objects.filter(user=user)
-                    print(listing_list)
                     for listing in listing_list:
                         order_indices.append(listing.id)
-                print('order_indices: ', order_indices)
 
                 # Create a Case expression to order the queryset based on the indices
                 ordering_cases = [
