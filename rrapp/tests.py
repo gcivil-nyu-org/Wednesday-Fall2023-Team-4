@@ -616,7 +616,7 @@ class ListingNewViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
 
-class ProfileViewTest(TestCase):
+class ProfileViewTest(TestCase): #TODO
     def test_profile_view_get(self):
         client = Client()
         response = client.get(reverse("rrapp:profile"))
@@ -626,7 +626,10 @@ class ProfileViewTest(TestCase):
         client = Client()
         response = client.post(
             reverse("rrapp:profile"),
-            {"first_name": "Test", "last_name": "User"},
+            {"first_name": "Test",
+             "last_name": "User",
+            
+            },
         )
         self.assertEqual(response.status_code, 302)
 
