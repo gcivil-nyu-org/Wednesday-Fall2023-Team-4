@@ -235,7 +235,6 @@ class ConversationHomeView(generic.View):
         return HttpResponseRedirect(reverse("chat:conversation_home"))
 
     def calculateMatchLevel(self, cur_username, target_username):
-        print(cur_username, target_username)
         cur_user = User.objects.get(username=cur_username)
         target_user = User.objects.get(username=target_username)
         cur_quiz, created_cur = Quiz.objects.get_or_create(user=cur_user)

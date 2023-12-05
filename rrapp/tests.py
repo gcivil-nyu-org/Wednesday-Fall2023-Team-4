@@ -1,6 +1,8 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.utils import timezone
+from datetime import timedelta
 
 import datetime
 
@@ -88,7 +90,6 @@ class RegisterViewTest(ViewsTestCase):
                 "phone_number": "1234",
             },
         )
-        print(response)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "rrapp/login_register.html")
         self.assertFormError(response, "form", "username", "This field is required.")
@@ -137,6 +138,7 @@ class RegisterViewTest(ViewsTestCase):
             "username": "testuser222",
             "pets": "dogs",
             "food_group": "all",
+            "birth_date": timezone.now().date() - timedelta(days=5),
         }
 
         response = self.client.post(
@@ -293,8 +295,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
 
     def test_listing_detail_rentee_view_save_listing(self):
         self.client.force_login(self.user)
-        rentee = Rentee.objects.create(user=self.user)
-        print(rentee)
+        Rentee.objects.create(user=self.user)
         listing = Listing.objects.create(
             user=User.objects.create_user(
                 username="testuser2", password="testpass2", email="testuser@example.edu"
@@ -318,8 +319,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
 
     def test_listing_detail_rentee_view_connection_request_exists(self):
         self.client.force_login(self.user)
-        rentee = Rentee.objects.create(user=self.user)
-        print(rentee)
+        Rentee.objects.create(user=self.user)
         user2 = User.objects.create_user(
             username="testuser2", password="testpass2", email="testuser2@example.edu"
         )
@@ -344,8 +344,7 @@ class ListingDetailRenteeViewTest(ViewsTestCase):
 
     def test_listing_detail_rentee_view_connection_request_create(self):
         self.client.force_login(self.user)
-        rentee = Rentee.objects.create(user=self.user)
-        print(rentee)
+        Rentee.objects.create(user=self.user)
         user2 = User.objects.create_user(
             username="testuser2", password="testpass2", email="testuser@example.edu"
         )
@@ -398,18 +397,107 @@ class ListingResultsViewTest(ViewsTestCase):
         response = self.client.get(
             reverse("rrapp:rentee_listings"),
             {
-                "monthly_rent": 1000,
-                "number_of_bedrooms": 2,
-                "number_of_bathrooms": 2,
+                "monthly_rent_min": 500,
+                "monthly_rent_max": 1500,
+                "number_of_bedrooms_min": 2,
+                "number_of_bedrooms_max": 5,
+                "number_of_bathrooms_min": 2,
+                "number_of_bathrooms_max": 4,
                 "room_type": "private",
                 "food_groups_allowed": "vegan",
                 "pets_allowed": "all",
                 "washer": "on",
-                "Dryer": "on",
+                "dryer": "on",
                 "utilities_included": "on",
                 "furnished": "on",
                 "dishwasher": "on",
                 "parking": "on",
+                "sort": "-monthly_rent",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/rentee_listings.html")
+
+    def test_listing_results_view_recommendation_all_0_authenticated_user(self):
+        self.client.force_login(self.user)
+        self.user.birth_date = timezone.now().date() - timedelta(days=0)
+        self.user.save()
+        user2 = User.objects.create_user(
+            username="testuser2",
+            password="testpass2",
+            email="testuser2@example.edu",
+        )
+        user2.smokes = True
+        user2.birth_date = timezone.now().date() - timedelta(days=0)
+        user2.save()
+        user3 = User.objects.create_user(
+            username="testuser3",
+            password="testpass3",
+            email="testuser3@example.edu",
+        )
+        user3.pets = Pets.DOGS
+        user3.birth_date = timezone.now().date() - timedelta(days=0)
+        user3.save()
+        Listing.objects.create(
+            user=user2,
+            title="Test Listing 2-1",
+            monthly_rent=1000,
+        )
+        Listing.objects.create(
+            user=user3,
+            title="Test Listing 3-1",
+            monthly_rent=1000,
+        )
+        Listing.objects.create(
+            user=user2,
+            title="Test Listing 2-2",
+            monthly_rent=1100,
+        )
+        Rating.objects.create(rater=self.user, ratee=user2, rating=4.0)
+        Rating.objects.create(rater=user3, ratee=user2, rating=1.0)
+        Rating.objects.create(rater=user2, ratee=user3, rating=5.0)
+        response = self.client.get(
+            reverse("rrapp:rentee_listings"),
+            {
+                "sort": "recommendation",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/rentee_listings.html")
+
+    def test_listing_results_view_recommendation_no_rating_authenticated_user(self):
+        self.client.force_login(self.user)
+        user2 = User.objects.create_user(
+            username="testuser2",
+            password="testpass2",
+            email="testuser2@example.edu",
+        )
+        user2.smokes = True
+        user3 = User.objects.create_user(
+            username="testuser3",
+            password="testpass3",
+            email="testuser3@example.edu",
+        )
+        user3.pets = Pets.DOGS
+        Listing.objects.create(
+            user=user2,
+            title="Test Listing 2-1",
+            monthly_rent=1000,
+        )
+        Listing.objects.create(
+            user=user3,
+            title="Test Listing 3-1",
+            monthly_rent=1000,
+        )
+        Listing.objects.create(
+            user=user2,
+            title="Test Listing 2-2",
+            monthly_rent=1100,
+        )
+        response = self.client.get(
+            reverse("rrapp:rentee_listings"),
+            {
+                "sort": "recommendation",
             },
         )
         self.assertEqual(response.status_code, 200)
