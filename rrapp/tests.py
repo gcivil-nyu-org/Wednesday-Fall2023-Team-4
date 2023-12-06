@@ -11,8 +11,6 @@ from rrapp.forms import ListingForm, QuizForm, UserForm
 from .models import Listing, Rentee, Renter, SavedListing, Rating, Pets
 from chat.models import DirectMessagePermission, Permission
 
-from psycopg2.extras import NumericRange
-
 User = get_user_model()
 
 
