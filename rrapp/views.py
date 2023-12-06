@@ -728,7 +728,6 @@ class ListingNewView(generic.CreateView):
 
         if form.is_valid():
             form_data = form.cleaned_data
-
             listing = Listing.objects.create(
                 user=request.user,
                 status=form_data.get("status"),
