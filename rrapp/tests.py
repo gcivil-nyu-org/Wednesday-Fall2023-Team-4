@@ -1,10 +1,12 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.utils import timezone
+from datetime import timedelta
 
 import datetime
 
-from rrapp.forms import QuizForm
+from rrapp.forms import ListingForm, QuizForm, UserForm
 
 from .models import Listing, Rentee, Renter, SavedListing, Rating, Pets
 from chat.models import DirectMessagePermission, Permission
@@ -136,6 +138,7 @@ class RegisterViewTest(ViewsTestCase):
             "username": "testuser222",
             "pets": "dogs",
             "food_group": "all",
+            "birth_date": timezone.now().date() - timedelta(days=5),
         }
 
         response = self.client.post(
@@ -394,18 +397,107 @@ class ListingResultsViewTest(ViewsTestCase):
         response = self.client.get(
             reverse("rrapp:rentee_listings"),
             {
-                "monthly_rent": 1000,
-                "number_of_bedrooms": 2,
-                "number_of_bathrooms": 2,
+                "monthly_rent_min": 500,
+                "monthly_rent_max": 1500,
+                "number_of_bedrooms_min": 2,
+                "number_of_bedrooms_max": 5,
+                "number_of_bathrooms_min": 2,
+                "number_of_bathrooms_max": 4,
                 "room_type": "private",
                 "food_groups_allowed": "vegan",
                 "pets_allowed": "all",
                 "washer": "on",
-                "Dryer": "on",
+                "dryer": "on",
                 "utilities_included": "on",
                 "furnished": "on",
                 "dishwasher": "on",
                 "parking": "on",
+                "sort": "-monthly_rent",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/rentee_listings.html")
+
+    def test_listing_results_view_recommendation_all_0_authenticated_user(self):
+        self.client.force_login(self.user)
+        self.user.birth_date = timezone.now().date() - timedelta(days=0)
+        self.user.save()
+        user2 = User.objects.create_user(
+            username="testuser2",
+            password="testpass2",
+            email="testuser2@example.edu",
+        )
+        user2.smokes = True
+        user2.birth_date = timezone.now().date() - timedelta(days=0)
+        user2.save()
+        user3 = User.objects.create_user(
+            username="testuser3",
+            password="testpass3",
+            email="testuser3@example.edu",
+        )
+        user3.pets = Pets.DOGS
+        user3.birth_date = timezone.now().date() - timedelta(days=0)
+        user3.save()
+        Listing.objects.create(
+            user=user2,
+            title="Test Listing 2-1",
+            monthly_rent=1000,
+        )
+        Listing.objects.create(
+            user=user3,
+            title="Test Listing 3-1",
+            monthly_rent=1000,
+        )
+        Listing.objects.create(
+            user=user2,
+            title="Test Listing 2-2",
+            monthly_rent=1100,
+        )
+        Rating.objects.create(rater=self.user, ratee=user2, rating=4.0)
+        Rating.objects.create(rater=user3, ratee=user2, rating=1.0)
+        Rating.objects.create(rater=user2, ratee=user3, rating=5.0)
+        response = self.client.get(
+            reverse("rrapp:rentee_listings"),
+            {
+                "sort": "recommendation",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rrapp/rentee_listings.html")
+
+    def test_listing_results_view_recommendation_no_rating_authenticated_user(self):
+        self.client.force_login(self.user)
+        user2 = User.objects.create_user(
+            username="testuser2",
+            password="testpass2",
+            email="testuser2@example.edu",
+        )
+        user2.smokes = True
+        user3 = User.objects.create_user(
+            username="testuser3",
+            password="testpass3",
+            email="testuser3@example.edu",
+        )
+        user3.pets = Pets.DOGS
+        Listing.objects.create(
+            user=user2,
+            title="Test Listing 2-1",
+            monthly_rent=1000,
+        )
+        Listing.objects.create(
+            user=user3,
+            title="Test Listing 3-1",
+            monthly_rent=1000,
+        )
+        Listing.objects.create(
+            user=user2,
+            title="Test Listing 2-2",
+            monthly_rent=1100,
+        )
+        response = self.client.get(
+            reverse("rrapp:rentee_listings"),
+            {
+                "sort": "recommendation",
             },
         )
         self.assertEqual(response.status_code, 200)
@@ -524,7 +616,7 @@ class ListingNewViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
 
-class ProfileViewTest(TestCase):
+class ProfileViewTest(TestCase):  # TODO
     def test_profile_view_get(self):
         client = Client()
         response = client.get(reverse("rrapp:profile"))
@@ -532,10 +624,33 @@ class ProfileViewTest(TestCase):
 
     def test_profile_view_post(self):
         client = Client()
-        response = client.post(
-            reverse("rrapp:profile"),
-            {"first_name": "Test", "last_name": "User"},
-        )
+        data = {
+            "first_name": "Test",
+            "last_name": "User",
+            "birth_date": "2000-01-01",
+            "bio": "Test bio",
+            "smokes": True,
+            "pets": "dogs",
+            "food_group": "all",
+            "phone_number": "1234567890",
+        }
+        form = UserForm(data)
+        response = client.post(reverse("rrapp:profile"), data)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(response.status_code, 302)
+
+    def test_profile_view_post_invalid(self):
+        client = Client()
+        data = {
+            "first_name": "",
+            "last_name": "",
+            "birth_date": "2077-01-01",
+            "bio": "Test bio",
+            "phone_number": "",
+        }
+        form = UserForm(data)
+        response = client.post(reverse("rrapp:profile"), data)
+        self.assertFalse(form.is_valid())
         self.assertEqual(response.status_code, 302)
 
 
@@ -561,10 +676,89 @@ class ListingUpdateViewTest(TestCase):
 
     def test_listing_update_view_post(self):
         client = Client()
+        data = {
+            "status": "active",
+            "title": "Updated Listing",
+            "description": "Updated description",
+            "monthly_rent": 1000,
+            "date_available_from": "2021-01-01",
+            "date_available_to": "2077-12-31",
+            "property_type": "apartment",
+            "room_type": "shared",
+            "address1": "1234 Test St",
+            "address2": "Apt 1",
+            "zip_code": "12345",
+            "city": "New York",
+            "state": "NY",
+            "country": "US",
+            "washer": True,
+            "dryer": True,
+            "dishwasher": True,
+            "microwave": True,
+            "baking_oven": True,
+            "parking": True,
+            "number_of_bedrooms": 2,
+            "number_of_bathrooms": 2,
+            "furnished": True,
+            "utilities_included": True,
+            "age_range_0": 20,
+            "age_range_1": 30,
+            "smoking_allowed": True,
+            "pets_allowed": "all",
+            "food_groups_allowed": "all",
+            "restrict_to_matches": True,
+            "existing_photos": "[]",
+            "add_photos": "[]",
+        }
+        form = ListingForm(data)
         response = client.post(
-            reverse("rrapp:listing_detail_modify", kwargs={"pk": 1}),
-            {"title": "Updated Listing"},
+            reverse("rrapp:listing_detail_modify", kwargs={"pk": 1}), data
         )
+        print(form.errors)
+        self.assertTrue(form.is_valid())
+        self.assertIn(response.status_code, [200, 302])
+
+    def test_listing_update_view_post_invalid(self):
+        client = Client()
+        data = {
+            "status": "active",
+            "title": "Updated Listing",
+            "description": "Updated description",
+            "monthly_rent": -1,
+            "date_available_from": "2021-01-01",
+            "date_available_to": "2020-12-31",
+            "property_type": "apartment",
+            "room_type": "shared",
+            "address1": "1234 Test St",
+            "address2": "Apt 1",
+            "zip_code": "12345",
+            "city": "New York",
+            "state": "NY",
+            "country": "US",
+            "washer": True,
+            "dryer": True,
+            "dishwasher": True,
+            "microwave": True,
+            "baking_oven": True,
+            "parking": True,
+            "number_of_bedrooms": -1,
+            "number_of_bathrooms": -1,
+            "furnished": True,
+            "utilities_included": True,
+            "age_range_0": 10,
+            "age_range_1": 130,
+            "smoking_allowed": True,
+            "pets_allowed": "all",
+            "food_groups_allowed": "all",
+            "restrict_to_matches": True,
+            "existing_photos": "[]",
+            "add_photos": "[]",
+        }
+        form = ListingForm(data)
+        response = client.post(
+            reverse("rrapp:listing_detail_modify", kwargs={"pk": 1}), data
+        )
+        self.assertFalse(form.is_valid())
         self.assertIn(response.status_code, [200, 302])
 
 
