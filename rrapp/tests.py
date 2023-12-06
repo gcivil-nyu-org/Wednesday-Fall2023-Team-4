@@ -721,49 +721,48 @@ class ListingUpdateViewTest(TestCase):
         self.assertIn(response.status_code, [200, 302])
 
 
-def test_listing_update_view_post_invalid(self):
-    client = Client()
-    data = {
-        "status": "active",
-        "title": "Updated Listing",
-        "description": "Updated description",
-        "monthly_rent": -1,
-        "date_available_from": "2021-01-01",
-        "date_available_to": "2020-12-31",
-        "property_type": "apartment",
-        "room_type": "shared",
-        "address1": "1234 Test St",
-        "address2": "Apt 1",
-        "zip_code": "12345",
-        "city": "New York",
-        "state": "NY",
-        "country": "US",
-        "washer": True,
-        "dryer": True,
-        "dishwasher": True,
-        "microwave": True,
-        "baking_oven": True,
-        "parking": True,
-        "number_of_bedrooms": -1,
-        "number_of_bathrooms": -1,
-        "furnished": True,
-        "utilities_included": True,
-        "age_range_0": 10,
-        "age_range_1": 130,
-        "smoking_allowed": True,
-        "pets_allowed": "all",
-        "food_groups_allowed": "all",
-        "restrict_to_matches": True,
-        "existing_photos": "[]",
-        "add_photos": "[]",
-    }
-    form = ListingForm(data)
-    response = client.post(
-        reverse("rrapp:listing_detail_modify", kwargs={"pk": 1}), data
-    )
-    print(form.errors)
-    self.assertFalse(form.is_valid())
-    self.assertIn(response.status_code, [200, 302])
+    def test_listing_update_view_post_invalid(self):
+        client = Client()
+        data = {
+            "status": "active",
+            "title": "Updated Listing",
+            "description": "Updated description",
+            "monthly_rent": -1,
+            "date_available_from": "2021-01-01",
+            "date_available_to": "2020-12-31",
+            "property_type": "apartment",
+            "room_type": "shared",
+            "address1": "1234 Test St",
+            "address2": "Apt 1",
+            "zip_code": "12345",
+            "city": "New York",
+            "state": "NY",
+            "country": "US",
+            "washer": True,
+            "dryer": True,
+            "dishwasher": True,
+            "microwave": True,
+            "baking_oven": True,
+            "parking": True,
+            "number_of_bedrooms": -1,
+            "number_of_bathrooms": -1,
+            "furnished": True,
+            "utilities_included": True,
+            "age_range_0": 10,
+            "age_range_1": 130,
+            "smoking_allowed": True,
+            "pets_allowed": "all",
+            "food_groups_allowed": "all",
+            "restrict_to_matches": True,
+            "existing_photos": "[]",
+            "add_photos": "[]",
+        }
+        form = ListingForm(data)
+        response = client.post(
+            reverse("rrapp:listing_detail_modify", kwargs={"pk": 1}), data
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn(response.status_code, [200, 302])
 
 
 class PersonalQuizViewTest(TestCase):
