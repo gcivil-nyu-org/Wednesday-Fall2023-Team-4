@@ -817,6 +817,8 @@ class PublicProfileView(generic.DetailView):
         'pets',
         'food_group',
         'rating',
+        'is_verified',
+        'verified_student',
     ]
 
     def get_context_data(self, **kwargs: Any):
