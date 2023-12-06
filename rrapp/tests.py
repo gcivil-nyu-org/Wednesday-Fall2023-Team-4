@@ -616,7 +616,7 @@ class ListingNewViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
 
-class ProfileViewTest(TestCase): #TODO
+class ProfileViewTest(TestCase):  # TODO
     def test_profile_view_get(self):
         client = Client()
         response = client.get(reverse("rrapp:profile"))
@@ -635,8 +635,7 @@ class ProfileViewTest(TestCase): #TODO
             "phone_number": "1234567890",
         }
         form = UserForm(data)
-        response = client.post(
-            reverse("rrapp:profile"), data)
+        response = client.post(reverse("rrapp:profile"), data)
         self.assertTrue(form.is_valid())
         self.assertEqual(response.status_code, 302)
 
@@ -650,11 +649,10 @@ class ProfileViewTest(TestCase): #TODO
             "phone_number": "",
         }
         form = UserForm(data)
-        response = client.post(
-            reverse("rrapp:profile"), data)
+        response = client.post(reverse("rrapp:profile"), data)
         self.assertFalse(form.is_valid())
         self.assertEqual(response.status_code, 302)
-        
+
 
 class PublicProfileViewTest(TestCase):
     def test_public_profile_view(self):
