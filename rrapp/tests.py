@@ -720,7 +720,6 @@ class ListingUpdateViewTest(TestCase):
         self.assertTrue(form.is_valid())
         self.assertIn(response.status_code, [200, 302])
 
-
     def test_listing_update_view_post_invalid(self):
         client = Client()
         data = {
