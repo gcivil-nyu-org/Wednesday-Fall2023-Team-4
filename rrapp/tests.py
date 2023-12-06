@@ -6,7 +6,7 @@ from datetime import timedelta
 
 import datetime
 
-from rrapp.forms import QuizForm
+from rrapp.forms import QuizForm, UserForm
 
 from .models import Listing, Rentee, Renter, SavedListing, Rating, Pets
 from chat.models import DirectMessagePermission, Permission
@@ -624,15 +624,37 @@ class ProfileViewTest(TestCase): #TODO
 
     def test_profile_view_post(self):
         client = Client()
+        data = {
+            "first_name": "Test",
+            "last_name": "User",
+            "birth_date": "2000-01-01",
+            "bio": "Test bio",
+            "smokes": True,
+            "pets": "dogs",
+            "food_group": "all",
+            "phone_number": "1234567890",
+        }
+        form = UserForm(data)
         response = client.post(
-            reverse("rrapp:profile"),
-            {"first_name": "Test",
-             "last_name": "User",
-            
-            },
-        )
+            reverse("rrapp:profile"), data)
+        self.assertTrue(form.is_valid())
         self.assertEqual(response.status_code, 302)
 
+    def test_profile_view_post_invalid(self):
+        client = Client()
+        data = {
+            "first_name": "",
+            "last_name": "",
+            "birth_date": "2077-01-01",
+            "bio": "Test bio",
+            "phone_number": "",
+        }
+        form = UserForm(data)
+        response = client.post(
+            reverse("rrapp:profile"), data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(response.status_code, 302)
+        
 
 class PublicProfileViewTest(TestCase):
     def test_public_profile_view(self):
