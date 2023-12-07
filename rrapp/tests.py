@@ -729,6 +729,7 @@ class ListingUpdateViewTest(TestCase):
             "date_available_to": "2020-12-31",
             "property_type": "apartment",
             "room_type": "shared",
+            "gender_type": "Male",
             "address1": "1234 Test St",
             "address2": "Apt 1",
             "zip_code": "12345",
