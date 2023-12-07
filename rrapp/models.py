@@ -62,7 +62,6 @@ class LeaseType(models.TextChoices):
     EXISTING = "existing", _("Existing")
 
 
-
 class Genders(models.TextChoices):
     MALE = "male", _("Male")
     FEMALE = "female", _("Female")

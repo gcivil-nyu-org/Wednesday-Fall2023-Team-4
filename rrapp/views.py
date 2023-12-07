@@ -8,8 +8,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AbstractBaseUser
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 
 from django.contrib.messages.views import SuccessMessageMixin
@@ -33,7 +31,7 @@ from django.views import generic
 from django.template.loader import render_to_string
 
 from psycopg2.extras import NumericRange
-from typing import Any, List
+from typing import Any
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
