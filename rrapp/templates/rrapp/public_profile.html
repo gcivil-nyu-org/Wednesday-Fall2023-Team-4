@@ -35,6 +35,13 @@
                     <div class = "d-flex flex-column align-items-center board rounded-3" style="background-color:#F8F8F8">
                         <h1 class="font-monospace display-5 fw-medium text-body-emphasis my-3">User Profile</h1>
                         <div>
+                            {% if tarUser.profile_picture %}
+                                <img src="{{ tarUser.profile_picture.url }}" class="card-img-top" width="400" height="400"></img>
+                            {% else %}
+                                <img src="{% static 'rrapp/DefaultProfile.jpg' %}" class="card-img-top" width="400" height="400"></img>
+                            {% endif %}
+                        </div>
+                        <div>
                             <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Username :</b> {{ tarUser.username }}</p>
                             <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Name :</b> {{ tarUser.first_name }} {{ tarUser.last_name }} </p>
                             <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Bio :</b> {{ tarUser.bio }} </p>

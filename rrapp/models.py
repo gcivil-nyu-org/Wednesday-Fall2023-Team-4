@@ -56,6 +56,10 @@ class Status(models.TextChoices):
     ACTIVE = "active", _("Active")
     INACTIVE = "inactive", _("Inactive")
 
+class LeaseType(models.TextChoices):
+    NEW = "new", _("New")
+    EXISTING = "existing", _("Existing")
+
 
 class Preference(models.Model):
     age_range = IntegerRangeField(
@@ -428,6 +432,12 @@ class Listing(models.Model):
     number_of_bathrooms = models.IntegerField(default=1)
     furnished = models.BooleanField(default=True)
     utilities_included = models.BooleanField(default=True)
+
+    lease_type = models.CharField(
+        max_length=20,
+        choices=LeaseType.choices,
+        default=LeaseType.NEW,
+    )
 
     # preferences
     age_range = IntegerRangeField(

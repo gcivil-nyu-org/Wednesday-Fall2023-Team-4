@@ -261,6 +261,18 @@
 
                         <div class="col-3 p-2">
                             <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Lease type :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.lease_type }}</div>
+                            </div>
+                        </div>
+                        
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
                                 <div class="p-2 text-left">Utilities :</div>
                             </div>
                         </div>
@@ -381,12 +393,12 @@
                             </div>
                         </div>
 
-                        <div class="col-6 p-2">
+                        <div class="col-3 p-2">
                             <div class="board w-100 h-100 rounded-3 back-left">
                                 <div class="p-2 text-left">Restricted to matching rentees :</div>
                             </div>
                         </div>
-                        <div class="col-6 p-2">
+                        <div class="col-3 p-2">
                             <div class="board w-100 h-100 rounded-3 back-right">
                                 <div class="p-2 text-right">{{ object.restrict_to_matches }}</div>
                             </div>
