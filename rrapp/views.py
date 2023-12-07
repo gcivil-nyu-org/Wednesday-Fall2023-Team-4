@@ -753,6 +753,7 @@ class ListingNewView(generic.CreateView):
                 number_of_bathrooms=form_data.get("number_of_bathrooms"),
                 furnished=form_data.get("furnished") == "true",
                 utilities_included=form_data.get("utilities_included") == "true",
+                lease_type=form_data.get("lease_type"),
                 smoking_allowed=form_data.get("smoking_allowed") == "true",
                 pets_allowed=form_data.get("pets_allowed"),
                 food_groups_allowed=form_data.get("food_groups_allowed"),
@@ -760,6 +761,7 @@ class ListingNewView(generic.CreateView):
                     int(form_data.get("age_range").lower),
                     int(form_data.get("age_range").upper),
                 ),
+                restrict_to_matches=form_data.get("restrict_to_matches") == "true",
             )
             listing.save()
             for file in request.FILES.getlist('add_photos'):

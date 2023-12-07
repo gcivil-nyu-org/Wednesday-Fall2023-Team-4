@@ -287,6 +287,7 @@ class ListingForm(ModelForm):
             "number_of_bathrooms",
             "furnished",
             "utilities_included",
+            "lease_type",
             "age_range",
             "smoking_allowed",
             "pets_allowed",

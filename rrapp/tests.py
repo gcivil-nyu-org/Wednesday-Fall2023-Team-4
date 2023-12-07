@@ -701,6 +701,7 @@ class ListingUpdateViewTest(TestCase):
             "number_of_bathrooms": 2,
             "furnished": True,
             "utilities_included": True,
+            "lease_type": "new",
             "age_range_0": 20,
             "age_range_1": 30,
             "smoking_allowed": True,
