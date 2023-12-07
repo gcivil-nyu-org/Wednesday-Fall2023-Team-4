@@ -139,6 +139,7 @@ class RegisterViewTest(ViewsTestCase):
             "pets": "dogs",
             "food_group": "all",
             "birth_date": timezone.now().date() - timedelta(days=5),
+            "gender": "non_binary",
         }
 
         response = self.client.post(
@@ -628,6 +629,7 @@ class ProfileViewTest(TestCase):  # TODO
             "first_name": "Test",
             "last_name": "User",
             "birth_date": "2000-01-01",
+            "gender": "female",
             "bio": "Test bio",
             "smokes": True,
             "pets": "dogs",
@@ -707,6 +709,7 @@ class ListingUpdateViewTest(TestCase):
             "smoking_allowed": True,
             "pets_allowed": "all",
             "food_groups_allowed": "all",
+            "preferred_gender": "female",
             "restrict_to_matches": True,
             "existing_photos": "[]",
             "add_photos": "[]",

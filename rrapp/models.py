@@ -62,32 +62,11 @@ class LeaseType(models.TextChoices):
     EXISTING = "existing", _("Existing")
 
 
-class Preference(models.Model):
-    age_range = IntegerRangeField(
-        default=NumericRange(1, 101),
-        blank=True,
-        validators=[RangeMinValueValidator(1), RangeMaxValueValidator(100)],
-    )
-    smoking_allowed = models.BooleanField()
-    pets_allowed = models.CharField(
-        max_length=20,
-        choices=Pets.choices,
-        default=Pets.NONE,
-    )
-    food_groups_allowed = models.CharField(
-        max_length=20,
-        choices=FoodGroup.choices,
-        default=FoodGroup.ALL,
-    )
-
-
-class Amenities(models.Model):
-    washer = models.BooleanField(default=True)
-    dryer = models.BooleanField(default=True)
-    dishwasher = models.BooleanField(default=True)
-    microwave = models.BooleanField(default=True)
-    baking_oven = models.BooleanField(default=True)
-    parking = models.BooleanField(default=False)
+class Genders(models.TextChoices):
+    MALE = "male", _("Male")
+    FEMALE = "female", _("Female")
+    NON_BINARY = "non_binary", _("Non Binary")
+    ALL = "all", _("All")
 
 
 class CustomUserManager(BaseUserManager):
@@ -131,7 +110,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    bio = models.TextField(default="")  # Does it nullable?
+    bio = models.TextField(default="")  # Is it nullable?
+    gender = models.CharField(
+        max_length=20,
+        choices=[x for x in Genders.choices[:-1]],
+        default=Genders.MALE,
+    )
     profile_picture = models.ImageField(
         upload_to=user_directory_path,
         height_field=None,
@@ -441,6 +425,11 @@ class Listing(models.Model):
     )
 
     # preferences
+    preferred_gender = models.CharField(
+        max_length=20,
+        choices=Genders.choices,
+        default=Genders.ALL,
+    )
     age_range = IntegerRangeField(
         default=NumericRange(18, 60),
         blank=True,

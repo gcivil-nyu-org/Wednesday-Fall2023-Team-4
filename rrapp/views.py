@@ -8,8 +8,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AbstractBaseUser
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 
 from django.contrib.messages.views import SuccessMessageMixin
@@ -33,7 +31,7 @@ from django.views import generic
 from django.template.loader import render_to_string
 
 from psycopg2.extras import NumericRange
-from typing import Any, List
+from typing import Any
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
@@ -756,6 +754,7 @@ class ListingNewView(generic.CreateView):
                 lease_type=form_data.get("lease_type"),
                 smoking_allowed=form_data.get("smoking_allowed") == "true",
                 pets_allowed=form_data.get("pets_allowed"),
+                preferred_gender=form_data.get("preferred_gender"),
                 food_groups_allowed=form_data.get("food_groups_allowed"),
                 age_range=NumericRange(
                     int(form_data.get("age_range").lower),
@@ -813,6 +812,7 @@ class PublicProfileView(generic.DetailView):
         'username',
         'first_name',
         'last_name',
+        'gender',
         'bio',
         'smokes',
         'pets',
@@ -976,21 +976,6 @@ def deleteAccount(request):
     return render(
         request, 'rrapp/confirm_delete_user.html', {"user_id": request.user.id}
     )
-
-
-class UsersListView(LoginRequiredMixin, generic.ListView):
-    http_method_names = [
-        'get',
-    ]
-
-    def get_queryset(self):
-        return User.objects.all().exclude(id=self.request.user.id)
-
-    def render_to_response(self, context, **response_kwargs):
-        users: List[AbstractBaseUser] = context['object_list']
-
-        data = [{"username": usr.get_username(), "pk": str(usr.pk)} for usr in users]
-        return JsonResponse(data, safe=False, **response_kwargs)
 
 
 def get_inbox_count(username):
