@@ -32,6 +32,10 @@ class PropertyType(models.TextChoices):
     INDEPENDENT_HOUSE = "independent_house", _("Independent house")
     APARTMENT = "apartment", _("Apartment")
 
+class GenderType(models.TextChoices):
+    MALE = "Male", _("Male")
+    FEMALE = "Female", _("Female")
+    ALL = "All", _("All")
 
 class RoomType(models.TextChoices):
     PRIVATE = "private", _("Private")
@@ -403,7 +407,11 @@ class Listing(models.Model):
         choices=RoomType.choices,
         default=RoomType.PRIVATE,
     )
-
+    gender_type = models.CharField(
+        max_length=20,
+        choices=GenderType.choices,
+        default=GenderType.ALL,
+    )
     address1 = models.CharField("Address line 1", max_length=1024, default="")
 
     address2 = models.CharField("Address line 2", max_length=1024, default="")

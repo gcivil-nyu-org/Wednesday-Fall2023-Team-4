@@ -271,6 +271,7 @@ class ListingForm(ModelForm):
             "date_available_to",
             "property_type",
             "room_type",
+            "gender_type",
             "address1",
             "address2",
             "zip_code",
