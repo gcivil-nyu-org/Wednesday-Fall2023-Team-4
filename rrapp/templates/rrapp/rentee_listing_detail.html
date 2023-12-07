@@ -265,6 +265,17 @@
 
                         <div class="col-3 p-2">
                             <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Lease type :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.lease_type }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
                                 <div class="p-2 text-left">Utilities :</div>
                             </div>
                         </div>
@@ -342,7 +353,7 @@
 
                         <div class="col-3 p-2">
                             <div class="board w-100 h-100 rounded-3 back-left">
-                                <div class="p-2 text-left">Age Range :</div>
+                                <div class="p-2 text-left">Preferred age group :</div>
                             </div>
                         </div>
                         <div class="col-3 p-2">
@@ -353,7 +364,7 @@
 
                         <div class="col-3 p-2">
                             <div class="board w-100 h-100 rounded-3 back-left">
-                                <div class="p-2 text-left">Smoking Allowed :</div>
+                                <div class="p-2 text-left">Smoking allowed :</div>
                             </div>
                         </div>
                         <div class="col-3 p-2">
@@ -364,7 +375,7 @@
 
                         <div class="col-3 p-2">
                             <div class="board w-100 h-100 rounded-3 back-left">
-                                <div class="p-2 text-left">Pets Allowed :</div>
+                                <div class="p-2 text-left">Preferred pets :</div>
                             </div>
                         </div>
                         <div class="col-3 p-2">
@@ -375,7 +386,7 @@
 
                         <div class="col-3 p-2">
                             <div class="board w-100 h-100 rounded-3 back-left">
-                                <div class="p-2 text-left">Food Allowed :</div>
+                                <div class="p-2 text-left">Preferred food group :</div>
                             </div>
                         </div>
                         <div class="col-3 p-2">
@@ -384,12 +395,23 @@
                             </div>
                         </div>
 
-                        <div class="col-6 p-2">
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-left">
+                                <div class="p-2 text-left">Preferred gender :</div>
+                            </div>
+                        </div>
+                        <div class="col-3 p-2">
+                            <div class="board w-100 h-100 rounded-3 back-right">
+                                <div class="p-2 text-right">{{ object.preferred_gender }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 p-2">
                             <div class="board w-100 h-100 rounded-3 back-left">
                                 <div class="p-2 text-left">Restricted to matching rentees :</div>
                             </div>
                         </div>
-                        <div class="col-6 p-2">
+                        <div class="col-3 p-2">
                             <div class="board w-100 h-100 rounded-3 back-right">
                                 <div class="p-2 text-right">{{ object.restrict_to_matches }}</div>
                             </div>
