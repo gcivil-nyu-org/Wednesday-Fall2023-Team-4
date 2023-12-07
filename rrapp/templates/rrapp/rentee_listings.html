@@ -175,7 +175,7 @@
                             
                             <div class="mb-3 row">
                                 <!-- Room Type Filter -->
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <!-- <label for="filter-room-type" class="form-label">Room Type</label> -->
                                     <select class="form-select" id="filter-room-type" name="room_type">
                                         <option value="">All Room Type</option>
@@ -185,7 +185,7 @@
                                 </div>
 
                                 <!-- Food Groups Allowed Filter -->
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <!-- <label for="filter-food-groups-allowed" class="form-label">Food Groups Allowed</label> -->
                                     <select class="form-select" id="filter-food-groups-allowed" name="food_groups_allowed">
                                         <option value="">All Food Groups</option>
@@ -197,7 +197,7 @@
                                 </div>
 
                                 <!-- Pets Filter -->
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <!-- <label for="filter-pets_allowed" class="form-label">Pets Allowed</label> -->
                                     <select class="form-select" id="filter-pets_allowed" name="pets_allowed">
                                         <option value="">All Pets Type</option>
@@ -207,6 +207,19 @@
                                         <option value="dogs" {% if request.GET.pets_allowed == 'dogs' %}selected{% endif %}>Dogs</option>
                                     </select>
                                 </div>
+
+                                <!-- Gender Filter -->
+                                <div class="col-md-3">
+                                    <!-- <label for="filter-pets_allowed" class="form-label">Pets Allowed</label> -->
+                                    <select class="form-select" id="filter-preferred_gender" name="preferred_gender">
+                                        <option value="">All Gender Type</option>
+                                        <option value="male" {% if request.GET.preferred_gender == 'male' %}selected{% endif %}>Male</option>
+                                        <option value="all" {% if request.GET.preferred_gender == 'all' %}selected{% endif %}>All</option>
+                                        <option value="female" {% if request.GET.preferred_gender == 'female' %}selected{% endif %}>Female</option>
+                                        <option value="non_binary" {% if request.GET.preferred_gender == 'non_binary' %}selected{% endif %}>Non Binary</option>
+                                    </select>
+                                </div>
+
                             </div>
                             
                             <div class="mb-3 row">
