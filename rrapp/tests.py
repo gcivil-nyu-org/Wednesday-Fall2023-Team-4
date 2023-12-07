@@ -684,6 +684,7 @@ class ListingUpdateViewTest(TestCase):
             "date_available_from": "2021-01-01",
             "date_available_to": "2077-12-31",
             "property_type": "apartment",
+            "gender_type": "Male",
             "room_type": "shared",
             "address1": "1234 Test St",
             "address2": "Apt 1",

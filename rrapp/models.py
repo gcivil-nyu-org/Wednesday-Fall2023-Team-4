@@ -32,12 +32,10 @@ class PropertyType(models.TextChoices):
     INDEPENDENT_HOUSE = "independent_house", _("Independent house")
     APARTMENT = "apartment", _("Apartment")
 
-
 class GenderType(models.TextChoices):
     MALE = "Male", _("Male")
     FEMALE = "Female", _("Female")
     ALL = "All", _("All")
-
 
 class RoomType(models.TextChoices):
     PRIVATE = "private", _("Private")
