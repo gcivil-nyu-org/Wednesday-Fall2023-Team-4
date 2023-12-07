@@ -219,7 +219,7 @@ if 'EMAIL_HOST_PASSWORD' in os.environ:
 EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
 
 
-GOOGLE_API_KEY = "AIzaSyCkBp171bT7ek-WsLR8g_y0LIvrGpnIpN8"
+GOOGLE_API_KEY = ""
 if 'GOOGLE_API_KEY' in os.environ:
     GOOGLE_API_KEY = os.environ['GOOGLE_API_KEY']
 
