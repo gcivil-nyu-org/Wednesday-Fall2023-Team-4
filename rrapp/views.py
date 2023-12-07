@@ -760,6 +760,7 @@ class ListingNewView(generic.CreateView):
                     int(form_data.get("age_range").lower),
                     int(form_data.get("age_range").upper),
                 ),
+                restrict_to_matches=form_data.get("restrict_to_matches") == "true",
             )
             listing.save()
             for file in request.FILES.getlist('add_photos'):
