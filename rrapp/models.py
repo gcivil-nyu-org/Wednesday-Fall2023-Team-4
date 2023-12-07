@@ -56,6 +56,7 @@ class Status(models.TextChoices):
     ACTIVE = "active", _("Active")
     INACTIVE = "inactive", _("Inactive")
 
+
 class LeaseType(models.TextChoices):
     NEW = "new", _("New")
     EXISTING = "existing", _("Existing")
