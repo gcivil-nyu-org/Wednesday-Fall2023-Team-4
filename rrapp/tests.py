@@ -139,6 +139,7 @@ class RegisterViewTest(ViewsTestCase):
             "pets": "dogs",
             "food_group": "all",
             "birth_date": timezone.now().date() - timedelta(days=5),
+            "gender": "non_binary",
         }
 
         response = self.client.post(
