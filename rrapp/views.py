@@ -601,6 +601,10 @@ class ListingResultsView(generic.ListView):
         if room_type:
             filters &= Q(room_type=room_type)
 
+        gender_type = self.request.GET.get("gender_type")
+        if gender_type:
+            filters &= Q(gender_type=gender_type)
+
         food_groups_allowed = self.request.GET.get("food_groups_allowed")
         if food_groups_allowed:
             filters &= Q(food_groups_allowed=food_groups_allowed)
@@ -738,6 +742,7 @@ class ListingNewView(generic.CreateView):
                 date_available_to=form_data.get("date_available_to"),
                 property_type=form_data.get("property_type"),
                 room_type=form_data.get("room_type"),
+                gender_type=form_data.get("gender_type"),
                 address1=form_data.get("address1"),
                 address2=form_data.get("address2"),
                 zip_code=form_data.get("zip_code"),
