@@ -34,7 +34,6 @@ from psycopg2.extras import NumericRange
 from typing import Any
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
-from celery import shared_task
 
 from chat.models import DirectMessagePermission, Permission
 from chat.utils import get_pending_connections_count
