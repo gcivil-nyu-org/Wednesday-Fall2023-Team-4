@@ -389,7 +389,10 @@ class ListingDetailRenteeView(generic.DetailView):
 
             if len(p) > 0:
                 print("permission already exists", p)
-                messages.error(request, "Cannot send a new request until renter responds to the existing request.")
+                messages.error(
+                    request,
+                    "Cannot send a new request until renter responds to the existing request.",
+                )
             else:
                 # create DirectMessagePermission object in db
                 DirectMessagePermission.objects.create(
