@@ -2,6 +2,9 @@ from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
 from .models import User, Photo
 from django.core.files.storage import default_storage
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 @receiver(pre_save, sender=User)

@@ -2,6 +2,7 @@ import os
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from datetime import timedelta
 from django.conf import settings
 
 from django.contrib.postgres.fields import IntegerRangeField
@@ -146,6 +147,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
     verified_student = models.BooleanField(default=False)
+    auto_expire_time = models.DateTimeField(
+        default=(timezone.now() + timedelta(days=3650))
+    )
     rating = models.FloatField(null=True, default=None, blank=True)
 
     objects = CustomUserManager()
