@@ -881,17 +881,3 @@ class RatingViewTest(ViewsTestCase):
         )
         user = User.objects.get(id=user2.id)
         self.assertTrue(user.rating == 5.0)
-
-
-# class StudentStatusExpireTest(ViewsTestCase):
-#     def student_status_expire(self):
-#         self.client.force_login(self.user)
-#         user.verified_student = True
-#         user.auto_expire_time = timezone.now()
-#         response = self.client.get(
-#             reverse("rrapp:rate_user", kwargs={"ratee_id": self.user.id})
-#         )
-#         self.assertIn(response.status_code, [200, 302])
-#         self.assertFalse(
-#             Rating.objects.filter(rater=self.user, ratee=user2, rating=5.0).exists()
-#         )
