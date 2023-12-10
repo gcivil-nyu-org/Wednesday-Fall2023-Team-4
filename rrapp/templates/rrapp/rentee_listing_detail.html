@@ -15,6 +15,14 @@
         {% include 'rrapp/left_bar.html' with user=user path=path inbox=inbox %}
 
         <div class="text-center right-page">
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
             <div class="container-xxl text-center">
                 <div class="container pt-3">
                     <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">

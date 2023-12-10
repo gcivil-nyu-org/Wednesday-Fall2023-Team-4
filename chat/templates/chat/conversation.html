@@ -53,10 +53,10 @@
                             </div>
 
                             <div>
-                                <div class="list-group scrollarea" id="chat-messages" style="max-height: 500px; overflow-y: scroll; text-align: center; overflow:hidden;">
+                                <div class="list-group scrollarea" id="chat-messages" style="max-height: 1000px; overflow-y: scroll; text-align: center; ">
                                     {%for m in messages %}
-                                                <b>{{ m.sender.username }}:</b>
                                                 <div class="mx-auto mt-1" style="max-width: 80%; word-wrap: break-word;overflow-wrap: break-word;">
+                                                    <b>{{ m.sender.username }}:</b>
                                                     {{ m.content }}
                                                 </div>
                                                 <br>
