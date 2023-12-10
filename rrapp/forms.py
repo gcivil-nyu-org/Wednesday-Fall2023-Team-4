@@ -145,6 +145,20 @@ class MyUserCreationForm(UserCreationForm):
             raise forms.ValidationError("Passwords do not match")
         return password2
 
+    def clean_profile_picture(self):
+        profile_picture = self.cleaned_data.get("profile_picture")
+        if profile_picture:
+            if profile_picture.size > 1024 * 1024 * 3:
+                raise forms.ValidationError("Profile picture is too large (max 3MB)")
+        return profile_picture
+
+    def clean_id_picture(self):
+        id_picture = self.cleaned_data.get("id_picture")
+        if id_picture:
+            if id_picture.size > 1024 * 1024 * 3:
+                raise forms.ValidationError("ID picture is too large (max 3MB)")
+        return id_picture
+
 
 class UserForm(ModelForm):
     birth_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
@@ -209,6 +223,20 @@ class UserForm(ModelForm):
             raise forms.ValidationError("Birth date cannot be in the future")
         return birth_date
 
+    def clean_profile_picture(self):
+        profile_picture = self.cleaned_data.get("profile_picture")
+        if profile_picture:
+            if profile_picture.size > 1024 * 1024 * 3:
+                raise forms.ValidationError("Profile picture is too large (max 3MB)")
+        return profile_picture
+
+    def clean_id_picture(self):
+        id_picture = self.cleaned_data.get("id_picture")
+        if id_picture:
+            if id_picture.size > 1024 * 1024 * 3:
+                raise forms.ValidationError("ID picture is too large (max 3MB)")
+        return id_picture
+
 
 class ListingForm(ModelForm):
     date_available_from = forms.DateField(
@@ -224,7 +252,8 @@ class ListingForm(ModelForm):
         widget=forms.CheckboxSelectMultiple,
     )
     add_photos = forms.FileField(
-        required=False, widget=forms.FileInput(attrs={'multiple': True})
+        required=False,
+        widget=forms.FileInput(attrs={'multiple': True, 'accept': 'image/*'}),
     )
     address1 = forms.CharField(
         max_length=1024,
@@ -355,6 +384,16 @@ class ListingForm(ModelForm):
                         "Maximum age cannot be greater than 100"
                     )
         return age_range
+
+    def clean_add_photos(self):
+        add_photos = self.files.getlist("add_photos")
+        if add_photos:
+            for photo in add_photos:
+                if photo.size > 1024 * 1024 * 3:
+                    raise forms.ValidationError(
+                        f"Photo '{photo.name}' is too large (max 3MB)"
+                    )
+        return add_photos
 
 
 class QuizForm(ModelForm):
