@@ -611,6 +611,10 @@ class ListingResultsView(generic.ListView):
         if pets_allowed:
             filters &= Q(pets_allowed=pets_allowed)
 
+        preferred_gender = self.request.GET.get("preferred_gender")
+        if preferred_gender:
+            filters &= Q(preferred_gender=preferred_gender)
+
         # Continue filtering for other fields if needed
 
         # Combine filters
