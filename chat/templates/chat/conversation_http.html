@@ -43,14 +43,14 @@
                                     {% csrf_token %}
                                     <div class="input" style="text-align: center; align-items: center; ">
                                         <input type="text" class="input rounded-pill" id="chat-message-input" name="chat-message-input" value="" size="50%" placeholder="Message">
-                                        <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-right" id="chat-message-submit">Send</button>
+                                        <button type="submit" class="btn align-item-center rounded-pill btn-lg btn-primary-cus" id="chat-message-submit">Send</button>
                                     </div>
                                     <div class="input" style="text-align: center; align-items: center; ">
                                         {% if recipient_permission %}
                                             {% if recipient_permission.permission != 'blocked' %}
-                                            <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-right" id="block-user" name="block-user" value={{receiver.username}}>Block User</button>
+                                            <button type="submit" class="btn align-item-center rounded-pill btn-lg btn-primary-cus" id="block-user" name="block-user" value={{receiver.username}}>Block User</button>
                                             {% else %}
-                                            <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-right" id="unblock-user" name="unblock-user" value={{receiver.username}}>Unblock User</button>
+                                            <button type="submit" class="btn align-item-center rounded-pill btn-lg btn-primary-cus" id="unblock-user" name="unblock-user" value={{receiver.username}}>Unblock User</button>
                                             {% endif %}
                                         {% endif %}
                                     </div>

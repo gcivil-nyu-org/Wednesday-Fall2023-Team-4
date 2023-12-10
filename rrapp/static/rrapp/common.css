@@ -122,29 +122,6 @@ html, body{
     flex-direction: column;
 }
 
-.cus-btn-left {
-    --bs-btn-color: #FFFFFF;
-    --bs-btn-bg: #00796B;
-    --bs-btn-active-bg: #009688;
-    --bs-btn-hover-bg: #009688;
-    --bs-btn-hover-color: #fff;
-}
-
-.cus-btn-mid {
-    --bs-btn-color: #FFFFFF;
-    --bs-btn-bg: #FF9800;
-    --bs-btn-active-bg: #FFC107;
-    --bs-btn-hover-bg: #FFC107;
-    --bs-btn-hover-color: #fff;
-}
-.cus-btn-right {
-    --bs-btn-color: #FFFFFF;
-    --bs-btn-bg: #2E3236;
-    --bs-btn-active-bg: #455A64;
-    --bs-btn-hover-bg: #455A64;
-    --bs-btn-hover-color: #fff;
-}
-
 .text-left {
     color: #FFFFFF;
 }

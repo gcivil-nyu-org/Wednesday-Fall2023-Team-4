@@ -54,20 +54,19 @@
                             <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Current student? :</b> {{ tarUser.verified_student }}</p>
                             <p class="font-monospace display-6 fw-medium text-body-emphasis my-3"> <b>Rating :</b> {{ tarUser.rating }} </p>
                         </div>
+
+                        {% if rated %}
+                            <a href="{% url 'rrapp:rate_user' tarUser.id %}">
+                                <button type="submit" class="btn align-item-center btn-primary-cus mb-3" name='rate'>Update rating</button>
+                            </a>
+                            <p>My current rating: {{ rating }}</p>
+                        {% else %}
+                        <a href="{% url 'rrapp:rate_user' tarUser.id %}">
+                            <button type="submit" class="btn align-item-center btn-primary-cus mb-3" name='rate'>Rate the user</button>
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
-
-                {% if rated %}
-                    <a href="{% url 'rrapp:rate_user' tarUser.id %}">
-                        <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-left" name='rate'>Update rating</button>
-                    </a>
-                    <p>My current rating: {{ rating }}</p>
-                {% else %}
-                    <a href="{% url 'rrapp:rate_user' tarUser.id %}">
-                        <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-mid" name='rate'>Rate the user</button>
-                    </a>
-                {% endif %}
-
             </div>
         </div>
     </body>
