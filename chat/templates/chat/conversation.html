@@ -5,6 +5,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
         {% load static %}
         <link rel="stylesheet" href="{% static 'rrapp/common.css' %}">
         <title>Inbox</title>
@@ -12,54 +13,122 @@
 
     <body class = "align-items-stretch">
         <div class="back-contianer">
-            {% include 'rrapp/left_bar.html' with user=user path=path %}
-            <div class="text-center right-page">
 
-                <div class = "align-items-center">
-                    <div class="align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
-                        <span class="fs-4 fw-semibold">Conversation with </span>
-                        <a href="{% url 'rrapp:public_profile' receiver.id %}" >
-                            <button type="button" class="btn align-item-center rounded-pill btn-lg btn btn-success">{{receiver.username}}</button>
-                        </a>
-                    </div>
+            {% include 'rrapp/left_bar.html' with user=user path=path %}
+
+            <div class="text-center right-page">
+            
+                <div class="container p-3">
+                    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+                        <ol class="breadcrumb p-3 bg-body-tertiary board rounded-3">
+                            <li class="breadcrumb-item">
+                                <a class="link-body-emphasis fw-semibold text-decoration-none">
+                                    Home
+                                </a>
+                            </li>
+        
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'chat:conversation_home' %}" class="link-body-emphasis fw-semibold text-decoration-none">
+                                    Inbox
+                                </a>
+                            </li>
+
+                            <li class="breadcrumb-item avtive">
+                                {{receiver.username}}
+                            </li>
+                        </ol>
+                    </nav>
                 </div>
 
-                <br>
 
-                <section class="section">
-                    <div  class = "align-items-center">
-                        <div>
+                <div class = "w-100 align-items-center px-5 mb-3">
+                    <div class = "d-flex flex-row board rounded-3 flex-grow-1" style="background-color:#F8F8F8; min-height: 85vh;">
+                        <div class="col-8 p-3 d-flex flex-column-reverse">
+                            <div class="d-flex justify-content-start text-align-center align-items-center p-1">
+                                <div class="input-group me-2">
+                                    <span class="input-group-text">{{sender}}</span>
+                                    <input type="text" class="form-control" id="chat-message-input" name="chat-message-input" value="" placeholder="Enter Message Here...">
+                                </div>
+                                <button type="submit" class="btn align-item-center rounded-pill btn-success-cus" id="chat-message-submit">Send</button>
+                            </div>
+
                             <div>
-                                <div class="list-group scrollarea" id="chat-messages" style="max-height: 500px; overflow-y: scroll; text-align: center;">
+                                <div class="list-group scrollarea" id="chat-messages" style="max-height: 1000px; overflow-y: scroll; text-align: center; ">
                                     {%for m in messages %}
-                                        <p>
-                                            <b>{{ m.sender.username }}</b>: {{ m.content }}<br>
-                                        </p>
+                                                <div class="mx-auto mt-1" style="max-width: 80%; word-wrap: break-word;overflow-wrap: break-word;">
+                                                    <b>{{ m.sender.username }}:</b>
+                                                    {{ m.content }}
+                                                </div>
+                                                <br>
                                     {% endfor %}
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4 d-flex flex-column p-4">
+                            <div class="card text-bg-cus h-100">
+                                {% if target_user.profile_picture %}
+                                    <img src="{{ target_user.profile_picture.url }}" class="card-img-top" width="100%"></img>
+                                {% else %}
+                                    <img src="{% static 'rrapp/DefaultProfile.jpg' %}" class="card-img-top" width="100%"></img>
+                                {% endif %}
+
+                                <h3 class="card-header">
+                                    {{receiver.username}}
+                                </h3>
                                 
-                                <div class="input" style="text-align: center; align-items: center; ">
-                                    <input type="text" class="input rounded-pill" id="chat-message-input" name="chat-message-input" value="" size="50%" placeholder="Message">
-                                    <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-right" id="chat-message-submit">Send</button>
-                                </div>
-                                <form method="post" action="{% url 'chat:conversation' receiver.username %}">
-                                    {% csrf_token %}
-                                    <div class="input" style="text-align: center; align-items: center; ">
-                                        {% if recipient_permission %}
-                                            {% if recipient_permission.permission != 'blocked' %}
-                                            <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-right" id="block-user" name="block-user" value={{receiver.username}}>Block User</button>
-                                            {% else %}
-                                            <button type="submit" class="btn align-item-center rounded-pill btn-lg cus-btn-right" id="unblock-user" name="unblock-user" value={{receiver.username}}>Unblock User</button>
-                                            {% endif %}
+                                <div class="card-body">
+                                    <div class="card-text text-start mx-1 mb-3" style="line-height: 1.8;">
+                                        <i class="bi bi-person-badge me-2"></i>
+
+                                        <span class="badge text-bg-success-cus">Email Verification</span >
+                                        {% if target_user.is_verified%}
+                                            <i class="bi bi-check text-success-cus me-2"></i>
+                                        {% else %}
+                                            <i class="bi bi-x text-danger-cus me-2"></i>
                                         {% endif %}
+
+                                        <span class="badge text-bg-success-cus">Student Verification</span >
+                                        {% if target_user.verified_student%}
+                                            <i class="bi bi-check text-success-cus"></i>
+                                        {% else %}
+                                            <i class="bi bi-x text-danger-cus"></i>
+                                        {% endif %}
+
+                                        <br>
+                                        <i class="bi bi-person-vcard me-2"></i>
+                                        {{target_user.first_name}} {{target_user.last_name}}
+                                        <br>
+                                        <i class="bi bi-telephone me-2"></i>
+                                        {{target_user.phone_number}}
+                                        <br>
+                                        <i class="bi bi-envelope me-2"></i>
+                                        {{target_user.email}}
                                     </div>
-                                </form>
-        
-                                <small class="has-text-grey-light">Your username: {{ sender }}</small>
+
+                                    <a href="{% url 'rrapp:public_profile' receiver.id %}" >
+                                        <button type="button" class="btn align-item-center btn btn-secondary-cus mb-3">View Public Profle</button>
+                                    </a>
+
+                                    <form method="post" action="{% url 'chat:conversation' receiver.username %}" class="my-2">
+                                        {% csrf_token %}
+                                        <div class="input" style="text-align: center; align-items: center; ">
+                                            {% if recipient_permission %}
+                                                {% if recipient_permission.permission != 'blocked' %}
+                                                <button type="submit" class="btn align-item-center btn-danger-cus" id="block-user" name="block-user" value={{receiver.username}}>Block User</button>
+                                                {% else %}
+                                                <button type="submit" class="btn align-item-center btn-success-cus" id="unblock-user" name="unblock-user" value={{receiver.username}}>Unblock User</button>
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    </form>
+                                </div>
+
+
                             </div>
                         </div>
                     </div>
-                </section>
+                </div>
             </div>
         </div>
 

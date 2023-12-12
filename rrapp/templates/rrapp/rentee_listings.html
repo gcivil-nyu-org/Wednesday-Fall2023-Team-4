@@ -4,12 +4,13 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-        {% load static %}
-        <link rel="stylesheet" href="{% static 'rrapp/common.css' %}">
+    
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4J7XIaU4AfV9ig7w8_VTaREoojNxhZx0&callback=initMap" async defer></script>
         <!-- Add noUiSlider CSS -->
         <link href="https://cdn.jsdelivr.net/npm/nouislider/distribute/nouislider.min.css" rel="stylesheet">
-
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'rrapp/common.css' %}">
         <!-- Add noUiSlider JavaScript -->
         <script src="https://cdn.jsdelivr.net/npm/nouislider/distribute/nouislider.min.js"></script>
 
@@ -272,8 +273,8 @@
                                 </div>
                             </div>                
                         
-                            <button type="submit" class="btn btn-primary my-2">Filter</button>
-                            <button type="button" class="btn btn-secondary my-2" onclick="resetFilters()">Reset</button>
+                            <button type="submit" class="btn btn-primary-cus my-2">Filter</button>
+                            <button type="button" class="btn btn-secondary-cus my-2" onclick="resetFilters()">Reset</button>
                             <div class="col-md-6 mx-auto">
                                 <label for="sort-select" class="form-label">Sort by:</label>
                                 <div class="d-flex justify-content-center">
@@ -325,7 +326,7 @@
                         </span>
                     </div>
             </div>
-            <div id="map" style="height: 400px;"></div>
+            <div id="map" class="m-5 rounded-3" style="height: 400px;"></div>
         </div>
 
 
