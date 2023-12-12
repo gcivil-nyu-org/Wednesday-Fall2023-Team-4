@@ -30,7 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "roomierendezvous-app-dev.us-east-1.elasticbeanstalk.com",
-    "roomierendevuous-prod-1-dev.us-west-2.elasticbeanstalk.com",
+    "Wednesday-Fall2023-Team-4-dev.us-west-2.elasticbeanstalk.com",
 ]
 
 
