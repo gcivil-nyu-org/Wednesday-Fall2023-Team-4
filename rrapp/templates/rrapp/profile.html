@@ -76,6 +76,20 @@
                                     <p>{{ user.username }}</p>
                                 </div>
 
+                                <div class="col-6 p-2">
+                                    <p>Email verified? : </p>
+                                </div>
+                                <div class="col-6 p-2">
+                                    <p>{{ user.is_verified }}</p>
+                                </div>
+
+                                <div class="col-6 p-2">
+                                    <p>Student status verified? : </p>
+                                </div>
+                                <div class="col-6 p-2">
+                                    <p>{{ user.verified_student }}</p>
+                                </div>  
+
                                 {% for field in form.visible_fields %}
                                     <div class="col-6 p-2">
                                             {{ field.label_tag }}
