@@ -68,6 +68,7 @@ class ConversationWsView(generic.View):
                 'receiver': receiverUsernameId,
                 'messages': messages,
                 'recipient_permission': recipientPermission,
+                'target_user': receiverUser,
             },
         )
 
