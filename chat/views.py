@@ -137,6 +137,11 @@ class ConversationHomeView(generic.View):
                     ),
                 }
             )
+        all_pending_connection_usernamesids = sorted(
+            all_pending_connection_usernamesids,
+            key=lambda x: x['matchLevel'],
+            reverse=True,
+        )
 
         active_connections = list(
             DirectMessagePermission.objects.filter(
