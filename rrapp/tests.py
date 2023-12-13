@@ -669,15 +669,36 @@ class ShortListViewTest(TestCase):
         response = client.get(reverse("rrapp:shortlist"))
         self.assertIn(response.status_code, [200, 302])
 
+    def test_shortlist_view_non_empty(self):
+        client = Client()
+        user = User.objects.create_user(
+            username="testuser", password="testpass", email="testuser@example.edu"
+        )
+        rentee = Rentee.objects.create(user=user)
+        listing = Listing.objects.create(user=user, title="Test", description="Test")
+        SavedListing.objects.create(rentee_id=rentee, saved_listings=listing)
+        response = client.get(reverse("rrapp:shortlist"))
+        self.assertIn(response.status_code, [200, 302])
+
 
 class ListingUpdateViewTest(TestCase):
     def test_listing_update_view_get(self):
         client = Client()
-        response = client.get(reverse("rrapp:listing_detail_modify", kwargs={"pk": 1}))
+        user = User.objects.create_user(
+            username="testuser", password="testpass", email="testuser@example.edu"
+        )
+        listing = Listing.objects.create(user=user, title="Test", description="Test")
+        response = client.get(
+            reverse("rrapp:listing_detail_modify", kwargs={"pk": listing.id})
+        )
         self.assertIn(response.status_code, [200, 302])
 
     def test_listing_update_view_post(self):
         client = Client()
+        user = User.objects.create_user(
+            username="testuser", password="testpass", email="testuser@example.edu"
+        )
+        listing = Listing.objects.create(user=user, title="Test", description="Test")
         data = {
             "status": "active",
             "title": "Updated Listing",
@@ -716,7 +737,7 @@ class ListingUpdateViewTest(TestCase):
         }
         form = ListingForm(data)
         response = client.post(
-            reverse("rrapp:listing_detail_modify", kwargs={"pk": 1}), data
+            reverse("rrapp:listing_detail_modify", kwargs={"pk": listing.id}), data
         )
         print(form.errors)
         self.assertTrue(form.is_valid())
