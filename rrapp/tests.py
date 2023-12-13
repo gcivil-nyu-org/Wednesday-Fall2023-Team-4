@@ -647,13 +647,10 @@ class ListingNewViewTest(ViewsTestCase):
             "add_photos": "[]",
         }
         form = ListingForm(data)
-        response = self.client.post(
-            reverse("rrapp:listing_new"), data
-        )
+        response = self.client.post(reverse("rrapp:listing_new"), data)
         print(form.errors)
         self.assertTrue(form.is_valid())
         self.assertIn(response.status_code, [200, 302])
-        
 
 
 class ProfileViewTest(TestCase):  # TODO
