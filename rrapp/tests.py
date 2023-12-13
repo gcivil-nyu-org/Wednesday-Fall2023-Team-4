@@ -676,7 +676,7 @@ class ShortListViewTest(TestCase):
         )
         rentee = Rentee.objects.create(user=user)
         listing = Listing.objects.create(user=user, title="Test", description="Test")
-        savedListing = SavedListing.objects.create(
+        SavedListing.objects.create(
             rentee_id=rentee, saved_listings=listing
         )
         response = client.get(reverse("rrapp:shortlist"))
