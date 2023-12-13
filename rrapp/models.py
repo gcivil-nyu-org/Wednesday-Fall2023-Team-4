@@ -2,6 +2,7 @@ import os
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from datetime import timedelta
 from django.conf import settings
 
 from django.contrib.postgres.fields import IntegerRangeField
@@ -57,32 +58,16 @@ class Status(models.TextChoices):
     INACTIVE = "inactive", _("Inactive")
 
 
-class Preference(models.Model):
-    age_range = IntegerRangeField(
-        default=NumericRange(1, 101),
-        blank=True,
-        validators=[RangeMinValueValidator(1), RangeMaxValueValidator(100)],
-    )
-    smoking_allowed = models.BooleanField()
-    pets_allowed = models.CharField(
-        max_length=20,
-        choices=Pets.choices,
-        default=Pets.NONE,
-    )
-    food_groups_allowed = models.CharField(
-        max_length=20,
-        choices=FoodGroup.choices,
-        default=FoodGroup.ALL,
-    )
+class LeaseType(models.TextChoices):
+    NEW = "new", _("New")
+    EXISTING = "existing", _("Existing")
 
 
-class Amenities(models.Model):
-    washer = models.BooleanField(default=True)
-    dryer = models.BooleanField(default=True)
-    dishwasher = models.BooleanField(default=True)
-    microwave = models.BooleanField(default=True)
-    baking_oven = models.BooleanField(default=True)
-    parking = models.BooleanField(default=False)
+class Genders(models.TextChoices):
+    MALE = "male", _("Male")
+    FEMALE = "female", _("Female")
+    NON_BINARY = "non_binary", _("Non Binary")
+    ALL = "all", _("All")
 
 
 class CustomUserManager(BaseUserManager):
@@ -126,7 +111,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    bio = models.TextField(default="")  # Does it nullable?
+    bio = models.TextField(default="")  # Is it nullable?
+    gender = models.CharField(
+        max_length=20,
+        choices=[x for x in Genders.choices[:-1]],
+        default=Genders.MALE,
+    )
     profile_picture = models.ImageField(
         upload_to=user_directory_path,
         height_field=None,
@@ -157,6 +147,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
     verified_student = models.BooleanField(default=False)
+    auto_expire_time = models.DateTimeField(
+        default=(timezone.now() + timedelta(days=3650))
+    )
     rating = models.FloatField(null=True, default=None, blank=True)
 
     objects = CustomUserManager()
@@ -429,7 +422,18 @@ class Listing(models.Model):
     furnished = models.BooleanField(default=True)
     utilities_included = models.BooleanField(default=True)
 
+    lease_type = models.CharField(
+        max_length=20,
+        choices=LeaseType.choices,
+        default=LeaseType.NEW,
+    )
+
     # preferences
+    preferred_gender = models.CharField(
+        max_length=20,
+        choices=Genders.choices,
+        default=Genders.ALL,
+    )
     age_range = IntegerRangeField(
         default=NumericRange(18, 60),
         blank=True,

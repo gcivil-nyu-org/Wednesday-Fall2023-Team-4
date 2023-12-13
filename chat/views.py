@@ -68,6 +68,7 @@ class ConversationWsView(generic.View):
                 'receiver': receiverUsernameId,
                 'messages': messages,
                 'recipient_permission': recipientPermission,
+                'target_user': receiverUser,
             },
         )
 
@@ -136,6 +137,11 @@ class ConversationHomeView(generic.View):
                     ),
                 }
             )
+        all_pending_connection_usernamesids = sorted(
+            all_pending_connection_usernamesids,
+            key=lambda x: x['matchLevel'],
+            reverse=True,
+        )
 
         active_connections = list(
             DirectMessagePermission.objects.filter(

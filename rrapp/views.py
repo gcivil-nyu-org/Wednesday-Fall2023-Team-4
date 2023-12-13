@@ -8,8 +8,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AbstractBaseUser
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 
 from django.contrib.messages.views import SuccessMessageMixin
@@ -33,7 +31,7 @@ from django.views import generic
 from django.template.loader import render_to_string
 
 from psycopg2.extras import NumericRange
-from typing import Any, List
+from typing import Any
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
@@ -150,7 +148,7 @@ class RegisterView(generic.View):
             type_rentee.save()
 
             login(request, user)
-
+            messages.success(request, "Registration successful.")
             return HttpResponseRedirect(reverse("rrapp:rentee_listings"))
 
         return render(request, "rrapp/login_register.html", {"form": form})
@@ -370,10 +368,12 @@ class ListingDetailRenteeView(generic.DetailView):
                 SavedListing.objects.filter(
                     rentee_id__user=user_id, saved_listings=listing_id
                 ).delete()
+                messages.success(request, "Removed from shortlist.")
             else:
                 rentee = Rentee.objects.get(user=user_id)
                 listing = Listing.objects.get(id=listing_id)
                 SavedListing.objects.create(rentee_id=rentee, saved_listings=listing)
+                messages.success(request, "Added to shortlist.")
 
         if "connection_request" in request.POST:
             listing = Listing.objects.get(id=listing_id)
@@ -389,6 +389,10 @@ class ListingDetailRenteeView(generic.DetailView):
 
             if len(p) > 0:
                 print("permission already exists", p)
+                messages.error(
+                    request,
+                    "Cannot send a new request until renter responds to the existing request.",
+                )
             else:
                 # create DirectMessagePermission object in db
                 DirectMessagePermission.objects.create(
@@ -396,6 +400,7 @@ class ListingDetailRenteeView(generic.DetailView):
                     receiver=listing.user,
                     permission=Permission.REQUESTED,
                 )
+                messages.success(request, "Request sent to renter.")
         return HttpResponseRedirect(request.path_info)  # redirect to the same page
 
 
@@ -609,6 +614,10 @@ class ListingResultsView(generic.ListView):
         if pets_allowed:
             filters &= Q(pets_allowed=pets_allowed)
 
+        preferred_gender = self.request.GET.get("preferred_gender")
+        if preferred_gender:
+            filters &= Q(preferred_gender=preferred_gender)
+
         # Continue filtering for other fields if needed
 
         # Combine filters
@@ -681,6 +690,7 @@ class ListingUpdateView(generic.UpdateView):
             listing.save()
             for file in request.FILES.getlist('add_photos'):
                 Photo.objects.create(image=file, listing=listing)
+            messages.success(request, "Changes saved successfully.")
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
@@ -743,27 +753,31 @@ class ListingNewView(generic.CreateView):
                 zip_code=form_data.get("zip_code"),
                 city=form_data.get("city"),
                 country=form_data.get("country"),
-                washer=form_data.get("washer") == "true",
-                dryer=form_data.get("dryer") == "true",
-                dishwasher=form_data.get("dishwasher") == "true",
-                microwave=form_data.get("microwave") == "true",
-                baking_oven=form_data.get("baking_oven") == "true",
-                parking=form_data.get("parking") == "true",
+                washer=form_data.get("washer"),
+                dryer=form_data.get("dryer"),
+                dishwasher=form_data.get("dishwasher"),
+                microwave=form_data.get("microwave"),
+                baking_oven=form_data.get("baking_oven"),
+                parking=form_data.get("parking"),
                 number_of_bedrooms=form_data.get("number_of_bedrooms"),
                 number_of_bathrooms=form_data.get("number_of_bathrooms"),
-                furnished=form_data.get("furnished") == "true",
-                utilities_included=form_data.get("utilities_included") == "true",
-                smoking_allowed=form_data.get("smoking_allowed") == "true",
+                furnished=form_data.get("furnished"),
+                utilities_included=form_data.get("utilities_included"),
+                lease_type=form_data.get("lease_type"),
+                smoking_allowed=form_data.get("smoking_allowed"),
                 pets_allowed=form_data.get("pets_allowed"),
+                preferred_gender=form_data.get("preferred_gender"),
                 food_groups_allowed=form_data.get("food_groups_allowed"),
                 age_range=NumericRange(
                     int(form_data.get("age_range").lower),
                     int(form_data.get("age_range").upper),
                 ),
+                restrict_to_matches=form_data.get("restrict_to_matches"),
             )
             listing.save()
             for file in request.FILES.getlist('add_photos'):
                 Photo.objects.create(image=file, listing=listing)
+            messages.success(request, "Listing created successfully.")
             return HttpResponseRedirect(reverse("rrapp:my_listings"))
         else:
             return self.form_invalid(form)
@@ -798,6 +812,7 @@ class ProfileView(generic.UpdateView):
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
+            messages.success(request, 'Changes saved successfully.')
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
@@ -811,6 +826,7 @@ class PublicProfileView(generic.DetailView):
         'username',
         'first_name',
         'last_name',
+        'gender',
         'bio',
         'smokes',
         'pets',
@@ -942,6 +958,7 @@ class PersonalQuizView(generic.UpdateView):
         form = self.get_form()
 
         if form.is_valid():
+            messages.success(request, "Successfully saved your responses.")
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
@@ -956,6 +973,7 @@ def listing_delete(request, pk):
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
+        messages.success(request, "Listing deleted successfully.")
         return HttpResponseRedirect(reverse('rrapp:my_listings'))
     return render(
         request,
@@ -974,21 +992,6 @@ def deleteAccount(request):
     return render(
         request, 'rrapp/confirm_delete_user.html', {"user_id": request.user.id}
     )
-
-
-class UsersListView(LoginRequiredMixin, generic.ListView):
-    http_method_names = [
-        'get',
-    ]
-
-    def get_queryset(self):
-        return User.objects.all().exclude(id=self.request.user.id)
-
-    def render_to_response(self, context, **response_kwargs):
-        users: List[AbstractBaseUser] = context['object_list']
-
-        data = [{"username": usr.get_username(), "pk": str(usr.pk)} for usr in users]
-        return JsonResponse(data, safe=False, **response_kwargs)
 
 
 def get_inbox_count(username):

@@ -30,7 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "roomierendezvous-app-dev.us-east-1.elasticbeanstalk.com",
-    "roomierendevuous-prod-1-dev.us-west-2.elasticbeanstalk.com"
+    "Wednesday-Fall2023-Team-4-dev.us-west-2.elasticbeanstalk.com",
 ]
 
 
@@ -147,16 +147,16 @@ if "AWS_STORAGE_BUCKET_NAME" in os.environ:
 
     AWS_DEFAULT_ACL = 'public-read'
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-    
+
     AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
     AWS_LOCATION = 'roomierendezvous_files'
 
     AWS_MEDIA_LOCATION = 'media'
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_MEDIA_LOCATION}/'
-    
+
     AWS_STATIC_LOCATION = 'static'
     STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_STATIC_LOCATION}/'
-    
+
 else:
     STATIC_URL = "/static/"
     STATIC_ROOT = os.path.join(BASE_DIR, "static")
