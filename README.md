@@ -7,6 +7,9 @@ Master :
 [![Coverage Status](https://coveralls.io/repos/github/gcivil-nyu-org/Wednesday-Fall2023-Team-4/badge.svg?branch=master)](https://coveralls.io/github/gcivil-nyu-org/Wednesday-Fall2023-Team-4?branch=master)
 
 References:-
+For setting up django application :
+
+https://testdriven.io/blog/django-elastic-beanstalk/
 
 For setting up Websocket based chat on AWS Elastic Beanstalk :
 
